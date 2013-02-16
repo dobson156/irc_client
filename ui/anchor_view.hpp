@@ -140,10 +140,10 @@ class name { \
     int      n; \
 public: \
 	name(point dimension_, int n_); \
-    point get_fill_position() const; \
-    point get_fill_dimension() const; \
-    point get_anchor_position() const; \
-    point get_anchor_dimension() const; \
+	point get_fill_position() const; \
+	point get_fill_dimension() const; \
+	point get_anchor_position() const; \
+	point get_anchor_dimension() const; \
 	void set_dimension(point dimension_); \
 	void set_n(int n); \
 	int get_n() const; \
