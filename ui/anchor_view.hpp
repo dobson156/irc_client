@@ -154,6 +154,7 @@ ANCHOR_PROTOTYPE(left)
 ANCHOR_PROTOTYPE(right)
 ANCHOR_PROTOTYPE(bottom)
 
+#undef ANCHOR_PROTOTYPE
 } //namespace anchors
 
 } //nameapce cons
