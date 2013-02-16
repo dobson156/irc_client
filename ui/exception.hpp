@@ -5,14 +5,16 @@
 #include <sstream>
 #include <string>
 
-class ui_exception : public std::exception {
+namespace cons {
+
+class exception : public std::exception {
 	std::string msg, 
 	            file,
 	            func;
 	int         line;
 	std::string what_;	
 public:
-	ui_exception(std::string msg_,  std::string file_, 
+	exception(std::string msg_,  std::string file_, 
 	             std::string func_, int line_)
 	:	std::exception()
 	,	msg  { std::move(msg_)  }
@@ -30,8 +32,11 @@ public:
 	virtual const char *what() const noexcept override {
 		return what_.c_str();
 	}
-};
+}; //class exception
 
-#define CONS_MAKE_EXCEPTION(msg) ui_exception (msg, __FILE__, __func__, __LINE__)
+} //namespace cons
+
+#define CONS_MAKE_EXCEPTION(msg) \
+	::cons::exception (msg, __FILE__, __func__, __LINE__)
 
 #endif //UI_EXCEPT_HPP
