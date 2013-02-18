@@ -20,12 +20,12 @@ std::unique_ptr<T> make_unique( Args&& ...args ) {
 
 template<typename Unsigned=unsigned>
 Unsigned stou(const std::string& str, std::size_t *idx=nullptr, int base=10) {
-    unsigned long result=std::stoul(str, idx, base);
+	unsigned long result=std::stoul(str, idx, base);
 
-    if (result > std::numeric_limits<Unsigned>::max())
-        throw std::out_of_range("stou: ");
+	if (result > std::numeric_limits<Unsigned>::max())
+		throw std::out_of_range("stou: ");
 
-    return result;
+	return result;
 }
 
 } //namespace util

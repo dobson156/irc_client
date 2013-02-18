@@ -46,7 +46,6 @@ short colour_pair::get_free_id() {
 	}
 	*it=true;
 	return std::distance(used_slots.begin(), it)+1;
-	
 }
 void colour_pair::release_id(short id) {
 	--id;
@@ -55,7 +54,6 @@ void colour_pair::release_id(short id) {
 	used_slots[id]=false;
 }
 //END STATIC
-
 
 std::pair<short, short> colour_pair::get_pair() const {
 	CONS_ASSERT(id!=0, "invalid colour id");
@@ -77,14 +75,12 @@ colour_pair::colour_pair()
 :	id { get_free_id() }
 {
 	//see man use_default_colors for details
-	CONS_ASSERT(id < 28, "high id2");
  	use_default_colors();
 	init_pair_(-1, -1);
 }
 colour_pair::colour_pair(short foreground, short background)
 :	id { get_free_id() }
 {	
-	CONS_ASSERT(id < 28, "high id");
 	init_pair_(foreground, background);
 }
 colour_pair::colour_pair(colour_pair&& other) 
