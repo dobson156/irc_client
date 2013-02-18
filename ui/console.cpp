@@ -2,6 +2,7 @@
 //#include "uilib.hpp"
 
 #include "console.hpp"
+#include "util.hpp"
 
 #include <fstream>
 #include <string>
@@ -34,8 +35,27 @@ point operator-(const point& l, const point& r) {
 }
 
 //CLASS colour_pair
-//STATIC DATA MEMBER
-short colour_pair::counter { 1 };
+//STATIC
+std::vector<bool> colour_pair::used_slots;
+
+short colour_pair::get_free_id() {
+	auto it=std::find(used_slots.begin(), used_slots.end(), false);
+	if(it==used_slots.end()) {
+		used_slots.push_back(true);
+		return used_slots.size();
+	}
+	*it=true;
+	return std::distance(used_slots.begin(), it)+1;
+	
+}
+void colour_pair::release_id(short id) {
+	--id;
+	CONS_ASSERT(std::size_t(id) < used_slots.size(), "invalid id");
+	CONS_ASSERT(used_slots[id], "id already released");
+	used_slots[id]=false;
+}
+//END STATIC
+
 
 std::pair<short, short> colour_pair::get_pair() const {
 	CONS_ASSERT(id!=0, "invalid colour id");
@@ -54,7 +74,7 @@ void colour_pair::init_pair_(short fg, short bg) {
 }
 
 colour_pair::colour_pair()
-:	id { counter++ }
+:	id { get_free_id() }
 {
 	//see man use_default_colors for details
 	CONS_ASSERT(id < 28, "high id2");
@@ -62,7 +82,7 @@ colour_pair::colour_pair()
 	init_pair_(-1, -1);
 }
 colour_pair::colour_pair(short foreground, short background)
-:	id { counter++ }
+:	id { get_free_id() }
 {	
 	CONS_ASSERT(id < 28, "high id");
 	init_pair_(foreground, background);
@@ -73,14 +93,16 @@ colour_pair::colour_pair(colour_pair&& other)
 	other.id=0; 
 }
 colour_pair::colour_pair(const colour_pair& other) 
-:	id { counter++ }
+:	id { get_free_id() }
 {
 	const auto& p=other.get_pair();
 	init_pair_(std::get<0>(p), std::get<1>(p));
 }
 colour_pair::~colour_pair() {
-	if(id!=0)
+	if(id!=0) {
 		attroff(COLOR_PAIR(id));
+		release_id(id);
+	}
 }
 colour_pair& colour_pair::operator=(colour_pair other) {
 	swap(other);

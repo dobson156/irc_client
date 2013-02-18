@@ -3,12 +3,14 @@
 
 #include <ncurses.h>
 
+#include <vector>
 #include <string>
 #include <memory> //unique_ptr
 #include <ostream>
 #include <utility> //pair
 
 namespace cons {
+
 
 struct point { 
 	int x, y; 
@@ -23,7 +25,10 @@ point operator- (const point& l, const point& r);
 
 class colour_pair {
 	//As this lib is single thread async this is not a data race
-	static short counter;
+	static std::vector<bool> used_slots;	
+	static short get_free_id(); 
+	static void release_id(short id); 
+
 	short id { 0 };
 	std::pair<short, short> get_pair() const;
 	void init_pair_(short fg, short bg);
