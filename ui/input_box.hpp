@@ -1,8 +1,6 @@
 #ifndef INPUT_BOX_HPP
 #define INPUT_BOX_HPP
 
-#include <fstream>
-
 #include "basic.hpp"
 #include "string_stencil.hpp"
 
@@ -57,10 +55,6 @@ public:
 		if(y <= dim.y) {
 		*/
 			//CONS_ASSERT(frame_.get_dimension() == required, "predicate failed");
-
-			std::ofstream dbg { "xx", std::ios_base::app };
-			dbg << "rf" << std::endl;
-
 			std::ostringstream oss;
 			oss << frame_.get_dimension();
 

@@ -3,8 +3,6 @@
 
 #include "basic.hpp"
 
-#include <fstream>
-
 #include <string>
 #include <algorithm> // min
 
