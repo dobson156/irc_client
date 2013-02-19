@@ -368,7 +368,7 @@ void copy(frame& src, frame& dst,
 }
 
 
-point  boardered::calc_element_dimension() const {
+point  bordered::calc_element_dimension() const {
 	auto dim=get_dimension() -  point{ right+left, top+bottom };
 	return {
 		std::max(dim.x, 0),
@@ -376,44 +376,44 @@ point  boardered::calc_element_dimension() const {
 	};
 }
 
-point boardered::calc_element_position() const {
+point bordered::calc_element_position() const {
 	return { int(left), int(top) };
 }
 
-void boardered::clear() {
+void bordered::clear() {
 	frame_.clear();
 	if(element) element->clear();
 }
-void boardered::refresh() {
+void bordered::refresh() {
 	frame_.clear();
  	auto dim=get_dimension();
 
 	if(right
 	&& mvwvline(frame_.get_handle(), 0, dim.x-1, '|', dim.y)) {
-		throw CONS_MAKE_EXCEPTION("unable to draw right boarder");
+		throw CONS_MAKE_EXCEPTION("unable to draw right border");
 	}
 	if(left
 	&& mvwvline(frame_.get_handle(), 0, 0, '|', dim.y)) {
-		throw CONS_MAKE_EXCEPTION("unable to draw left boarder");
+		throw CONS_MAKE_EXCEPTION("unable to draw left border");
 	}
 	if(top
 	&& mvwhline(frame_.get_handle(), 0, 0, '-', dim.x)) {
-		throw CONS_MAKE_EXCEPTION("unable to draw top boarder");
+		throw CONS_MAKE_EXCEPTION("unable to draw top border");
 	}
 	if(bottom
 	&& mvwhline(frame_.get_handle(), dim.y-1, 0, '-', dim.x)) {
-		throw CONS_MAKE_EXCEPTION("unable to draw bottom boarder");
+		throw CONS_MAKE_EXCEPTION("unable to draw bottom border");
 	}
 	frame_.refresh();
 	if(element) element->refresh();
 }
 
-void boardered::set_position(const point& position) {
+void bordered::set_position(const point& position) {
 	//IMPLICATIONS ON CHILDREN???
 	frame_.set_position(position);
 	if(element) element->set_position(calc_element_position());
 }
-void boardered::set_dimension(const point& dimension) { 
+void bordered::set_dimension(const point& dimension) { 
 	frame_.set_dimension(dimension); 
 	if(element) {
 		//element->set_position(calc_element_position());
@@ -422,12 +422,12 @@ void boardered::set_dimension(const point& dimension) {
 	}
 
 }
-point boardered::get_dimension()  const { return frame_.get_dimension();   }
-point boardered::get_position()   const { return frame_.get_position();    }
-short boardered::get_background() const  { return frame_.get_background(); }
-short boardered::get_foreground() const  { return frame_.get_foreground(); }
-void boardered::set_background(short bg) { frame_.set_background(bg);      }
-void boardered::set_foreground(short fg) { frame_.set_foreground(fg);      }
+point bordered::get_dimension()  const { return frame_.get_dimension();   }
+point bordered::get_position()   const { return frame_.get_position();    }
+short bordered::get_background() const  { return frame_.get_background(); }
+short bordered::get_foreground() const  { return frame_.get_foreground(); }
+void bordered::set_background(short bg) { frame_.set_background(bg);      }
+void bordered::set_foreground(short fg) { frame_.set_foreground(fg);      }
 
 namespace anchors {
 top::top(point dimension_, int n_)
