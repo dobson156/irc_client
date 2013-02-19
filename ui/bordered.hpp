@@ -8,9 +8,9 @@
 
 namespace cons {
 
-enum class boarders { top, bottom, left, right };
+enum class borders { top, bottom, left, right };
 		  
-class boardered : public base {
+class bordered : public base {
 	frame           frame_;
 	unique_base_ptr element;
 	bool top  { false }, bottom { false }, 
@@ -23,16 +23,16 @@ class boardered : public base {
 	template<typename T, typename... Args>
 	void set_flags(T val, Args... args) {
 		switch(val)	{
-		case boarders::top:    top   =true; break;
-		case boarders::bottom: bottom=true; break;
-		case boarders::left:   left  =true; break;
-		case boarders::right:  right =true; break;
+		case borders::top:    top   =true; break;
+		case borders::bottom: bottom=true; break;
+		case borders::left:   left  =true; break;
+		case borders::right:  right =true; break;
 		}
 		set_flags(args...);
 	}
 public:
 	template<typename... Boarders>
-	boardered(unique_window_ptr handle_, Boarders... b)
+	bordered(unique_window_ptr handle_, Boarders... b)
 	:	frame_ { std::move(handle_) }
 	{
 		set_flags(b...);
@@ -65,7 +65,7 @@ public:
 	void set_foreground(short fg);
 	short get_background() const;
 	short get_foreground() const;
-}; //class boarder
+}; //class border
 
 } //namespace cons
 
