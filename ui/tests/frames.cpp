@@ -19,7 +19,7 @@ int main() {
 //		anchor_right& btm=p.emplace_fill<anchor_right>(20);
 
 	//TOP - left
-		boardered&   tlb=top.emplace_anchor<boardered>(boarders::right, boarders::top, boarders::left, boarders::bottom);
+		bordered&   tlb=top.emplace_anchor<bordered>(borders::right, borders::top, borders::left, borders::bottom);
 		text_box&    tlf=tlb.emplace_element<text_box>("top left");
 
 	//TOP - right 

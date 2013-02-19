@@ -18,27 +18,27 @@ int main() {
 		anchor_right& btm=p.emplace_fill<anchor_right>(20);
 
 	//TOP - left
-		cons::boardered&   tlb=top.emplace_anchor<cons::boardered>(
-			cons::boarders::right, cons::boarders::left, 
-			cons::boarders::top,   cons::boarders::bottom);
+		cons::bordered&   tlb=top.emplace_anchor<cons::bordered>(
+			cons::borders::right, cons::borders::left, 
+			cons::borders::top,   cons::borders::bottom);
 		text_box&    tlf=tlb.emplace_element<text_box>("top left");
 		tlf.set_background(COLOR_YELLOW);
 
 	//TOP - right 
-		cons::boardered&   trb=top.emplace_fill<cons::boardered>(
-			cons::boarders::right, cons::boarders::left, cons::boarders::top, cons::boarders::bottom);
+		cons::bordered&   trb=top.emplace_fill<cons::bordered>(
+			cons::borders::right, cons::borders::left, cons::borders::top, cons::borders::bottom);
 		text_box&    trf=trb.emplace_element<text_box>("top right");
 		trf.set_background(COLOR_BLUE);
 		
 	//BTM - right  
-		cons::boardered&   brb=btm.emplace_anchor<cons::boardered>(
-			cons::boarders::right, cons::boarders::left, cons::boarders::top, cons::boarders::bottom);
+		cons::bordered&   brb=btm.emplace_anchor<cons::bordered>(
+			cons::borders::right, cons::borders::left, cons::borders::top, cons::borders::bottom);
 		text_box&    brf=brb.emplace_element<text_box>("btm right");
 		brf.set_background(COLOR_RED);
 
 	//BTM - left 
-		cons::boardered&   blb=btm.emplace_fill<cons::boardered>(
-			cons::boarders::right, cons::boarders::left, cons::boarders::top, cons::boarders::bottom);
+		cons::bordered&   blb=btm.emplace_fill<cons::bordered>(
+			cons::borders::right, cons::borders::left, cons::borders::top, cons::borders::bottom);
 		str_list&    blf=blb.emplace_element<str_list>();
 		//blf.set_background(COLOR_GREEN);
 

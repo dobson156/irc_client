@@ -21,7 +21,7 @@
 #include "input_box.hpp"
 
 //decorartors
-#include "boardered.hpp"
+#include "bordered.hpp"
 
 /*
 #ifdef CONS_FAST_COMPILE

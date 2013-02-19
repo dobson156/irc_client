@@ -25,7 +25,7 @@ class irc_ui_window {
 	anchor_bottom&      status_anchor;
 	anchor_left&      channel_anchor;
 
-	boardered&          channel_boarder;
+	bordered&          channel_border;
 
 	text_list&          channel_list;
 	text_list&          message_list;
@@ -44,8 +44,8 @@ public:
 	,	status_anchor  (input_anchor.emplace_fill<anchor_bottom>(1))
 	,	channel_anchor (status_anchor.emplace_fill<anchor_left>(20))
 
-	,	channel_boarder(channel_anchor.emplace_anchor<boardered>(boarders::right))
-	,	channel_list   (channel_boarder.emplace_element<text_list>()) 
+	,	channel_border(channel_anchor.emplace_anchor<bordered>(borders::right))
+	,	channel_list   (channel_border.emplace_element<text_list>()) 
 
 	,	message_list   (channel_anchor.emplace_fill<text_list>())
 	,	title          (parent.emplace_anchor<text_box>("my irc client") )
