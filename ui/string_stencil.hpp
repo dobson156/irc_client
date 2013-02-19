@@ -41,21 +41,14 @@ public:
 
 	point write_to(frame& frame_, const std::string& str) const {
 		auto dim  =frame_.get_dimension();
-		auto chars=str.size();
-		auto rows =required_y(dim.x, chars);
+		auto rows =required_y(dim.x, str.size());
 
-
-		std::ofstream dbg { "hhh", std::ios_base::app };
-		for(int i=0; i!=rows; ++i) {
-			frame_.write(
-				{0,i}, 
-				str.c_str() + i*dim.x,
-				std::min<int>(dim.x, chars)
-			);
-			chars-=dim.x;
-			dbg << i << "  ";
+		if(rows < dim.y) {
+			frame_.write({0, 0}, str);
 		}
-		dbg << std::endl;
+		else {
+			frame_.write({0, 0}, str.cbegin(), str.cbegin()+rows*dim.x);
+		}
 		return { dim.x, rows };
 	}
 }; //class string_stencil

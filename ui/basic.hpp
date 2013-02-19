@@ -96,6 +96,8 @@ public:
 	point write(const point& pt, char ch);
 	point write(const point& pt, const std::string& str);
 	point write(const point& pt, const std::string& str, int n);
+	point write(const point& pt, std::string::const_iterator first, 
+	                             std::string::const_iterator last);
 //Overrides
 	void clear()                               override;
 	void refresh()                             override;
