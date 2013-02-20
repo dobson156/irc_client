@@ -4,7 +4,6 @@
 #include "console.hpp"
 #include "util.hpp"
 
-#include <fstream>
 #include <string>
 #include <ostream>
 #include <utility>
@@ -199,17 +198,25 @@ void frame::set_cursor(const point& pt) {
 		throw CONS_MAKE_EXCEPTION(oss.str());
 	}
 }
+void frame::apply_colour() {
+	if(wbkgd(handle.get(), colours.get_id())==ERR) {
+		throw CONS_MAKE_EXCEPTION("Unable to set background of frame");
+	}
+}
+
 //Ctor
 frame::frame(unique_window_ptr handle_) 
 :	base()
 ,	handle { std::move(handle_) }
 {
-	std::ofstream debug { "dbg", std::ios_base::app };
-	debug << "i" << std::endl;
-	//if(attron(COLOR_PAIR(colours.get_id()))==ERR) {
-	if(wbkgd(handle.get(), colours.get_id())==ERR) {
-		throw CONS_MAKE_EXCEPTION("Unable to set colour");
-	}
+}
+
+unique_window_ptr frame::reset(unique_window_ptr handle_) {
+	//we don't actually care if it was previously invalid
+	CONS_ASSERT(handle_, "can not assign a invalid handle");
+	std::swap(handle_, handle);
+	apply_colour();
+	return handle_;
 }
 
 //Content
@@ -298,16 +305,19 @@ point frame::get_position() const {
 void frame::set_background(short bg) {
 	CONS_ASSERT(handle, "invalid handle");
 	colours.set_background(bg);	
-	if(wattron(handle.get(), COLOR_PAIR(colours.get_id()))==ERR) {
-		throw CONS_MAKE_EXCEPTION("Unable to set background of frame");
-	}
+	apply_colour();
+//	if(wcolor_set(handle.get(), COLOR_PAIR(colours.get_id()), nullptr)==ERR) {
+//		throw CONS_MAKE_EXCEPTION("Unable to set background of frame");
+//	}
 }
 void frame::set_foreground(short fg) {
 	CONS_ASSERT(handle, "invalid handle");
 	colours.set_foreground(fg);	
-	if(wattron(handle.get(), COLOR_PAIR(colours.get_id()))==ERR) {
-		throw CONS_MAKE_EXCEPTION("Unable to set background of frame");
-	}
+	//if(wattron(handle.get(), COLOR_PAIR(colours.get_id()))==ERR) {
+	apply_colour();
+	//if(wcolor_set(handle.get(), COLOR_PAIR(colours.get_id()), nullptr)==ERR) {
+	//	throw CONS_MAKE_EXCEPTION("Unable to set background of frame");
+	//}
 }
 short frame::get_background() const {
 	return colours.get_background();
@@ -428,6 +438,12 @@ short bordered::get_background() const  { return frame_.get_background(); }
 short bordered::get_foreground() const  { return frame_.get_foreground(); }
 void bordered::set_background(short bg) { frame_.set_background(bg);      }
 void bordered::set_foreground(short fg) { frame_.set_foreground(fg);      }
+
+unique_window_ptr bordered::reset(unique_window_ptr handle) {
+	handle=frame_.reset(std::move(handle));
+	element->reset(make_element_window());
+	return handle;
+}
 
 namespace anchors {
 top::top(point dimension_, int n_)

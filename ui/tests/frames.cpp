@@ -36,8 +36,6 @@ int main() {
 		*/
 		top.refresh();
 
-		//std::ofstream debug {"debugz", std::ios_base::app };
-
 		int i;
 		while((i=getch( ))!='q') {
 			switch(i) {

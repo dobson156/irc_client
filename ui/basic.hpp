@@ -52,6 +52,8 @@ public:
 	short get_id() const;
 }; //class colour_pair
 
+using unique_window_ptr=std::unique_ptr<WINDOW, decltype(&::delwin)>;
+
 void swap(colour_pair& a, colour_pair& b);
 class base {
 public:
@@ -62,10 +64,11 @@ public:
 	virtual void set_dimension(const point& dimension)=0;
 	virtual point get_position() const                =0;
 	virtual point get_dimension() const               =0;
+
+	virtual unique_window_ptr reset(unique_window_ptr)=0;
 }; //class base
 
 using unique_base_ptr  =std::unique_ptr<base>;
-using unique_window_ptr=std::unique_ptr<WINDOW, decltype(&::delwin)>;
 
 //helper
 int destroy_parent(WINDOW *win);
@@ -83,6 +86,8 @@ class frame : public base {
 
 	point get_cursor() const; 
 	void set_cursor(const point& p);
+
+	void apply_colour();
 public:
 //Ctor
 	frame()            =delete;
@@ -105,6 +110,8 @@ public:
 	void set_dimension(const point& dimension) override;
 	point get_position()                 const override;
 	point get_dimension()                const override;
+
+	unique_window_ptr reset(unique_window_ptr handle_) override;
 //Colour
 	void set_background(short bg);
 	void set_foreground(short fg);

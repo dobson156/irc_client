@@ -18,21 +18,16 @@ class irc_ui_window {
 	using anchor_top   =anchor_view<anchors::top>;
 	using anchor_bottom=anchor_view<anchors::bottom>;
 	using anchor_left  =anchor_view<anchors::left>;
-
 //Member variables
 	anchor_top          parent;
 	anchor_bottom&      input_anchor;
 	anchor_bottom&      status_anchor;
 	anchor_left&      channel_anchor;
-
 	bordered&          channel_border;
-
 	text_list&          channel_list;
 	text_list&          message_list;
 	text_box&           title;
-	//text_box&           input;
 	text_box&           status;
-
 	input_box&          input;
 public: 
 	irc_ui_window() 
@@ -56,8 +51,7 @@ public:
 
 	,	input          (input_anchor.emplace_anchor<input_box>())
 	{
-		std::stringstream ss;
-
+		/*
 		input.reg_on_grow(
 			[&](const point& pt) {
 				input_anchor.set_partition(pt.y);
@@ -70,8 +64,7 @@ public:
 				return true;
 			}
 		);
-
-
+		*/
 
 		channel_list.insert(channel_list.begin(), "hello");
 		channel_list.insert(channel_list.begin(), "world");
@@ -80,12 +73,10 @@ public:
 		message_list.insert(message_list.begin(), "msg1");
 		message_list.insert(message_list.begin(), std::string(400, 'a'));
 
-		status.set_foreground(COLOR_RED);
 		status.set_background(COLOR_CYAN);
+		status.set_content("Hi");
+
 		title.set_background(COLOR_CYAN);
-
-
-		status.set_content(ss.str());
 
 		parent.refresh();
 	}
@@ -99,8 +90,12 @@ public:
 		noecho();
 		while(input.get_char()!='q') {
 			input_anchor.set_partition(input_anchor.get_partition()+1);
+
+			std::ostringstream ss;
+			ss << channel_list.get_dimension();
+
+			channel_list.insert(channel_list.begin(), ss.str());
 			parent.refresh();
-			//std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	}
 }; //class irc_ui_window

@@ -15,9 +15,16 @@ class bordered : public base {
 	unique_base_ptr element;
 	bool top  { false }, bottom { false }, 
 	     left { false }, right  { false };
-
+	//TODO make safe for very small sizes
 	point calc_element_dimension() const;
 	point calc_element_position()  const;
+	unique_window_ptr make_element_window() {
+		return make_window(
+			frame_.get_handle(),
+			calc_element_position(),
+			calc_element_dimension()
+		);
+	}
 
 	void set_flags() { }
 	template<typename T, typename... Args>
@@ -41,12 +48,7 @@ public:
 	template<typename ElementType, typename... Args>
 	ElementType& emplace_element(Args&&...additional_args) {
 		auto element_fill=util::make_unique<ElementType>(
-			//TODO make safe for very small sizes
-			make_window(
-				frame_.get_handle(),
-				calc_element_position(),
-				calc_element_dimension()
-			),
+			make_element_window(),
 			std::forward<Args>(additional_args)...
 		);
 		auto raw_ptr=element_fill.get();
@@ -60,6 +62,8 @@ public:
 	void set_dimension(const point& dimension) override;
 	point get_position()                 const override;
 	point get_dimension()                const override;
+
+	unique_window_ptr reset(unique_window_ptr handle) override;
 //Colours
 	void set_background(short bg);
 	void set_foreground(short fg);

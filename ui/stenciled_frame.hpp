@@ -43,6 +43,9 @@ public:
 	}
 	point get_position()  const override { return frame_.get_position();  }
 	point get_dimension() const override { return frame_.get_dimension(); }
+	unique_window_ptr reset(unique_window_ptr handle) override {
+		return frame_.reset(std::move(handle));
+	}
 //Colour
 	void set_background(short bg) { frame_.set_background(bg); }
 	void set_foreground(short fg) { frame_.set_foreground(fg); }

@@ -21,28 +21,22 @@ private:
 	unique_base_ptr anchor;
 	unique_base_ptr fill;
 
+	unique_window_ptr make_fill_window() {
+		return make_window(frame_.get_handle(),
+			anchor_control.get_fill_position(),	
+			anchor_control.get_fill_dimension()
+		);
+	}
+	unique_window_ptr make_anchor_window() {
+		return make_window(frame_.get_handle(),
+			anchor_control.get_anchor_position(),	
+			anchor_control.get_anchor_dimension()
+		);
+	}
 	void shuffle() {
-		if(anchor) {
-			try {
-				anchor->set_position(anchor_control.get_anchor_position());
-				anchor->set_dimension(anchor_control.get_anchor_dimension());
-			}
-			catch(const std::exception&) {
-				anchor->set_dimension(anchor_control.get_anchor_dimension());
-				anchor->set_position(anchor_control.get_anchor_position());
-			}
-		}
-		if(fill) {
-			try {
-				fill->set_position(anchor_control.get_fill_position());
-				fill->set_dimension(anchor_control.get_fill_dimension());
-			}
-			catch(const std::exception&) {
-				fill->set_dimension(anchor_control.get_fill_dimension());
-				fill->set_position(anchor_control.get_fill_position());
-			}
-		}
-		touchwin(frame_.get_handle());
+		//sets replaces windows with windows in the right place
+		if(fill)   fill->reset(make_fill_window());
+		if(anchor) anchor->reset(make_anchor_window());
 	}
 public:
 	anchor_view(unique_window_ptr handle_, int partition) 
@@ -53,11 +47,7 @@ public:
 	template<typename ElementType, typename... Args>
 	ElementType& emplace_fill(Args&&...additional_args) {
 		auto element_fill=util::make_unique<ElementType>(
-			make_window(
-				frame_.get_handle(),
-				anchor_control.get_fill_position(),	
-				anchor_control.get_fill_dimension()
-			),
+			make_fill_window(),
 			std::forward<Args>(additional_args)...
 		);
 		auto raw_ptr=element_fill.get();
@@ -67,11 +57,7 @@ public:
 	template<typename ElementType, typename... Args>
 	ElementType& emplace_anchor(Args&&...additional_args) {
 		auto element_anchor=util::make_unique<ElementType>(
-			make_window(
-				frame_.get_handle(),
-				anchor_control.get_anchor_position(),	
-				anchor_control.get_anchor_dimension()
-			),
+			make_anchor_window(),	
 			std::forward<Args>(additional_args)...
 		);
 		auto raw_ptr=element_anchor.get();
@@ -129,6 +115,13 @@ public:
 	void set_partition(int n) {
 		anchor_control.set_n(n);		
 		shuffle();
+	}
+	unique_window_ptr reset(unique_window_ptr handle) override {
+		CONS_ASSERT(handle, "new handle is invalid");
+		handle=frame_.reset(std::move(handle));
+		anchor_control.set_dimension(frame_.get_dimension());
+		shuffle();
+		return handle;
 	}
 }; //class anchor_view
 

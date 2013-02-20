@@ -20,8 +20,7 @@ public:
 	input_box(unique_window_ptr ptr)
 	:	frame_ { std::move(ptr) }
 	{
-		frame_.set_background(COLOR_RED);
-		scrollok(frame_.get_handle(), TRUE);
+		//scrollok(frame_.get_handle(), TRUE);
 	}
 
 	int get_char() {
@@ -79,8 +78,6 @@ public:
 		else { //the compromise
 		*/
 		/*
-			//std::ofstream dbg { "debug", std::ios_base::app };
-			//dbg << "source topleft" <<  point{0, dim.y-y} 
 			//	<<"dest size" << frame_.get_dimension() << std::endl;
 			CONS_ASSERT(false, "i should not get here");
 
@@ -143,6 +140,10 @@ public:
 	}
 	point get_position()  const override { return frame_.get_position();  }
 	point get_dimension() const override { return frame_.get_dimension(); }
+
+	unique_window_ptr reset(unique_window_ptr handle) override {
+		return frame_.reset(std::move(handle));
+	}
 //Colour
 	void set_background(short bg) { frame_.set_background(bg); }
 	void set_foreground(short fg) { frame_.set_foreground(fg); }
