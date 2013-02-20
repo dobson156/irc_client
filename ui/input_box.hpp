@@ -6,7 +6,7 @@
 
 namespace cons {
 
-enum class { no_input, new_line, new_char, control_char };
+//enum class { no_input, new_line, new_char, control_char };
 
 class input_box : public base {
 public:

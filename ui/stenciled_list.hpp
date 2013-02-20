@@ -35,11 +35,11 @@ public:
 	{	}
 //Mutuate
 	iterator insert(iterator it, value_type value) {
-		return values.insert(it, std::move(value));
-		//return values.insert(it, value);
+		//return values.insert(it, std::move(value));
+		return values.insert(it, value);
 	}
 	iterator erase(iterator it) {
-		return values.insert(it);
+		return values.erase(it);
 	}
 //Observe
 	size_type      size()  const { return values.size();   }

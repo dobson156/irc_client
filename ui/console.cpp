@@ -9,14 +9,15 @@
 #include <utility>
 #include <sstream>
 #include <stdexcept>
-/*
-template class cons::stenciled_frame<cons::string_stencil>;
-template class cons::stenciled_list<cons::string_stencil>;
-template class cons::anchor_view<cons::anchors::top>;
-template class cons::anchor_view<cons::anchors::bottom>;
-template class cons::anchor_view<cons::anchors::left>;
-template class cons::anchor_view<cons::anchors::right>;
-*/
+
+#ifdef CONS_FAST_COMPILE
+	template class cons::stenciled_frame<cons::string_stencil>;
+	template class cons::stenciled_list<cons::string_stencil>;
+	template class cons::anchor_view<cons::anchors::top>;
+	template class cons::anchor_view<cons::anchors::bottom>;
+	template class cons::anchor_view<cons::anchors::left>;
+	template class cons::anchor_view<cons::anchors::right>;
+#endif 
 
 namespace cons {
 
@@ -238,7 +239,8 @@ point frame::write(const point& pt, const std::string& str) {
 }
 point frame::write(const point& pt, const std::string& str, int n) {
 	CONS_ASSERT(handle, "invalid handle");
-	CONS_ASSERT(n>=0 && std::size_t(n) <= str.size(), "n is greater than string length");
+	CONS_ASSERT(n>=0 && std::size_t(n) <= str.size(), 
+		"n is greater than string length");
 	set_cursor(pt); //throws
 	if(waddnstr(handle.get(), str.c_str(), n)==ERR) {
 		throw CONS_MAKE_EXCEPTION("Unable to write string to frame");
@@ -353,7 +355,7 @@ void copy(frame& src, frame& dst,
 		);
 		CONS_ASSERT(src_dim.x > src_lower_right.x
 		         && src_dim.y > src_lower_right.y,
-		            "copy area is larger than source: "
+	 	            "copy area is larger than source: "
 		);
 		CONS_ASSERT(src.get_handle(), "source frame is not valid");
 		CONS_ASSERT(dst.get_handle(), "destination frame is not valid");

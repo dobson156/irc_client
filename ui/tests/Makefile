@@ -1,7 +1,7 @@
-CPP   =g++
+CPP   =clang++
 INC   =-I../.
 
-CFLAGS?= -O0 -g -std=c++11 -pedantic -Wall -Wextra 
+CFLAGS?= -O0 -g -std=c++11 -pedantic -Wall -Wextra -DCONS_FAST_COMPILE
 LFLAGS?= 
 
 LIB   =-lncurses ../console.o 

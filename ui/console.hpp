@@ -23,7 +23,6 @@
 //decorartors
 #include "bordered.hpp"
 
-/*
 #ifdef CONS_FAST_COMPILE
 	extern template class cons::stenciled_frame<cons::string_stencil>;
 	extern template class cons::stenciled_list<cons::string_stencil>;
@@ -32,6 +31,5 @@
 	extern template class cons::anchor_view<cons::anchors::left>;
 	extern template class cons::anchor_view<cons::anchors::right>;
 #endif 
-*/
 
 #endif // CONSOLE_HPP
