@@ -68,6 +68,7 @@ public:
 		    y_sum=0;
 
 		auto dim=frame_.get_dimension();
+		frame_.clear();
 
 		//find the largest entry
 		for(const auto& val : values) {

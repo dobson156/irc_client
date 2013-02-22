@@ -130,7 +130,7 @@ namespace anchors {
 #define ANCHOR_PROTOTYPE(name) \
 class name { \
 	point    dimension;\
-    int      n; \
+	int      n; \
 public: \
 	name(point dimension_, int n_); \
 	point get_fill_position() const; \
@@ -148,6 +148,7 @@ ANCHOR_PROTOTYPE(right)
 ANCHOR_PROTOTYPE(bottom)
 
 #undef ANCHOR_PROTOTYPE
+
 } //namespace anchors
 
 } //nameapce cons

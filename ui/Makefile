@@ -11,10 +11,13 @@ export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra
 
 export LFLAGS=$(OPTS)
 
-all: console.o tests
+all: console.o console.a tests
 
 tests: console.o
 	cd tests && $(MAKE) -j
+
+console.a: console.o
+	ar r console.a console.o
 
 %.o: %.cpp
 	$(CPP) -c $(CFLAGS) $(INC) $< -o $@ 

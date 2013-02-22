@@ -23,21 +23,34 @@ public:
 		//scrollok(frame_.get_handle(), TRUE);
 	}
 
+
+	point calc_cursor_position() {
+		auto dim=get_dimension();
+		return {
+			int(value.size()) % dim.x,
+			int(value.size()) / dim.x,
+		};
+	}
+
 	int get_char() {
 		noecho();
-		int c=mvwgetch(frame_.get_handle(),0,0);
-		//int c=wgetch(frame_.get_handle());
-		value+=c;
-		return c;
-		/*
-		int i=wgetch(frame_.get_handle());
 
-		while(std::isprint(i)) {
-			value+=i;
-			refresh();
-			i=wgetch(frame_.get_handle());
+		auto pos=calc_cursor_position();
+		int c=mvwgetch(frame_.get_handle(), pos.y, pos.x);
+
+
+
+		if(c==0x08) {
+			if(!value.empty()) {
+				value.pop_back();
+				refresh();
+			}
 		}
-		*/
+		else if(std::isprint(c)) {
+			value+=c;
+			refresh();
+		}
+		return c;
 	}
 
 	bool grow(point pt) {
@@ -45,56 +58,24 @@ public:
 	}
 
 	void refresh() {
-		/*
 		auto dim=get_dimension();
 		int y=stencil.required_y(dim.x, value.size());
 		point required { dim.x, y };
 		frame_.clear();
 
+		if(value.empty()) {
+			if(dim.y!=1 && grow({dim.x, 1}))
+				return;
+			else frame_.refresh();
+			return;
+		}
+
 		if(y <= dim.y) {
-		*/
-			//CONS_ASSERT(frame_.get_dimension() == required, "predicate failed");
-			std::ostringstream oss;
-			oss << frame_.get_dimension();
-
-			//TODO: may remove clear
-			frame_.clear();
-			frame_.write({0,0}, "hi");
-			//stencil.write_to(frame_, value + oss.str());
-		/*	
+			stencil.write_to(frame_, value);
 		}
-		
 		else if(!grow(required)) {	//the simple case
-		*/
-		/*
-
 
 		}
-
-			CONS_ASSERT(frame_.get_dimension() == required, "predicate failed");
-			frame_.clear();
-			frame_.write(point{1,0}, "hello");
-		}
-		else { //the compromise
-		*/
-		/*
-			//	<<"dest size" << frame_.get_dimension() << std::endl;
-			CONS_ASSERT(false, "i should not get here");
-
-
-			frame pad { make_pad(required) };
-			stencil.write_to(pad, value);
-			frame_.clear();
-			copy(pad, 
-				 frame_, 
-				 {0, required.y-dim.y}, 
-				 {0,0}, 
-				 frame_.get_dimension()
-			);
-		}
-		*/
-		//frame_.clear();
-		//frame_.write(point{0,0}, "hello world");
 		frame_.refresh();
 	}
 
@@ -105,9 +86,8 @@ public:
 		//refresh();
 	}
 
-	const std::string& get_value() const {
-		return value;
-	}
+	std::string&       get_value()       { return value; }
+	const std::string& get_value() const { return value; }
 
 	//watch thread safety
 	void reg_on_grow(grow_cb gcb) {
@@ -127,14 +107,6 @@ public:
 		//frame_.set_position(position); 
 	}
 	void set_dimension(const point& dimension) override { 
-		/*
-		auto pos=frame_.get_position();
-
-		WINDOW *p=wgetparent(frame_.get_handle());
-
-		frame_=frame { make_window(p, pos, dimension) };
-		touchwin(frame_.get_handle());
-		*/
 		frame_.set_dimension(dimension); 
 		touchwin(frame_.get_handle());
 	}

@@ -1,10 +1,10 @@
 CPP   =clang++
 INC   =-I../.
 
-CFLAGS?= -O0 -g -std=c++11 -pedantic -Wall -Wextra -DCONS_FAST_COMPILE
+CFLAGS?= -O0 -g -std=c++11 -pedantic -Wall -Wextra #-DCONS_FAST_COMPILE
 LFLAGS?= 
 
-LIB   =-lncurses ../console.o 
+LIB   =-lncurses ../console.o
 
 PROGS=frames anchors ui_test input_box_test simple
 all: $(PROGS)

@@ -392,6 +392,14 @@ point bordered::calc_element_position() const {
 	return { int(left), int(top) };
 }
 
+unique_window_ptr bordered::make_element_window() {
+	return make_window(
+		frame_.get_handle(),
+		calc_element_position(),
+		calc_element_dimension()
+	);
+}
+
 void bordered::clear() {
 	frame_.clear();
 	if(element) element->clear();

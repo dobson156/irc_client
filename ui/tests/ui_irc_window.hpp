@@ -3,12 +3,16 @@
 
 #include <console.hpp>
 
+#include <csignal>
+
 #include <sstream>
-
-
 #include <thread>
 #include <chrono>
 #include <iostream>
+
+class irc_ui_window;
+irc_ui_window *current;
+void resize_handler(int sig);
 
 using namespace cons;
 class irc_ui_window {
@@ -51,30 +55,24 @@ public:
 
 	,	input          (input_anchor.emplace_anchor<input_box>())
 	{
-		/*
 		input.reg_on_grow(
 			[&](const point& pt) {
 				input_anchor.set_partition(pt.y);
-				input.set_background(COLOR_RED);
-				std::ostringstream oss;
-				oss << status_anchor.get_dimension() << "  " << status_anchor.get_position();
-				status_anchor.refresh();
-				title.set_content(oss.str());
-				title.refresh();
+				input_anchor.refresh();
 				return true;
 			}
 		);
-		*/
 
-		channel_list.insert(channel_list.begin(), "hello");
-		channel_list.insert(channel_list.begin(), "world");
-		channel_list.insert(channel_list.begin(), "01234567890123456789");
+		std::signal(SIGWINCH, &resize_handler);
 
 		message_list.insert(message_list.begin(), "msg1");
-		message_list.insert(message_list.begin(), std::string(400, 'a'));
+
+		channel_list.insert(channel_list.begin(), "1");
 
 		status.set_background(COLOR_CYAN);
 		status.set_content("Hi");
+		
+		channel_border.set_foreground(COLOR_CYAN);
 
 		title.set_background(COLOR_CYAN);
 
@@ -85,19 +83,31 @@ public:
 		parent.refresh();
 	}
 
+	void rejig() {
+		endwin();
+		parent.reset(make_window());
+	}
+
 	void run() {
-		cbreak();
-		noecho();
-		while(input.get_char()!='q') {
-			input_anchor.set_partition(input_anchor.get_partition()+1);
-
-			std::ostringstream ss;
-			ss << channel_list.get_dimension();
-
-			channel_list.insert(channel_list.begin(), ss.str());
-			parent.refresh();
+		int c;
+		std::string s;
+		while(true) {
+			c=input.get_char();
+			if(c=='\n') {
+				std::string s;
+				std::swap(s, input.get_value());
+				message_list.insert(message_list.end(), s);
+				message_list.refresh();
+				input.refresh();
+			}
 		}
 	}
 }; //class irc_ui_window
+
+
+void resize_handler(int sig) {
+	CONS_ASSERT(sig==SIGWINCH, "signal is not SIGWINCH");
+	current->rejig();
+}
 
 #endif //UI_IRC_WINDOW_HPP
