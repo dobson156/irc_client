@@ -1,8 +1,8 @@
 #export CPP   =clang++
 export CPP  =g++
 
-#OPTS         =-O3 -DNDEBUG
-OPTS         =-O0 -ggdb -DCONS_FAST_COMPILE
+OPTS         =-O3 -DNDEBUG
+#OPTS         =-O0 -ggdb -DCONS_FAST_COMPILE
 
 INC          =
 LIB          =-lncurses
