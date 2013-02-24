@@ -19,7 +19,8 @@ private:
 public:
 	stenciled_frame(unique_window_ptr handle, value_type value_)
 	:	frame_ { std::move(handle) }
-	,	value  { std::move(value_) }
+	,	value  ( std::move(value_) )
+	//,	value  ( value_ )
 	{	}
 	void set_content(value_type value_) {
 		value=std::move(value_);
