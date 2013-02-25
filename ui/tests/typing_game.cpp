@@ -12,8 +12,8 @@
 #include <algorithm>
 
 class stentence_maker {
-	std::vector<std::string> dict;
 	using isi=std::istream_iterator<std::string>;
+	std::vector<std::string> dict;
 	std::mt19937 eng { std::random_device()() };
 	std::uniform_int_distribution<std::size_t> dist { 0, dict.size()-1 };
 public:
@@ -41,14 +41,14 @@ struct score_stencil {
 	using value_type=score;
 	int require_y(int, const score&) const { return 3; };
 	cons::point write_to(cons::frame& frame_, const score& sc) {
-		auto dim=frame_.get_dimension();
+		const auto& dim=frame_.get_dimension();
 		int ts=std::min(dim.y, 3);
 		switch(ts) {
-		case 3: frame_.write({0,2},"words: "+std::to_string(sc.n));
-		case 2: frame_.write({0,1},"time:  "+std::to_string(sc.t));
-		case 1: frame_.write({0,0},"wpm:   "+std::to_string(sc.n*60/sc.t));
+		case 3: frame_.write({0, 2}, "words: "+std::to_string(sc.n));
+		case 2: frame_.write({0, 1}, "time:  "+std::to_string(sc.t));
+		case 1: frame_.write({0, 0}, "wpm:   "+std::to_string(sc.n*60/sc.t));
 		}
-		return { dim.y, ts };
+		return { ts, dim.x };
 	}
 };
 
@@ -73,12 +73,11 @@ int main() {
 	);
 
 	int i=0;
-	while(i!='q') {
-		auto& tbx=anc.emplace_fill<text_box>("");
-		std::size_t n=3;
+	do {
+		std::size_t n=5;
 		const auto& word=sm(n);
+		anc.emplace_fill<text_box>(word);
 
-		tbx.set_content(word);
 		inp.clear();
 		anc.refresh();
 
@@ -89,12 +88,12 @@ int main() {
 			                 ? COLOR_GREEN : COLOR_RED);
 			inp.refresh();
 		} while(inp.get_value()!=word);
-		auto t=std::chrono::duration_cast<std::chrono::milliseconds>(
+		double t=std::chrono::duration_cast<std::chrono::milliseconds>(
 			std::chrono::system_clock::now()-tstart).count();
 
 		inp.clear();
-		anc.emplace_fill<score_box>(score{ n, double(t)/1000 });
+		anc.emplace_fill<score_box>(score{ n, t/1000.0 });
 		anc.refresh();
 		i=inp.get_char();
-	}
+	} while(i!='q');
 }
