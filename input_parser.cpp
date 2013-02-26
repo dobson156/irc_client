@@ -58,12 +58,12 @@ void parse(Iter first, Iter last) {
 		( !lit('/') >> str                        [ phx::bind( &::handle_text,    _1 )     ]
 		|'/' 
 		>>  ( CMD_NM('j', "oin" ) >> (+str)       [ phx::bind( &::handle_join,    _1 )     ]
-			| CMD_NM('m', "sg"  ) >> (str >> str) [ phx::bind( &::handle_msg,     _1, _2 ) ]
-			| CMD_NM('l', "eave") >> (str >> str) [ phx::bind( &::handle_part,    _1, _2 ) ]
-			| "connect"           >> str          [ phx::bind( &::handle_connect, _1 )     ]
-			| "nick"              >> str          [ phx::bind( &::handle_nick,    _1 )     ]
-			| "exec"              >> str          [ phx::bind( &::handle_exec,    _1 )     ]
-			)
+		    | CMD_NM('m', "sg"  ) >> (str >> str) [ phx::bind( &::handle_msg,     _1, _2 ) ]
+		    | CMD_NM('l', "eave") >> (str >> str) [ phx::bind( &::handle_part,    _1, _2 ) ]
+		    | "connect"           >> str          [ phx::bind( &::handle_connect, _1 )     ]
+		    | "nick"              >> str          [ phx::bind( &::handle_nick,    _1 )     ]
+		    | "exec"              >> str          [ phx::bind( &::handle_exec,    _1 )     ]
+		    )
 		)
 		, 
 		space
