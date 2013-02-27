@@ -51,15 +51,21 @@ void parse(Iter first, Iter last) {
 	//This rule IS space sensitive
 	qi::rule<decltype(first), std::string()> str=+~char_(' ');
 
-#define CMD_NM(head, tail) lexeme[ lit(head) >> -lit(tail) >> space ]
+	auto cmd_nm=[&](char head, const char *tail) {
+		//TODO: replace with qi::copy as and when it becomes available
+		return boost::proto::deep_copy(lexeme [ lit(head) >> -lit(tail) >> space ]);
+	};
+
+//  #define CMD_NM(head, tail) lexeme[ lit(head) >> -lit(tail) >> space ]
+
 	qi::phrase_parse(
 		first,
 		last,
 		( !lit('/') >> str                        [ phx::bind( &::handle_text,    _1 )     ]
 		|'/' 
-		>>  ( CMD_NM('j', "oin" ) >> (+str)       [ phx::bind( &::handle_join,    _1 )     ]
-		    | CMD_NM('m', "sg"  ) >> (str >> str) [ phx::bind( &::handle_msg,     _1, _2 ) ]
-		    | CMD_NM('l', "eave") >> (str >> str) [ phx::bind( &::handle_part,    _1, _2 ) ]
+		>>  ( cmd_nm('j', "oin" ) >> (+str)       [ phx::bind( &::handle_join,    _1 )     ]
+		    | cmd_nm('m', "sg"  ) >> (str >> str) [ phx::bind( &::handle_msg,     _1, _2 ) ]
+		    | cmd_nm('l', "eave") >> (str >> str) [ phx::bind( &::handle_part,    _1, _2 ) ]
 		    | "connect"           >> str          [ phx::bind( &::handle_connect, _1 )     ]
 		    | "nick"              >> str          [ phx::bind( &::handle_nick,    _1 )     ]
 		    | "exec"              >> str          [ phx::bind( &::handle_exec,    _1 )     ]
@@ -68,15 +74,11 @@ void parse(Iter first, Iter last) {
 		, 
 		space
 	);
-#undef CMD_NM
 }
 
 int main() {
-	std::string input="/join hello bob";
-
 	while(std::getline(std::cin, input)) {
 		parse(input.cbegin(), input.cend());
 	}
-
 	return EXIT_SUCCESS;
 }
