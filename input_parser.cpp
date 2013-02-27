@@ -77,6 +77,7 @@ void parse(Iter first, Iter last) {
 }
 
 int main() {
+	std::string input;
 	while(std::getline(std::cin, input)) {
 		parse(input.cbegin(), input.cend());
 	}
