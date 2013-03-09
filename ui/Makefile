@@ -1,11 +1,12 @@
 #export CPP   =clang++
-export CPP  =g++
+#export CPP  ?=g++
+CPP  =g++
 
 #OPTS         =-O3 -DNDEBUG
 OPTS         =-O0 -ggdb -DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 
 INC          =
-LIB          =-lncurses
+LIB          =
 
 export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra 
 
@@ -14,7 +15,7 @@ export LFLAGS=$(OPTS)
 all: console.o console.a tests
 
 tests: console.o
-	cd tests && $(MAKE) -j
+	cd tests && $(MAKE) 
 
 console.a: console.o
 	ar r console.a console.o

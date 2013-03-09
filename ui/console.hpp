@@ -18,6 +18,8 @@
 #include "stenciled_frame.hpp"
 
 //input
+//#include "input_box.hpp"
+#include "async_input_box.hpp"
 #include "input_box.hpp"
 
 //decorartors

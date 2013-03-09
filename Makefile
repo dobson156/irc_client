@@ -1,5 +1,5 @@
-export CPP   =clang++
-#export CPP  =g++
+#export CPP   =clang++
+export CPP  =g++
 export LNK =$(CPP)
 
 #OPTS         =-O3 -DNDEBUG
