@@ -3,6 +3,8 @@
 
 #include "console_ui.hpp"
 
+#include <boost/asio/io_service.hpp>
+
 #include <string>
 #include <vector>
 #include <functional>
@@ -15,15 +17,17 @@ class controller {
 	void handle_text_input(const std::string& str);
 	void handle_special_char(int);
 //parser handlers
-	void handle_join(const std::vector<std::string>& input);
-	void handle_part(const std::string& chan, const std::string msg);
+	void handle_join   (const std::vector<std::string>& input);
+	void handle_part   (const std::string& chan, const std::string msg);
 	void handle_connect(const std::string& chan);
-	void handle_nick(const std::string& nick);
-	void handle_msg(const std::string& target, const std::string& msg);
-	void handle_text(const std::string& text);
-	void handle_exec(const std::string& exec);
+	void handle_nick   (const std::string& nick);
+	void handle_msg    (const std::string& target, const std::string& msg);
+	void handle_text   (const std::string& text);
+	void handle_exec   (const std::string& exec);
+	void handle_quit   ();
 //varaibles
-	ui view;
+	boost::asio::io_service io_service;
+	ui                      view;
 public:
 	controller();
 	void run();

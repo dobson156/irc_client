@@ -3,7 +3,7 @@
 CPP  =g++
 
 #OPTS         =-O3 -DNDEBUG
-OPTS         =-O0 -ggdb -DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
+OPTS         ?=-O0 -ggdb -DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 
 INC          =
 LIB          =

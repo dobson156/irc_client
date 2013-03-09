@@ -4,7 +4,7 @@
 
 namespace ui_impl {
 
-ui::ui()  
+ui::ui(boost::asio::io_service& io_service_)  
 :	parent         { make_window(), 1 }	
 ,	input_anchor   (parent.emplace_fill<anchor_bottom>(1))
 ,	status_anchor  (input_anchor.emplace_fill<anchor_bottom>(1))
@@ -14,24 +14,33 @@ ui::ui()
 ,	message_list   (channel_anchor.emplace_fill<text_list>())
 ,	title          (parent.emplace_anchor<text_box>("my irc client") )
 ,	status         (status_anchor.emplace_anchor<text_box>("channel's status"))
-,	input          (input_anchor.emplace_anchor<input_box>())
+,	input          (input_anchor.emplace_anchor<async_input_box>(io_service_))
+
+,	io_service     { &io_service_ }
 {	
 	title.set_background(COLOR_CYAN);
 	status.set_background(COLOR_CYAN);
 
 	channel_list.insert(channel_list.begin(), "channel");
 	message_list.insert(message_list.begin(), "message");
-	parent.refresh();
+	refresh();
+//	parent.refresh();
 }
 
-void ui::run() {
-	event_loop();
+void ui::refresh() {
+	parent.refresh();
+	input.refresh();
+} 
+
+void ui::stop() {
+	input.stop();
 }
 
 //TODO: note to self, what happens if you change this on THIS callback?
 //perhaps use the event system
 void ui::reg_on_text_input(std::function<void(std::string)> action){
 	on_text_input=std::move(action);
+	input.reg_on_input(on_text_input);
 }
 
 void ui::reg_on_special_char(std::function<void(int)> action){ 
@@ -44,9 +53,14 @@ void ui::set_title(const std::string& text){
 	title.refresh();
 }
 
+
+void ui::append_message(const std::string& msg) {
+	message_list.insert(message_list.end(), msg);
+	message_list.refresh();
+}
+
 /*
 ** this handles the user input
-*/
 void ui::event_loop() {
 	char t;
 	std::string buff;
@@ -72,6 +86,6 @@ void ui::event_loop() {
 		io_service.run();
 	}
 }
-
+*/
 
 } //namespace ui_impl

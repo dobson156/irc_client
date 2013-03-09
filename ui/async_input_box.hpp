@@ -8,8 +8,6 @@
 
 namespace cons {
 
-//enum class { no_input, new_line, new_char, control_char };
-
 class async_input_box : public base {
 public:
 	using grow_cb =std::function<bool(point)>;
@@ -23,9 +21,6 @@ private:
 	string_stencil           stencil;
 	input_manager            in_manager;
 	boost::asio::io_service *io_service;
-
-
-
 public:
 	async_input_box(unique_window_ptr ptr, boost::asio::io_service& io_service)
 	:	frame_        { std::move(ptr) }
@@ -33,6 +28,10 @@ public:
 	,	io_service    { &io_service    }
 	{	
 		set();
+	}
+
+	void stop() {
+		in_manager.stop();
 	}
 
 	point calc_cursor_position() const {
@@ -73,6 +72,7 @@ public:
 		auto pos=calc_cursor_position();
 
 		wmove(frame_.get_handle(), pos.y, pos.x);
+		frame_.refresh();
 
 		in_manager.async_read(
 			std::bind(&async_input_box::handle_read_complete, this, ph::_1)

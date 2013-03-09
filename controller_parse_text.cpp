@@ -25,6 +25,8 @@ void controller::parse_text(std::string::const_iterator first,
 	//This rule IS space sensitive
 	qi::rule<decltype(first), std::string()> str=+~char_(' ');
 
+	qi::rule<decltype(first), std::string()> str_to_end=+char_;
+
 	auto cmd_nm=[&](char head, const char *tail) {
 		//TODO: replace with qi::copy as and when it becomes available
 		return boost::proto::deep_copy(lexeme [ lit(head) >> -lit(tail) >> space ]);
@@ -33,7 +35,7 @@ void controller::parse_text(std::string::const_iterator first,
 	qi::phrase_parse(
 		first,
 		last,
-		( !lit('/') >> str                        [ phx::bind( &::controller::handle_text,    this, _1 )     ]
+		( !lit('/') >> str_to_end                 [ phx::bind( &::controller::handle_text,    this, _1 )     ]
 		|'/' 
 		>>  ( cmd_nm('j', "oin" ) >> (+str)       [ phx::bind( &::controller::handle_join,    this, _1 )     ]
 			| cmd_nm('m', "sg"  ) >> (str >> str) [ phx::bind( &::controller::handle_msg,     this, _1, _2 ) ]
@@ -41,6 +43,7 @@ void controller::parse_text(std::string::const_iterator first,
 			| "connect"           >> str          [ phx::bind( &::controller::handle_connect, this, _1 )     ]
 			| "nick"              >> str          [ phx::bind( &::controller::handle_nick,    this, _1 )     ]
 			| "exec"              >> str          [ phx::bind( &::controller::handle_exec,    this, _1 )     ]
+			| lit("quit")                             [ phx::bind( &::controller::handle_quit,    this)          ]
 			)
 		)
 		, 

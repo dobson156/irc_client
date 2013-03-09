@@ -37,21 +37,23 @@ class ui {
 	text_list&          message_list;
 	text_box&           title;
 	text_box&           status;
-	input_box&          input;
+	async_input_box&    input;
 //Callbacks
-	boost::asio::io_service io_service;
-	action_str              on_text_input;
-	action_int              on_special_char;
+	boost::asio::io_service *io_service;
+	action_str               on_text_input;
+	action_int               on_special_char;
 
-	void event_loop();
+	void refresh();
 public:
-	ui();
-	void run();
+	ui(boost::asio::io_service& io_service);
+	void stop();
 //event handlers	
 	void reg_on_text_input(std::function<void(std::string)> action);
 	void reg_on_special_char(std::function<void(int)> action);
 //setters
 	void set_title(const std::string& title);
+
+	void append_message(const std::string& msg);
 
 	template<typename Iterator> //*Iterator==std::string
 	void set_channels(Iterator first, Iterator last);

@@ -3,7 +3,8 @@
 
 #include "util.hpp"
 
-#include <boost/asio.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/posix/stream_descriptor.hpp>
 
 //for open
 #include <sys/stat.h> 
@@ -15,16 +16,10 @@
 #include <unistd.h>
 
 #include <cassert>
-
-#include <ctime>
-#include <chrono>
-#include <fstream>
-#include <iostream>
-#include <stdexcept>
-#include <functional>
+#include <stdexcept> //std::runtime_error
+#include <functional> //std::function
 
 namespace cons {
-
 
 //RAII buffer on off selector
 class buffer_off {
@@ -54,8 +49,6 @@ private:
 };
 
 
-
-
 class input_manager {
 public:
 	input_manager(input_manager&& rhs)
@@ -64,19 +57,30 @@ public:
 	,	io_service ( rhs.io_service          )
 	{	}
 
-	input_manager(boost::asio::io_service& io_service_, int fd)
-	:	buffer     ( 512, '\0'       )
-	,	file       { io_service_, fd }
-	,	io_service { &io_service_    } 
+	input_manager(boost::asio::io_service& io_service_, int fd_)
+	:	fd         { fd_              }
+	,	buffer     ( 512, '\0'        )
+	,	file       { io_service_, fd_ }
+	,	io_service { &io_service_     } 
 	{	}
+
+	~input_manager() {
+		::close(fd);
+	}
 
 	void async_read(std::function<void(std::string)> f_) {
 		f=std::move(f_);	
 		set();
 	}
+
+	void stop() {
+		file.close();
+	}
 private:
-	void handle_read_complete(const boost::system::error_code& , std::size_t n) {
-		if(f) f(std::string(buffer.begin(), buffer.begin() + n));
+	void handle_read_complete(const boost::system::error_code& ec, std::size_t n) {
+		if(!ec && f) {
+			f(std::string(buffer.begin(), buffer.begin() + n));
+		} //else this is the end of program
 	}
 	void set() {
 		file.async_read_some(
@@ -85,10 +89,10 @@ private:
 		);
 	}
 
+	int                                   fd;
 	std::function<void(std::string)>      f;
 	std::vector<char>                     buffer;
 	buffer_off                            buff_off;
-	//boost::asio::streambuf              sbuf;
 	boost::asio::posix::stream_descriptor file;
 	boost::asio::io_service              *io_service;
 };
