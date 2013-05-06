@@ -1,6 +1,9 @@
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
+#include "irc/session.hpp"
+#include "irc/connection.hpp"
+
 #include "console_ui.hpp"
 
 #include <boost/asio/io_service.hpp>
@@ -10,6 +13,8 @@
 #include <functional>
 
 class controller {
+	void start_connection(const std::string& server_name);
+
 	void parse_text(std::string::const_iterator first, 
 	                std::string::const_iterator last);
 	void parse_text(const std::string& text);
@@ -25,9 +30,16 @@ class controller {
 	void handle_text   (const std::string& text);
 	void handle_exec   (const std::string& exec);
 	void handle_quit   ();
+//connection handlers
+	void handle_connection_connect(std::shared_ptr<irc::connection>);
+//session handlers
+	void handle_session_motd(const std::string& motd);
+	void handle_session_join_channel(const irc::channel& chan);
 //varaibles
-	boost::asio::io_service io_service;
-	ui                      view;
+	boost::asio::io_service                       io_service;
+	ui                                            view;
+	std::vector<std::shared_ptr<irc::connection>> connections;
+	std::vector<std::unique_ptr<irc::session>>    sessions;
 public:
 	controller();
 	void run();

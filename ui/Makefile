@@ -1,6 +1,6 @@
 #export CPP   =clang++
 #export CPP  ?=g++
-CPP  =g++
+export CPP  ?=g++
 
 #OPTS         =-O3 -DNDEBUG
 OPTS         ?=-O0 -ggdb -DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
