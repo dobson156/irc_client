@@ -21,8 +21,8 @@ ui::ui(boost::asio::io_service& io_service_)
 	title.set_background(COLOR_CYAN);
 	status.set_background(COLOR_CYAN);
 
-	channel_list.insert(channel_list.begin(), "channel");
-	message_list.insert(message_list.begin(), "message");
+//	channel_list.insert(channel_list.begin(), "channel");
+//	message_list.insert(message_list.begin(), "message");
 	refresh();
 //	parent.refresh();
 }

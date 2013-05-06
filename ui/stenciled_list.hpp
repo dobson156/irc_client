@@ -69,34 +69,35 @@ public:
 
 		auto dim=frame_.get_dimension();
 		frame_.clear();
+		if(!values.empty()) {
+			//find the largest entry
+			for(const auto& val : values) {
+				int y_cur=stencil.required_y(dim.x, val.size());
+				y_sum+=y_cur;
+				y_max=std::max(y_max, y_cur);
 
-		//find the largest entry
-		for(const auto& val : values) {
-			int y_cur=stencil.required_y(dim.x, val.size());
-			y_sum+=y_cur;
-			y_max=std::max(y_max, y_cur);
-
-			if(y_sum > dim.y) break; 
-		}
-
-		//construct a temporary buffer with size of the large entry
-		frame pad { make_pad({ dim.x, y_max }) };
-
-		//point at which to write the next entry
-		point last_position { 0, 0 };
-
-		for(const auto& val : values) {
-			auto dim_used=stencil.write_to(pad, val);
-
-			if(last_position.y+dim_used.y > dim.y) {
-				int i=dim.y-last_position.y;
-				copy(pad, frame_, {0,0}, last_position, { dim_used.x, i });
-				break;
+				if(y_sum > dim.y) break; 
 			}
-			else {
-				copy(pad, frame_, {0,0}, last_position, dim_used);
-				last_position.y+=dim_used.y;
-				pad.clear();
+
+			//construct a temporary buffer with size of the large entry
+			frame pad { make_pad({ dim.x, y_max }) };
+
+			//point at which to write the next entry
+			point last_position { 0, 0 };
+
+			for(const auto& val : values) {
+				auto dim_used=stencil.write_to(pad, val);
+
+				if(last_position.y+dim_used.y > dim.y) {
+					int i=dim.y-last_position.y;
+					copy(pad, frame_, {0,0}, last_position, { dim_used.x, i });
+					break;
+				}
+				else {
+					copy(pad, frame_, {0,0}, last_position, dim_used);
+					last_position.y+=dim_used.y;
+					pad.clear();
+				}
 			}
 		}
 		frame_.refresh();
