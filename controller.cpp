@@ -55,6 +55,7 @@ void controller::parse_text(const std::string& text) {
 
 void controller::handle_text_input(const std::string& str) {
 	parse_text(str);
+	view.set_input({});
 }
 void controller::handle_special_char(int) {
 }
@@ -84,6 +85,9 @@ void controller::handle_nick(const std::string& nick) {
 void controller::handle_msg(const std::string& target, const std::string& msg) {
 }
 void controller::handle_text(const std::string& text) {
+	if(selected_channel != nullptr) {
+		selected_channel->async_send_message(text);
+	}
 	view.append_message(text);
 }
 void controller::handle_exec(const std::string& exec) {
@@ -100,8 +104,28 @@ void controller::handle_session_motd(const std::string& motd) {
 	}
 }
 
-void controller::handle_session_join_channel(const irc::channel& chan) {
+void controller::handle_session_join_channel(irc::channel& chan) {
+	//TODO: if on auto change
+	selected_channel=&chan;	
+	chan.connect_on_message(
+		std::bind(
+			&controller::handle_channel_message,
+			this, std::ref(chan),
+			ph::_1, ph::_2
+		)
+	);
 	view.append_message("JOINED " + chan.get_name());
+}
+
+void controller::handle_channel_message(irc::channel& chan, 
+                                        const std::string& nick, 
+                                        const std::string& msg) {
+	if(selected_channel != nullptr
+	&& &chan == selected_channel) {
+		std::ostringstream oss;
+		oss << nick << " said: " << msg;
+		view.append_message(oss.str()); 
+	}
 }
 
 

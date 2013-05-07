@@ -51,6 +51,8 @@ public:
 	void reg_on_text_input(std::function<void(std::string)> action);
 	void reg_on_special_char(std::function<void(int)> action);
 //setters
+	void set_input(const std::string& str);
+
 	void set_title(const std::string& title);
 
 	void append_message(const std::string& msg);

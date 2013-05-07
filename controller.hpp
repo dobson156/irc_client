@@ -34,10 +34,18 @@ class controller {
 	void handle_connection_connect(std::shared_ptr<irc::connection>);
 //session handlers
 	void handle_session_motd(const std::string& motd);
-	void handle_session_join_channel(const irc::channel& chan);
+	void handle_session_join_channel(irc::channel& chan);
+//channel handlers 
+	void handle_channel_message(irc::channel& chan, 
+	                            const std::string& nick, 
+	                            const std::string& msg);
+
 //varaibles
 	boost::asio::io_service                       io_service;
 	ui                                            view;
+
+	irc::channel                                 *selected_channel { nullptr };
+
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
 public:

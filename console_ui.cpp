@@ -47,6 +47,11 @@ void ui::reg_on_special_char(std::function<void(int)> action){
 	on_special_char=std::move(action);
 }
 
+void ui::set_input(const std::string& str) {
+		input.get_value()=str;
+		input.refresh();
+}
+
 //setters
 void ui::set_title(const std::string& text){ 
 	title.set_content(text);
