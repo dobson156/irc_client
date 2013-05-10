@@ -10,6 +10,10 @@ prefix::prefix(optional_string nick_,
 ,	host { std::move(host_) }
 {	}
 
+prefix::prefix(optional_string nick_)
+:	nick { std::move(nick_) }
+{	}
+
 std::ostream& operator<<(std::ostream& os, const prefix& pfx) {
 	if(pfx.nick) os << '<' << *pfx.nick << '>';
 	if(pfx.nick && pfx.user) os << "!";

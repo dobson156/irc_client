@@ -21,7 +21,7 @@ class session {
 	std::shared_ptr<connection>           	 connection__;
 	channel_container                        channels;
 	user_container                           users;
-	std::string                              nick, user, motd;
+	std::string                              nick, user_name, motd;
 //callback
 	sig_s                                    on_motd;
 	sig_ch                                   on_join_channel;
@@ -30,6 +30,7 @@ class session {
 	channel_iterator create_new_channel(const std::string& channel_name);
 	channel_iterator get_or_create_channel(const std::string& channel_name);
 
+	user_iterator create_new_user(const std::string& user_name);
 	user_iterator get_or_create_user(const prefix& pfx);
 	user_iterator get_or_create_user(const std::string& nick);
 //handlers
@@ -64,7 +65,7 @@ class session {
 	session& operator=(session&&)     =delete;
 public:
 	session(std::shared_ptr<connection> connection_,
-	        std::string nick, std::string user_);
+	        std::string nick, std::string user_name_);
 
 
 //async interface

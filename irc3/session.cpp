@@ -38,16 +38,16 @@ void session::prepare_connection() {
 
 	connection__->async_read();
 
-	connection__->async_write("USER "+user+" 0 * :test user\r\n");
+	connection__->async_write("USER "+user_name+" 0 * :test user\r\n");
 	connection__->async_write("NICK "+nick+"\r\n");
 }
 
 session::session(std::shared_ptr<connection> connection_, 
                  std::string nick_, 
-                 std::string user_) 
+                 std::string user_name_) 
 :	connection__ { std::move(connection_) }
 ,	nick         { std::move(nick_)       } 
-,	user         { std::move(user_)       } 
+,	user_name    { std::move(user_name_)  } 
 {	
 	prepare_connection();
 }
@@ -78,7 +78,6 @@ session::channel_iterator session::get_or_create_channel(const std::string& chan
 
 session::user_iterator session::create_new_user(const std::string& name) {
 	assert(users.count(name)==0);
-
 	user_iterator it;
 	bool          success;
 
@@ -91,6 +90,14 @@ session::user_iterator session::create_new_user(const std::string& name) {
 	return it;
 }
 
+session::user_iterator session::get_or_create_user(const std::string& user_name) {
+	auto it=users.find(user_name);
+
+	if(it!=users.cend())
+		return it;
+	else 
+		return create_new_user(user_name);
+}
 
 
 
