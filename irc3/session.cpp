@@ -76,6 +76,25 @@ session::channel_iterator session::get_or_create_channel(const std::string& chan
 		return create_new_channel(channel_name);
 }
 
+session::user_iterator session::create_new_user(const std::string& name) {
+	assert(users.count(name)==0);
+
+	user_iterator it;
+	bool          success;
+
+	std::tie(it, success)=users.emplace(
+		name, std::make_shared<user>(name));
+
+	if(!success)
+		throw std::runtime_error("Unable to insert new user: " + name); 
+
+	return it;
+}
+
+
+
+
+
 /*
 ** HANDLERS
 */ 
@@ -183,7 +202,10 @@ void session::handle_reply(const prefix& pfx, int rp,
 		break;
 	case numeric_replies::RPL_NAMREPLY:
 		if(params.size() > 3) { //
-			auto it=get_or_create_channel(params[2]);
+
+			auto chan=get_or_create_channel(params[2])->second;
+			assert(chan);
+
 			std::for_each(params.cbegin() + 3, params.cend(),
 				[&](const std::string& param) { 
 					std::istringstream iss { param };
@@ -192,7 +214,9 @@ void session::handle_reply(const prefix& pfx, int rp,
 						std::istream_iterator<std::string> {     },
 						[&](const std::string& nick)
 						{ 
-							it->second->add_user(nick); 
+							auto user=get_or_create_user(nick)->second;
+							assert(user);
+							chan->user_join(user); 
 						}
 					);
 				}

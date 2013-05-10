@@ -1,4 +1,4 @@
-#include "prefix.cpp"
+#include "prefix.hpp"
 
 namespace irc {
 

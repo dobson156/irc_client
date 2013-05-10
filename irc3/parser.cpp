@@ -43,12 +43,8 @@ void parser::parse_message(const std::string& message) {
 	qi::_3_type     _3;
 	qi::_a_type     _a;
 	
-	qi::alpha_type  alpha;
-	qi::alnum_type  alnum;
-
 	qi::lexeme_type lexeme;
 	qi::attr_type   attr;
-
  
 	//rule<std::string> nick = alpha >> *( alnum | char_("|-[]\\`^{}_") );
 	rule<std::string> nick = +~char_(" :@?!"); 

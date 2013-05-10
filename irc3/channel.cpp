@@ -58,12 +58,12 @@ void channel::user_join(const shared_user& user) {
 void channel::user_quit(const shared_user& user, const std::string& msg) {
 	auto it=users.find(user);	
 	if(it!=users.cend()) {
-		on_user_part(this, *it->second, msg);
+		on_user_part(*this, **it, msg);
 		users.erase(it);
 	}
 }
 
-void channel::set_topic(const std::string& topic_) {
+void channel::set_topic(std::string topic_) {
 	topic=std::move(topic_);
 	on_topic_change(*this, topic);
 }
