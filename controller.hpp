@@ -1,8 +1,8 @@
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
-#include "irc3/session.hpp"
-#include "irc3/connection.hpp"
+#include "irc/session.hpp"
+#include "irc/connection.hpp"
 
 #include "console_ui.hpp"
 

@@ -14,7 +14,7 @@ export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter
 export LFLAGS=$(OPTS)
 
 #slow objects are library elements and spirit parsers 
-SLOW_OBJS=ui/console.o controller_parse_text.o irc3/irc.o
+SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o
 FAST_OBJS=controller.o program.o console_ui.o
 OBJS=$(SLOW_OBJS) $(FAST_OBJS)
 
@@ -26,8 +26,8 @@ irc_client: $(OBJS)
 ui/console.o:
 	cd ui && $(MAKE)
 
-irc3/irc.o:
-	cd irc3 && $(MAKE)
+irc/irc.o:
+	cd irc && $(MAKE)
 
 %.o: %.cpp 
 	$(CPP) -c $(CFLAGS) $(INC) $< -o $@ 
@@ -35,7 +35,7 @@ irc3/irc.o:
 clean:
 	rm -rf $(OBJS) irc_client
 	cd ui && $(MAKE) clean
-	cd irc3 && $(MAKE) clean
+	cd irc && $(MAKE) clean
 
 #quick clean for development
 qclean:

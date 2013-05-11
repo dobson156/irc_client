@@ -1,9 +1,9 @@
 #include "controller.hpp"
 #include "util.hpp"
 
-#include "irc3/session.hpp"
-#include "irc3/channel.hpp"
-#include "irc3/user.hpp"
+#include "irc/session.hpp"
+#include "irc/channel.hpp"
+#include "irc/user.hpp"
 
 #include <exception>
 #include <iostream>
