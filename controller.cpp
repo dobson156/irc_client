@@ -120,6 +120,12 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 			this, ph::_1, ph::_2, ph::_3
 		)
 	);
+	chan.connect_on_topic_change(
+		std::bind(
+			&controller::handle_channel_topic_change,
+			this, ph::_1, ph::_2
+		)
+	);
 
 	view.append_message("JOINED " + chan.get_name());
 }
@@ -135,6 +141,12 @@ void controller::handle_channel_message(irc::channel& chan,
 	}
 }
 
+void controller::handle_channel_topic_change(irc::channel& chan, 
+                                             const std::string& msg) {
+	if(selected_channel==&chan) {
+		view.set_title(msg);
+	}
+}
 
 controller::controller() 
 :	view { io_service }

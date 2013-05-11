@@ -40,6 +40,8 @@ class controller {
 	                            const irc::user& user, 
 	                            const std::string& msg);
 
+	void handle_channel_topic_change(irc::channel& chan, 
+	                                 const std::string& msg);
 //varaibles
 	boost::asio::io_service                       io_service;
 	ui                                            view;
