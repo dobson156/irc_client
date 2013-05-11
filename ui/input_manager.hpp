@@ -52,7 +52,8 @@ private:
 class input_manager {
 public:
 	input_manager(input_manager&& rhs)
-	:	buff_off   { std::move(rhs.buff_off) }
+	:	buffer     { std::move(rhs.buffer)   }
+	,	buff_off   { std::move(rhs.buff_off) }
 	,	file       { std::move(rhs.file)     }
 	,	io_service ( rhs.io_service          )
 	{	}

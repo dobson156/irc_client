@@ -1,8 +1,8 @@
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
-#include "irc/session.hpp"
-#include "irc/connection.hpp"
+#include "irc3/session.hpp"
+#include "irc3/connection.hpp"
 
 #include "console_ui.hpp"
 
@@ -37,7 +37,7 @@ class controller {
 	void handle_session_join_channel(irc::channel& chan);
 //channel handlers 
 	void handle_channel_message(irc::channel& chan, 
-	                            const std::string& nick, 
+	                            const irc::user& user, 
 	                            const std::string& msg);
 
 //varaibles

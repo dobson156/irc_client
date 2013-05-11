@@ -1,4 +1,4 @@
-export CPP  =clang++
+export CPP =g++
 export LNK =$(CPP)
 
 #export OPTS         =-O3
@@ -7,7 +7,8 @@ export OPTS         =-O0 -ggdb
 INC          =
 LIB          =-lboost_system -lboost_signals -lpthread
 
-export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -DCONS_FAST_COMPILE -DNDEBUG  
+export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -DCONS_FAST_COMPILE 
+#-DNDEBUG  
 #-Wfatal-errors
 #-D_GLIBCXX_DEBUG
 #-Werror

@@ -2,8 +2,9 @@
 export CPP  =g++
 export LNK =$(CPP)
 
-export OPTS         =-O3 -DNDEBUG
-#OPTS         =-O0 -ggdb -DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
+#export OPTS         =-O3 -DNDEBUG
+OPTS         =-O0 -ggdb 
+#-DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 
 INC          =
 LIB          =-lncurses -lboost_system -lboost_signals -lpthread
@@ -13,7 +14,7 @@ export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter
 export LFLAGS=$(OPTS)
 
 #slow objects are library elements and spirit parsers 
-SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o
+SLOW_OBJS=ui/console.o controller_parse_text.o irc3/irc.o
 FAST_OBJS=controller.o program.o console_ui.o
 OBJS=$(SLOW_OBJS) $(FAST_OBJS)
 
@@ -25,8 +26,8 @@ irc_client: $(OBJS)
 ui/console.o:
 	cd ui && $(MAKE)
 
-irc/irc.o:
-	cd irc && $(MAKE)
+irc3/irc.o:
+	cd irc3 && $(MAKE)
 
 %.o: %.cpp 
 	$(CPP) -c $(CFLAGS) $(INC) $< -o $@ 
@@ -34,7 +35,7 @@ irc/irc.o:
 clean:
 	rm -rf $(OBJS) irc_client
 	cd ui && $(MAKE) clean
-	cd irc && $(MAKE) clean
+	cd irc3 && $(MAKE) clean
 
 #quick clean for development
 qclean:

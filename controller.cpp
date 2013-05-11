@@ -1,6 +1,10 @@
 #include "controller.hpp"
 #include "util.hpp"
 
+#include "irc3/session.hpp"
+#include "irc3/channel.hpp"
+#include "irc3/user.hpp"
+
 #include <exception>
 #include <iostream>
 
@@ -17,6 +21,7 @@ void controller::handle_connection_connect(
 		)
 	);
 	auto& session=sessions.back();
+
 	session->connect_on_motd(
 		std::bind(
 			&controller::handle_session_motd,
@@ -37,7 +42,6 @@ void controller::start_connection(const std::string& server) {
 	auto ic=irc::connection::make_shared(io_service, server, "6667");
 	ic->connect_on_resolve(
 		[&]{ view.append_message("connection resolved"); });
-
 	ic->connect_on_connect(
 		std::bind(
 			&controller::handle_connection_connect,
@@ -62,7 +66,7 @@ void controller::handle_special_char(int) {
 
 void controller::handle_join(const std::vector<std::string>& chans) {
 	if(!sessions.empty()) {
-		for(auto chan : chans) {
+		for(const auto& chan : chans) {
 			sessions[0]->async_join(chan);			
 		}
 	}
@@ -85,10 +89,12 @@ void controller::handle_nick(const std::string& nick) {
 void controller::handle_msg(const std::string& target, const std::string& msg) {
 }
 void controller::handle_text(const std::string& text) {
+	/*
 	if(selected_channel != nullptr) {
 		selected_channel->async_send_message(text);
 	}
 	view.append_message(text);
+	*/
 }
 void controller::handle_exec(const std::string& exec) {
 }
@@ -107,23 +113,24 @@ void controller::handle_session_motd(const std::string& motd) {
 void controller::handle_session_join_channel(irc::channel& chan) {
 	//TODO: if on auto change
 	selected_channel=&chan;	
+
 	chan.connect_on_message(
 		std::bind(
 			&controller::handle_channel_message,
-			this, std::ref(chan),
-			ph::_1, ph::_2
+			this, ph::_1, ph::_2, ph::_3
 		)
 	);
+
 	view.append_message("JOINED " + chan.get_name());
 }
 
 void controller::handle_channel_message(irc::channel& chan, 
-                                        const std::string& nick, 
+                                        const irc::user& user, 
                                         const std::string& msg) {
 	if(selected_channel != nullptr
 	&& &chan == selected_channel) {
 		std::ostringstream oss;
-		oss << nick << " said: " << msg;
+		oss << user.get_nick() << " said: " << msg;
 		view.append_message(oss.str()); 
 	}
 }
