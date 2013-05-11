@@ -1,4 +1,7 @@
 #include "session.hpp"
+#include "channel.hpp"
+#include "user.hpp"
+
 #include "connection.hpp"
 
 #include "util.hpp"
@@ -45,18 +48,39 @@ public:
 		sessions.back()->connect_on_join_channel(
 			[](irc::channel& chan) {
 				std::cout << "JOINED" << chan.get_name() << std::endl;
+
 				chan.connect_on_user_join(
-					[&](const irc::prefix& pfx, const std::string& str) {
-						std::cout << str << " at " <<  pfx << " has joined: " << chan.get_name() << std::endl;
+					[](const irc::channel& ch, irc::user& usr) {
+						std::cout << usr.get_nick() << " at " 
+						          << usr.get_prefix() << " has joined: " 
+								  << ch.get_name() << std::endl;
+
+						usr.connect_on_channel_message(
+							[](const irc::channel& ch, 
+							   const irc::user& usr,
+							   const std::string& msg) {
+								std::cout << usr.get_nick() << " -> " 
+								          << ch.get_name() << " : "
+										  << msg << std::endl;
+							}
+							
+						);
+
 					}
 				);
-				chan.connect_on_user_leave(
-					[&](const irc::prefix& pfx, const std::string& chn, irc::optional_string& msg) {
-						std::cout << *pfx.nick << " has left from: " << chan.get_name();
+
+
+				chan.connect_on_user_part(
+					[](const irc::channel& ch, 
+					   const irc::user& usr,
+					   const irc::optional_string& msg) {
+						std::cout << usr.get_nick() << " has left from: " 
+						          << ch.get_name();
 						if(msg) std::cout << " reason: " << *msg;
 						std::cout << std::endl;
 					}
 				);
+				/*
 				chan.connect_on_message(
 					[&](const std::string& nick, const std::string& msg) {
 						if(nick=="|pipe|") {
@@ -65,6 +89,7 @@ public:
 						std::cout << nick << " said " << msg << std::endl;
 					}
 				);
+				*/
 			}
 		);
 			

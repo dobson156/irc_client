@@ -12,7 +12,7 @@ struct prefix {
 	       optional_string user_, 
 	       optional_string host_);
 
-	prefix::prefix(optional_string nick_);
+	prefix(optional_string nick_);
 
 	prefix()                        =default;
 	prefix(prefix&&)                =default;

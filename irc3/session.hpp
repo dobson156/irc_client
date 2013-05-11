@@ -30,7 +30,8 @@ class session {
 	channel_iterator create_new_channel(const std::string& channel_name);
 	channel_iterator get_or_create_channel(const std::string& channel_name);
 
-	user_iterator create_new_user(const std::string& user_name);
+	user_iterator create_new_user(const std::string& user_name, 
+	                              const prefix& pfx);
 	user_iterator get_or_create_user(const prefix& pfx);
 	user_iterator get_or_create_user(const std::string& nick);
 //handlers

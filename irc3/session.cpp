@@ -76,13 +76,14 @@ session::channel_iterator session::get_or_create_channel(const std::string& chan
 		return create_new_channel(channel_name);
 }
 
-session::user_iterator session::create_new_user(const std::string& name) {
+session::user_iterator session::create_new_user(const std::string& name, 
+                                                const prefix& pfx) {
 	assert(users.count(name)==0);
 	user_iterator it;
 	bool          success;
 
 	std::tie(it, success)=users.emplace(
-		name, std::make_shared<user>(name));
+		name, std::make_shared<user>(name, pfx));
 
 	if(!success)
 		throw std::runtime_error("Unable to insert new user: " + name); 
@@ -96,10 +97,18 @@ session::user_iterator session::get_or_create_user(const std::string& user_name)
 	if(it!=users.cend())
 		return it;
 	else 
-		return create_new_user(user_name);
+		return create_new_user(user_name, { user_name });
 }
 
+session::user_iterator session::get_or_create_user(const prefix& pfx) {
+	assert(pfx.nick);
+	auto it=users.find(*pfx.nick);
 
+	if(it!=users.cend())
+		return it;
+	else 
+		return create_new_user(*pfx.nick, pfx);
+}
 
 
 /*

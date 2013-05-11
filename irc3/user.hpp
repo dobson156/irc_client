@@ -34,7 +34,28 @@ public:
 	void channel_message(const shared_channel& chan, 
 	                     const std::string& message);
 	void direct_message(const std::string& message);
-}; //class irc
+
+
+	template<typename F>
+	bsig::connection connect_on_channel_message(F&& f);
+	template<typename F>
+	bsig::connection connect_on_direct_message(F&& f);
+	template<typename F>
+	bsig::connection connect_on_nick_change(F&& f);
+}; //class user
+
+template<typename F>
+bsig::connection user::connect_on_channel_message(F&& f) {
+	return on_channel_message.connect(std::forward<F>(f));
+}
+template<typename F>
+bsig::connection user::connect_on_direct_message(F&& f) {
+	return on_direct_message.connect(std::forward<F>(f));
+}
+template<typename F>
+bsig::connection user::connect_on_nick_change(F&& f) {
+	return on_nick_change.connect(std::forward<F>(f));
+}
 
 } //namespace irc
 
