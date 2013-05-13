@@ -72,10 +72,10 @@ void controller::handle_join(const std::vector<std::string>& chans) {
 	}
 	//view.set_channels(input.cbegin(), input.cend());
 }
+
 void controller::handle_part(const std::string& chan, const std::string msg) {
+		
 }
-
-
 
 void controller::handle_connect(const std::string& chan) {
 	 view.append_message("attempting to connect to: " + chan);
