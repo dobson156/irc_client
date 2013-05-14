@@ -1,15 +1,18 @@
 #ifndef WINDOW_STENCIL_HPP
 #define WINDOW_STENCIL_HPP
 
-//FORWARD DEC
-namespace cons { class frame; }
+//FORWARD DECL
 class window;
+namespace cons { 
+	class frame;
+	class point; 
+} //namespace cons
 
 
 class window_stencil {
 public:
 	using value_type=window;
-	void write_to(cons::frame frm, window& window) const;
+	cons::point write_to(cons::frame frm, window& window) const;
 }; //class window_stencil
 
 

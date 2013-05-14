@@ -12,6 +12,8 @@ public:
 	std::size_t size()	const;
 
 
+
+	const std::string& msg_at(std::size_t i) const;
 }; //class window
 
 #endif //WINDOW_HPP
