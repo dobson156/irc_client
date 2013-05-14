@@ -36,6 +36,12 @@ void controller::handle_connection_connect(
 			ph::_1
 		)
 	);
+
+	session->connect_on_notice(
+		[&](const std::string& msg) {
+			
+		}
+	);
 }
 
 void controller::start_connection(const std::string& server) {
