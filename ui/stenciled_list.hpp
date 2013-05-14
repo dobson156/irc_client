@@ -47,17 +47,6 @@ public:
 	const_iterator end()   const { return values.cend();   }
 	iterator       begin()       { return values.begin();  }
 	iterator       end()         { return values.end();    }
-//Scroll
-	/*
-	void up() {
-	}
-	void down() {
-
-	}
-	void focus_on(const_iterator) {
-
-	}
-	*/
 //Overrides
 	void clear()   override {
 		frame_.clear();

@@ -12,7 +12,7 @@ namespace cons {
 class window_stencil {
 public:
 	using value_type=window;
-	cons::point write_to(cons::frame frm, window& window) const;
+	cons::point write_to(cons::frame& frm, window& window) const;
 }; //class window_stencil
 
 

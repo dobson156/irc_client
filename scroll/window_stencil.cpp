@@ -15,10 +15,11 @@ cons::frame message_to_pad(const std::string& str, cons::point max) {
 }
 
 //OK this is an fairly expensive algorithm, will try and cut it down at a later date
-cons::point window_stencil::write_to(cons::frame frm, window& win) const {
+cons::point window_stencil::write_to(cons::frame& frm, window& win) const {
 	auto selected=win.get_selected_idx();
-	auto size=win.size();
-	auto dime=frm.get_dimension();
+
+	const auto size=win.size();
+	const auto dime=frm.get_dimension();
 
 	std::deque<cons::frame> message_frames;
 
@@ -31,29 +32,33 @@ cons::point window_stencil::write_to(cons::frame frm, window& win) const {
 	std::size_t top, bottom;
 	top=bottom=selected;
 
-	message_frames.push_back(message_to_pad(win.msg_at(selected));
-	y_used=message_frames.back().get_dimension.size();
+	message_frames.push_back(message_to_pad(win.msg_at(selected), dime));
+
+	y_used=message_frames.back().get_dimension().y;
 	
 	//constructs the vector of frames
-	while(y_used < dime.y)
-	{
+	bool tdo=true, bdo=true;
+	while(y_used < dime.y && (tdo || bdo)) {
 		if(top!=0) {
 			--top;
-			message_frames.push_front(message_to_pad(win.msg_at(top));
-			y_used+=message_frames.front().get_dimension.size();
+			message_frames.push_front(message_to_pad(win.msg_at(top), dime));
+			y_used+=message_frames.front().get_dimension().y;
 		}
-		if(bottom!=size && y_used < dime.y) {
+		else tdo=false;
+
+		if(bottom<(size-1) && y_used < dime.y) {
 			++bottom;
-			message_frames.push_back(message_to_pad(win.msg_at(top));
-			y_used+=message_frames.back().get_dimension.size();
+			message_frames.push_back(message_to_pad(win.msg_at(bottom), dime));
+			y_used+=message_frames.back().get_dimension().y;
 		}
+		else bdo=false;
 	}
 	//compile vector into single frame
 	
 	int y=0;
 	for(auto& mfrm : message_frames) {
 		auto dime=mfrm.get_dimension();
-		copy(mfrm, frm, {0,0}, dime, {0,y});
+		copy(mfrm, frm, {0,0}, {0,y}, dime);
 		y+=dime.y;
 	}
 }
