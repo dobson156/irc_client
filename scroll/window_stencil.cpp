@@ -18,7 +18,7 @@ cons::frame message_to_pad(const std::string& str, cons::point max) {
 cons::point window_stencil::write_to(cons::frame& frm, window& win) const {
 	auto selected=win.get_selected_idx();
 
-	const auto size=win.size();
+	const auto size=size();
 	const auto dime=frm.get_dimension();
 
 	std::deque<cons::frame> message_frames;

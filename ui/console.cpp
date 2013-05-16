@@ -252,6 +252,7 @@ point frame::write(const point& pt, std::string::const_iterator first,
 	CONS_ASSERT(handle, "invalid handle");
 	set_cursor(pt); //throws
 	if(waddnstr(handle.get(), &*first, std::distance(first, last))==ERR) {
+		assert(false);
 		throw CONS_MAKE_EXCEPTION("Unable to write string to frame");
 	}
 	return get_cursor();

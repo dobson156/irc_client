@@ -23,6 +23,7 @@ ui::ui(boost::asio::io_service& io_service_)
 
 //	channel_list.insert(channel_list.begin(), "channel");
 //	message_list.insert(message_list.begin(), "message");
+	message_list.selected_idx(1000);
 	refresh();
 //	parent.refresh();
 }
