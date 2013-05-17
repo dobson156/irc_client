@@ -4,6 +4,7 @@
 #include "irc/session.hpp"
 #include "irc/connection.hpp"
 
+#include "message.hpp"
 #include "console_ui.hpp"
 
 #include <boost/asio/io_service.hpp>
@@ -50,6 +51,7 @@ class controller {
 
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
+	std::vector<std::unique_ptr<message>>         messages;
 public:
 	controller();
 	void run();

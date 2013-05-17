@@ -143,6 +143,9 @@ void controller::handle_channel_message(irc::channel& chan,
 	&& &chan == selected_channel) {
 		std::ostringstream oss;
 		oss << user.get_nick() << " said: " << msg;
+
+		messages.push_back(util::make_unique<chan_message>(user.get_nick(), msg));
+
 		view.append_message(oss.str()); 
 	}
 }
