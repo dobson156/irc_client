@@ -6,10 +6,13 @@
 #include "basic.hpp"
 #include "string_stencil.hpp"
 
+#include <algorithm>
+
 namespace cons {
 
 class async_input_box : public base {
 public:
+	enum class arrow_key { none = 0, left, right };
 	using grow_cb =std::function<bool(point)>;
 	using input_cb=std::function<void(std::string)>;
 private:
@@ -18,6 +21,7 @@ private:
 
 	frame                    frame_;
 	std::string              value;
+	unsigned                 pos = 0;
 	string_stencil           stencil;
 	input_manager            in_manager;
 	boost::asio::io_service *io_service;
@@ -46,11 +50,34 @@ public:
 	
 	}
 
+  arrow_key is_arrow_key(const std::string::iterator &it, const std::string::iterator &end) {
+		if(it[0] == 0x1b && it[1] == 0x5b) {
+			switch(it[2]) {
+			default: return arrow_key::none;
+			case 0x43: return arrow_key::right;
+			case 0x44: return arrow_key::left;
+			}
+		}
+		else {
+			return arrow_key::none;
+		}
+	}
+
 	void handle_read_complete(std::string str) {
 		bool do_refresh=false;
 
-		for(char c : str) {
-			if(c==0x08) {
+		for(auto it = str.begin(); it != str.end(); ++it) {
+
+			char c = *it;
+			arrow_key is_arrow_key_;
+			if (std::distance(it, str.end()) >= 3 &&
+				 (is_arrow_key_ = is_arrow_key(it, str.end())) != arrow_key::none) {
+				switch(is_arrow_key_) {
+				case arrow_key::left: { it+=2; if(pos>0) --pos; } break;
+				case arrow_key::right: { it+=2; if(pos<(str.size()-1)) ++pos; } break;
+				}
+			}
+			else if(c==0x08 || c==0x7f) {
 				if(!value.empty()) {
 					value.pop_back();
 					do_refresh=true;		
@@ -60,7 +87,8 @@ public:
 				if(on_input) on_input(value);
 			}
 			else if(std::isprint(c)) {
-				value+=c;
+				value.insert(value.begin()+pos, c);
+				++pos;
 				do_refresh=true;		
 			}
 		}	
