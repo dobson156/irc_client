@@ -176,8 +176,11 @@ unique_window_ptr make_pad(const point& dimension) {
 		newpad(dimension.y, dimension.x),
 		&::delwin
 	};
-	if(!handle)
-		throw CONS_MAKE_EXCEPTION("unable to create pad");
+	if(!handle) {
+		std::ostringstream oss;
+		oss << "unable to create pad with dimension: " << dimension;
+		throw CONS_MAKE_EXCEPTION(oss.str());
+	}
 	
 	return handle;
 	

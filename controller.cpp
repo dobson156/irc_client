@@ -39,7 +39,7 @@ void controller::handle_connection_connect(
 
 	session->connect_on_notice(
 		[&](const std::string& msg) {
-			
+			view.append_message("notice: "+msg);
 		}
 	);
 }
@@ -95,12 +95,10 @@ void controller::handle_nick(const std::string& nick) {
 void controller::handle_msg(const std::string& target, const std::string& msg) {
 }
 void controller::handle_text(const std::string& text) {
-	/*
 	if(selected_channel != nullptr) {
 		selected_channel->async_send_message(text);
 	}
 	view.append_message(text);
-	*/
 }
 void controller::handle_exec(const std::string& exec) {
 }
@@ -144,9 +142,9 @@ void controller::handle_channel_message(irc::channel& chan,
 		std::ostringstream oss;
 		oss << user.get_nick() << " said: " << msg;
 
-		messages.push_back(util::make_unique<chan_message>(user.get_nick(), msg));
-
-		view.append_message(oss.str()); 
+		auto msg_ptr=std::make_shared<chan_message>(user.get_nick(), msg);
+		view.append_message(msg_ptr);
+		messages.push_back(std::move(msg_ptr));
 	}
 }
 

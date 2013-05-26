@@ -1,11 +1,15 @@
 #ifndef CONSOLE_UI_HPP
 #define CONSOLE_UI_HPP
 
+#include "message.hpp"
+#include "message_stencil.hpp"
+
 #include "ui/console.hpp"
 
 #include <boost/asio/io_service.hpp>
 
 #include <string>
+#include <memory>
 #include <functional>
 
 
@@ -17,8 +21,10 @@ namespace ui_impl {
 using namespace cons;
 
 class ui {
+	using message_p    =std::shared_ptr<message>;
 //Member types
 	using text_list    =stenciled_list<string_stencil>;
+	using msg_list     =stenciled_list<message_stencil>;
 	using text_box     =stenciled_frame<string_stencil>;
 	using anchor_top   =anchor_view<anchors::top>;
 	using anchor_bottom=anchor_view<anchors::bottom>;
@@ -34,7 +40,7 @@ class ui {
 	anchor_left&        channel_anchor;
 	bordered&           channel_border;
 	text_list&          channel_list;
-	text_list&          message_list;
+	msg_list&           message_list;
 	text_box&           title;
 	text_box&           status;
 	async_input_box&    input;
@@ -55,6 +61,7 @@ public:
 
 	void set_title(const std::string& title);
 
+	void append_message(const message_p& msg);
 	void append_message(const std::string& msg);
 
 	template<typename Iterator> //*Iterator==std::string

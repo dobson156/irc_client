@@ -11,7 +11,7 @@ ui::ui(boost::asio::io_service& io_service_)
 ,	channel_anchor (status_anchor.emplace_fill<anchor_left>(20))
 ,	channel_border (channel_anchor.emplace_anchor<bordered>(borders::right))
 ,	channel_list   (channel_border.emplace_element<text_list>()) 
-,	message_list   (channel_anchor.emplace_fill<text_list>())
+,	message_list   (channel_anchor.emplace_fill<msg_list>())
 ,	title          (parent.emplace_anchor<text_box>("my irc client") )
 ,	status         (status_anchor.emplace_anchor<text_box>("channel's status"))
 ,	input          (input_anchor.emplace_anchor<async_input_box>(io_service_))
@@ -59,10 +59,15 @@ void ui::set_title(const std::string& text){
 	title.refresh();
 }
 
-
-void ui::append_message(const std::string& msg) {
+void ui::append_message(const message_p& msg) {
 	message_list.insert(message_list.end(), msg);
 	message_list.refresh();
+
+}
+
+void ui::append_message(const std::string& msg) {
+	//message_list.insert(message_list.end(), msg);
+	//message_list.refresh();
 }
 
 /*

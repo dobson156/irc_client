@@ -9,7 +9,8 @@ class message_stencil : public message_vistor {
 	cons::frame *frame_;
 	cons::point last;
 public:	
-	cons::point write_to(message&, cons::frame&);
+	using value_type=std::shared_ptr<message>;
+	cons::point write_to(cons::frame&, const value_type&);
 	void operator()(message&)      override;
 	void operator()(chan_message&) override;
 }; //message_stencil

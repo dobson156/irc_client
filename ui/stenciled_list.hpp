@@ -10,11 +10,10 @@
 
 namespace cons {
 
-
+//TODO pass in stencil type
 template<typename StencilType>
-frame message_to_pad(const std::string& str, point max) {
+frame message_to_pad(StencilType ss, const typename StencilType::value_type& str, point max) {
 	frame frm { make_pad(max) };
-	StencilType ss;
 	int y_used=ss.write_to(frm, str).y;
 	frame cut { make_pad({ max.x, y_used }) };
 	copy(frm, cut, {0,0}, {0,0}, cut.get_dimension());
@@ -102,7 +101,7 @@ public:
 
 
 			//start with the selected message
-			message_frames.push_back(message_to_pad<stencil_type>(*selected_it, dime));
+			message_frames.push_back(message_to_pad<stencil_type>(stencil, *selected_it, dime));
 			y_used=message_frames.back().get_dimension().y;
 
 
@@ -118,7 +117,7 @@ public:
 				//produce a forerunning message
 				if(top!=cbegin()) {
 					--top;
-					message_frames.push_front(message_to_pad<stencil_type>(*top, dime));
+					message_frames.push_front(message_to_pad<stencil_type>(stencil, *top, dime));
 					y_used+=message_frames.front().get_dimension().y;
 				}
 				else tdo=false;
@@ -127,7 +126,7 @@ public:
 				if(bdo) { //stops incrementing ptr once obsolete
 					++bottom;
 					if(bottom!=cend() && y_used < dime.y) {
-						message_frames.push_back(message_to_pad<stencil_type>(*bottom, dime));
+						message_frames.push_back(message_to_pad<stencil_type>(stencil, *bottom, dime));
 						y_used+=message_frames.back().get_dimension().y;
 					}
 					else bdo=false;

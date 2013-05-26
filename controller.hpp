@@ -51,7 +51,7 @@ class controller {
 
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
-	std::vector<std::unique_ptr<message>>         messages;
+	std::vector<std::shared_ptr<message>>         messages;
 public:
 	controller();
 	void run();
