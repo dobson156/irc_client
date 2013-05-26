@@ -49,7 +49,8 @@ void ui::reg_on_special_char(std::function<void(int)> action){
 }
 
 void ui::set_input(const std::string& str) {
-		input.get_value()=str;
+		//input.get_value()=str;
+		input.set_value(str);
 		input.refresh();
 }
 

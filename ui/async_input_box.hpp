@@ -50,10 +50,13 @@ public:
 	
 	}
 
-  arrow_key is_arrow_key(const std::string::iterator &it, const std::string::iterator &end) {
-		if(it[0] == 0x1b && it[1] == 0x5b) {
+	arrow_key is_arrow_key(std::string::const_iterator it, 
+	                       std::string::const_iterator last) {
+
+		if(std::distance(it, last) >= 3
+		&& it[0] == 0x1b && it[1] == 0x5b) {
 			switch(it[2]) {
-			default: return arrow_key::none;
+			default:   return arrow_key::none;
 			case 0x43: return arrow_key::right;
 			case 0x44: return arrow_key::left;
 			}
@@ -70,16 +73,30 @@ public:
 
 			char c = *it;
 			arrow_key is_arrow_key_;
-			if (std::distance(it, str.end()) >= 3 &&
-				 (is_arrow_key_ = is_arrow_key(it, str.end())) != arrow_key::none) {
+
+			if((is_arrow_key_=is_arrow_key(it, str.end())) != arrow_key::none) {
 				switch(is_arrow_key_) {
-				case arrow_key::left: { it+=2; if(pos>0) --pos; } break;
-				case arrow_key::right: { it+=2; if(pos<(str.size()-1)) ++pos; } break;
+				case arrow_key::left: { 
+					it+=2; 
+					if(pos > 0) 
+						--pos; 
+					break;
+				} 
+				case arrow_key::right: { 
+					it+=2; 
+					if(pos < value.size()) 
+						++pos; 
+ 					break;
+				}
+				default: 
+					break;
 				}
 			}
 			else if(c==0x08 || c==0x7f) {
-				if(!value.empty()) {
-					value.pop_back();
+				if(!value.empty() && pos != 0) {
+					value.erase(pos-1, 1);
+					--pos;
+					//value.pop_back();
 					do_refresh=true;		
 				}
 			}
@@ -141,11 +158,15 @@ public:
 	}
 
 	void clear() {
+		pos=0;
 		value.clear();
 		frame_.clear();
 	}
 
-	std::string&       get_value()       { return value; }
+	void set_value(const std::string& str) { 
+		value=str; 
+		pos=str.size();
+	}
 	const std::string& get_value() const { return value; }
 
 	//watch thread safety

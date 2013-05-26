@@ -21,6 +21,8 @@ OBJS=$(SLOW_OBJS) $(FAST_OBJS)
 all: irc_client
 
 irc_client: $(OBJS)
+	cd ui && $(MAKE)
+	cd irc && $(MAKE)
 	$(LNK) $^ -o $@ $(LIB)
 
 ui/console.o:
