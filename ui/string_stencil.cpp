@@ -22,11 +22,12 @@ point string_stencil::write_to(frame& frame_, const std::string& str) const {
 
 	if(rows <= dim.y) {
 		frame_.write({0, 0}, str);
+		return { dim.x, rows };
 	}
 	else {
 		frame_.write({0, 0}, str.cbegin(), str.cbegin()+dim.y*dim.x-1);
+		return dim;
 	}
-	return { dim.x, rows };
 }
 
 } //namespace cons
