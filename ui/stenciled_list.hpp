@@ -3,7 +3,6 @@
 
 #include "basic.hpp"
 
-#include <cassert>
 #include <utility> //std::move
 #include <vector>
 #include <deque>

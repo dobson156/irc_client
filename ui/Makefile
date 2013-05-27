@@ -14,10 +14,15 @@ export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra
 
 export LFLAGS=$(OPTS)
 
+OBJS=basic.o string_stencil.o async_input_box.o
+
 all: console.o console.a tests
 
 tests: console.o
 	cd tests && $(MAKE) 
+
+console.o: $(OBJS)
+	ld -r $^ $(LFLAGS) -o $@
 
 console.a: console.o
 	ar r console.a console.o
