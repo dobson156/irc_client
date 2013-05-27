@@ -80,7 +80,7 @@ void controller::handle_join(const std::vector<std::string>& chans) {
 }
 
 void controller::handle_part(const std::string& chan, const std::string msg) {
-		
+
 }
 
 void controller::handle_connect(const std::string& chan) {
@@ -91,6 +91,9 @@ void controller::handle_connect(const std::string& chan) {
 
 
 void controller::handle_nick(const std::string& nick) {
+	if(!sessions.empty()) {
+		sessions[0]->async_change_nick(nick);	
+	}
 }
 void controller::handle_msg(const std::string& target, const std::string& msg) {
 }
