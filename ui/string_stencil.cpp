@@ -20,11 +20,11 @@ point string_stencil::write_to(frame& frame_, const std::string& str) const {
 	auto dim  =frame_.get_dimension();
 	auto rows =required_y(dim.x, str.size());
 
-	if(rows < dim.y) {
+	if(rows <= dim.y) {
 		frame_.write({0, 0}, str);
 	}
 	else {
-		frame_.write({0, 0}, str.cbegin(), str.cbegin()+rows*dim.x);
+		frame_.write({0, 0}, str.cbegin(), str.cbegin()+dim.y*dim.x-1);
 	}
 	return { dim.x, rows };
 }

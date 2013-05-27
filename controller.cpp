@@ -133,7 +133,13 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 			this, ph::_1, ph::_2
 		)
 	);
-
+	chan.connect_on_user_join(
+		[&](const irc::channel& ch, const irc::user& usr) {
+			auto msg_ptr=std::make_shared<join_message>(usr.get_prefix());
+			view.append_message(msg_ptr);
+			messages.push_back(std::move(msg_ptr));
+		}
+	);
 	view.append_message("JOINED " + chan.get_name());
 }
 

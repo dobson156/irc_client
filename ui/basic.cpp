@@ -228,7 +228,10 @@ point frame::write(const point& pt, char ch) {
 	CONS_ASSERT(handle, "inavlid handle");
 	set_cursor(pt); //throws
 	if(waddch(handle.get(), ch)==ERR) {
-		throw CONS_MAKE_EXCEPTION("Unable to write char");
+		std::ostringstream oss;
+		oss << "Unable to write char to frame at point: " << pt 
+			<< " frame size: " << get_dimension();
+		throw CONS_MAKE_EXCEPTION(oss.str());
 	}
 	return get_cursor();
 }
@@ -236,7 +239,11 @@ point frame::write(const point& pt, const std::string& str) {
 	CONS_ASSERT(handle, "inavlid handle");
 	set_cursor(pt); //throws
 	if(waddstr(handle.get(), str.c_str())==ERR) {
-		throw CONS_MAKE_EXCEPTION("Unable to write string to frame");
+		std::ostringstream oss;
+		oss << "Unable to write string to frame at point: " << pt 
+		    << " string size: " << str.size()
+			<< " frame size: " << get_dimension();
+		throw CONS_MAKE_EXCEPTION(oss.str());
 	}
 	return get_cursor();
 }
@@ -255,8 +262,13 @@ point frame::write(const point& pt, std::string::const_iterator first,
 	CONS_ASSERT(handle, "invalid handle");
 	set_cursor(pt); //throws
 	if(waddnstr(handle.get(), &*first, std::distance(first, last))==ERR) {
-		assert(false);
-		throw CONS_MAKE_EXCEPTION("Unable to write string to frame");
+
+		std::ostringstream oss;
+		oss << "Unable to write string to frame   no. of chars: " 
+		    << std::distance(first, last) 
+			<< " size: " << get_dimension() 
+			<< " pos " << pt;
+		throw CONS_MAKE_EXCEPTION(oss.str());
 	}
 	return get_cursor();
 }
@@ -312,18 +324,11 @@ void frame::set_background(short bg) {
 	CONS_ASSERT(handle, "invalid handle");
 	colours.set_background(bg);	
 	apply_colour();
-//	if(wcolor_set(handle.get(), COLOR_PAIR(colours.get_id()), nullptr)==ERR) {
-//		throw CONS_MAKE_EXCEPTION("Unable to set background of frame");
-//	}
 }
 void frame::set_foreground(short fg) {
 	CONS_ASSERT(handle, "invalid handle");
 	colours.set_foreground(fg);	
-	//if(wattron(handle.get(), COLOR_PAIR(colours.get_id()))==ERR) {
 	apply_colour();
-	//if(wcolor_set(handle.get(), COLOR_PAIR(colours.get_id()), nullptr)==ERR) {
-	//	throw CONS_MAKE_EXCEPTION("Unable to set background of frame");
-	//}
 }
 short frame::get_background() const {
 	return colours.get_background();

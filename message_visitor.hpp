@@ -8,6 +8,7 @@ class message_vistor {
 public:
 	virtual void operator()(message&)     =0;
 	virtual void operator()(chan_message&)=0;
+	virtual void operator()(join_message&)=0;
 };
 
 #endif //MESSAGE_HPP

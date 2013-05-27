@@ -1,6 +1,8 @@
 #ifndef MESSAGE_HPP
 #define MESSAGE_HPP
 
+#include "irc/prefix.hpp"
+
 #include <chrono>
 #include <string>
 
@@ -41,5 +43,19 @@ public:
 	const std::string& get_content() const;
 }; //chan_message
 
+
+class join_message : public message {
+	irc::prefix prefix;
+public:
+	join_message(irc::prefix prefix_);
+	join_message(join_message&&)                =default;
+	join_message(const join_message&)           =default;
+	join_message& operator=(join_message&&)     =default;
+	join_message& operator=(const join_message&)=default;
+
+	void visit(message_vistor& visitor) override;
+
+	const irc::prefix& get_prefix() const;
+}; //chan_message
 
 #endif //MESSAGE_HPP

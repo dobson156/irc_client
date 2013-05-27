@@ -39,3 +39,18 @@ const std::string& chan_message::get_sender() const {
 const std::string& chan_message::get_content() const {
 	return content;
 }
+
+
+
+
+join_message::join_message(irc::prefix prefix_) 
+:	prefix { std::move(prefix_)  }
+{	}
+
+void join_message::visit(message_vistor& visitor) {
+	visitor(*this);
+}
+
+const irc::prefix& join_message::get_prefix() const {
+	return prefix;
+}
