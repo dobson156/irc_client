@@ -4,6 +4,7 @@
 #include "irc/session.hpp"
 #include "irc/connection.hpp"
 
+#include "window.hpp"
 #include "message.hpp"
 #include "console_ui.hpp"
 
@@ -51,7 +52,11 @@ class controller {
 
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
+
 	std::vector<std::shared_ptr<message>>         messages;
+
+
+	std::vector<std::unique_ptr<window>>          windows;
 public:
 	controller();
 	void run();

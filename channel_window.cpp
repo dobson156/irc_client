@@ -17,6 +17,7 @@ channel_window::channel_window(irc::channel& chan_)
 			messages.push_back(
 				std::make_shared<join_message>(user.get_prefix())
 			);
+			on_new_msg(*this, messages.back());
 		}
 	);
 
@@ -27,11 +28,23 @@ channel_window::channel_window(irc::channel& chan_)
 			messages.push_back(
 				std::make_shared<chan_message>(user.get_nick(), str)
 			);
+			on_new_msg(*this, messages.back());
+		}
+	);
+
+	auto topic_sig=chan.connect_on_topic_change(
+		[&](const irc::channel& chan_, const std::string& topic) {
+			assert(&chan_==&chan);
+			on_topic_change(*this, topic);
 		}
 	);
 
 	//Didn't really want any more nested functions
-	connections.assign( { std::move(msg_sig), std::move(usr_sig) } );
+	connections.assign( { 
+		std::move(msg_sig), 
+		std::move(usr_sig), 
+		std::move(topic_sig) 
+	} );
 }
 
 

@@ -22,6 +22,12 @@ void controller::handle_connection_connect(
 	);
 	auto& session=sessions.back();
 
+
+	auto sess_win=util::make_unique<session_window>(*session);
+
+	windows.push_back(std::move(sess_win));
+	
+
 	session->connect_on_motd(
 		std::bind(
 			&controller::handle_session_motd,
@@ -124,26 +130,18 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 	//TODO: if on auto change
 	selected_channel=&chan;	
 
-	chan.connect_on_message(
-		std::bind(
-			&controller::handle_channel_message,
-			this, ph::_1, ph::_2, ph::_3
-		)
-	);
-	chan.connect_on_topic_change(
-		std::bind(
-			&controller::handle_channel_topic_change,
-			this, ph::_1, ph::_2
-		)
-	);
-	chan.connect_on_user_join(
-		[&](const irc::channel& ch, const irc::user& usr) {
-			auto msg_ptr=std::make_shared<join_message>(usr.get_prefix());
-			view.append_message(msg_ptr);
-			messages.push_back(std::move(msg_ptr));
+	auto ch_win=util::make_unique<channel_window>(chan);
+	ch_win->connect_on_new_message(
+		[&](const window&, std::shared_ptr<message> msg_ptr) {
+			view.append_message(std::move(msg_ptr));
 		}
 	);
-	view.append_message("JOINED " + chan.get_name());
+	ch_win->connect_on_topic_change(
+		[&](const window&, const std::string& topic) {
+			view.set_title(topic);
+		}
+	);
+	windows.push_back(std::move(ch_win));
 }
 
 void controller::handle_channel_message(irc::channel& chan, 
