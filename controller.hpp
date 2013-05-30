@@ -17,8 +17,8 @@
 //helper
 struct win_get_name {
 	using result_type=const std::string&;
-	std::string operator()(const std::unique_ptr<window>& win) const;
-}; //win_get_name
+	const std::string& operator()(const std::unique_ptr<window>& win) const;
+}; //struct win_get_name
 
 
 class controller {
@@ -42,7 +42,6 @@ class controller {
 //connection handlers
 	void handle_connection_connect(std::shared_ptr<irc::connection>);
 //session handlers
-	void handle_session_motd(const std::string& motd);
 	void handle_session_join_channel(irc::channel& chan);
 //channel handlers 
 	void handle_channel_message(irc::channel& chan, 

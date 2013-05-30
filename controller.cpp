@@ -10,15 +10,14 @@
 #include <exception>
 #include <iostream>
 
-#define BOOST_RESULT_OF_USE_DECLTYPE 1
-
-std::string win_get_name::operator()(const std::unique_ptr<window>& win) const {
+const std::string& win_get_name::operator()(
+                      const std::unique_ptr<window>& win) const {
 	return win->get_name();
 }
 
 
 void controller::set_channels() {
-	view.set_channels(
+	view.set_channels( //iterate over channels as strings
 		boost::make_transform_iterator(windows.begin(), win_get_name()),
 		boost::make_transform_iterator(windows.end(),   win_get_name())
 	);
@@ -26,8 +25,6 @@ void controller::set_channels() {
 
 void controller::handle_connection_connect(
                   std::shared_ptr<irc::connection> connection) {
-	view.append_message("connected");
-
 	sessions.push_back(
 		util::make_unique<irc::session>(
 			std::move(connection), 
@@ -82,7 +79,6 @@ void controller::handle_join(const std::vector<std::string>& chans) {
 			sessions[0]->async_join(chan);			
 		}
 	}
-	//view.set_channels(input.cbegin(), input.cend());
 }
 
 void controller::handle_part(const std::string& chan, const std::string msg) {
@@ -116,14 +112,6 @@ void controller::handle_exec(const std::string& exec) {
 }
 void controller::handle_quit() {
 	view.stop();
-}
-
-void controller::handle_session_motd(const std::string& motd) {
-	std::istringstream iss { motd };
-	std::string t;
-	while(std::getline(iss, t)) {
-		view.append_message(t);
-	}
 }
 
 void controller::handle_session_join_channel(irc::channel& chan) {
@@ -183,7 +171,20 @@ void controller::run() {
 			break; //io service has run to completion
 		}
 		catch(const std::exception& e) {
-			std::cerr << "Exception" << e.what() << std::endl;
+//			auto it=std::find_if(
+//				windows.begin(), windows.end(), [](const std::unique_ptr<window>& win) {
+//					return win.get_name() == "error";
+//				}
+//			);
+//			if(it!=windows.end()) {
+//				auto error_win=dynamic_cast<error_window>(it->get());
+//				if(error_win) {
+//					error_win->add_error(e);
+//				}
+//			}
+//			else { //we'll just dump it to stdout
+				std::cerr << "Exception" << e.what() << std::endl;
+//			}
 		}
 	}
 }
