@@ -54,3 +54,23 @@ void join_message::visit(message_vistor& visitor) {
 const irc::prefix& join_message::get_prefix() const {
 	return prefix;
 }
+
+
+
+
+part_message::part_message(irc::prefix prefix_, irc::optional_string message_) 
+:	prefix  { std::move(prefix_)  }
+,	message { std::move(message_) }
+{	}
+
+void part_message::visit(message_vistor& visitor) {
+	visitor(*this);
+}
+
+const irc::prefix& part_message::get_prefix() const {
+	return prefix;
+}
+
+const irc::optional_string& part_message::get_message() const {
+	return message;
+}

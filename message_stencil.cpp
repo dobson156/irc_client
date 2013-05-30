@@ -66,3 +66,32 @@ void message_stencil::operator()(join_message& msg) {
 	}
 	last=cons::point{dim.x, pos.y+1};
 }
+
+void message_stencil::operator()(part_message& msg) {
+	assert(frame_ && "frame was not valid");
+	cons::frame& frame=*frame_;
+
+	frame_=nullptr;
+
+	cons::point pos {0,0};
+	auto dim=frame.get_dimension();
+
+	if(dim.y > 0) {
+		const auto& pfx=msg.get_prefix();
+		auto ts=time_to_string(msg.get_time_stamp());
+		pos=frame.write(pos, ts);
+
+		assert(pfx.nick);
+		std::ostringstream oss;
+		oss << pfx;
+
+		pos=frame.write(pos, *pfx.nick);
+		pos=frame.write(pos, " has parted ");
+		if(msg.get_message()) {
+			pos=frame.write(pos, "with ");
+			pos=frame.write(pos, *msg.get_message());
+		}
+		pos=frame.write(pos, oss.str());
+	}
+	last=cons::point{dim.x, pos.y+1};
+}

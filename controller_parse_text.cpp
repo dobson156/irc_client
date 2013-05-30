@@ -43,7 +43,7 @@ void controller::parse_text(std::string::const_iterator first,
 			| "connect"           >> str          [ phx::bind( &::controller::handle_connect, this, _1 )     ]
 			| "nick"              >> str          [ phx::bind( &::controller::handle_nick,    this, _1 )     ]
 			| "exec"              >> str          [ phx::bind( &::controller::handle_exec,    this, _1 )     ]
-			| lit("quit")                             [ phx::bind( &::controller::handle_quit,    this)          ]
+			| lit("quit")                         [ phx::bind( &::controller::handle_quit,    this)          ]
 			)
 		)
 		, 

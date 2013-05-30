@@ -43,7 +43,6 @@ public:
 	const std::string& get_content() const;
 }; //chan_message
 
-
 class join_message : public message {
 	irc::prefix prefix;
 public:
@@ -56,6 +55,23 @@ public:
 	void visit(message_vistor& visitor) override;
 
 	const irc::prefix& get_prefix() const;
+}; //chan_message
+
+
+class part_message : public message {
+	irc::prefix          prefix;
+	irc::optional_string message;
+public:
+	part_message(irc::prefix prefix_, irc::optional_string message_);
+	part_message(part_message&&)                =default;
+	part_message(const part_message&)           =default;
+	part_message& operator=(part_message&&)     =default;
+	part_message& operator=(const part_message&)=default;
+
+	void visit(message_vistor& visitor) override;
+
+	const irc::prefix&          get_prefix()  const;
+	const irc::optional_string& get_message() const;
 }; //chan_message
 
 #endif //MESSAGE_HPP

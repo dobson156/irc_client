@@ -16,6 +16,7 @@ public:
 	void operator()(message&)      override;
 	void operator()(chan_message&) override;
 	void operator()(join_message&) override;
+	void operator()(part_message&) override;
 }; //message_stencil
 
 #endif //MESSAGE_STENCIL_HPP
