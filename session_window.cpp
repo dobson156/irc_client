@@ -7,7 +7,8 @@
 
 
 session_window::session_window(irc::session& session_) 
-:	session ( session )
+:	window  { "channel"  }
+,	session ( session_            )
 {
 	auto ntc_sig=session.connect_on_notice(
 		[&](const std::string& notice) {

@@ -63,41 +63,10 @@ void ui::set_title(const std::string& text){
 void ui::append_message(const message_p& msg) {
 	message_list.insert(message_list.end(), msg);
 	message_list.refresh();
-
 }
 
 void ui::append_message(const std::string& msg) {
 	//message_list.insert(message_list.end(), msg);
 	//message_list.refresh();
 }
-
-/*
-** this handles the user input
-void ui::event_loop() {
-	char t;
-	std::string buff;
-	while(true) { //TODO stopping condition
-		t=input.get_char();
-		if(t=='\n') { //new text input
-
-			buff.clear();
-			std::swap(buff, input.get_value());
-			input.refresh();
-	
-			if(on_text_input) {
-				on_text_input(buff);
-			}
-		}
-		else if(false) { //TODO: is special 
-			if(on_special_char) {
-				on_special_char(t);
-			}
-		}
-		//TODO: do a non blocking get_char 
-		//so that reading a big blocks of text is fast
-		io_service.run();
-	}
-}
-*/
-
 } //namespace ui_impl

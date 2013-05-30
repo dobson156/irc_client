@@ -5,10 +5,24 @@
 #include "irc/channel.hpp"
 #include "irc/user.hpp"
 
+#include <boost/iterator/transform_iterator.hpp>
+
 #include <exception>
 #include <iostream>
 
+#define BOOST_RESULT_OF_USE_DECLTYPE 1
 
+std::string win_get_name::operator()(const std::unique_ptr<window>& win) const {
+	return win->get_name();
+}
+
+
+void controller::set_channels() {
+	view.set_channels(
+		boost::make_transform_iterator(windows.begin(), win_get_name()),
+		boost::make_transform_iterator(windows.end(),   win_get_name())
+	);
+}
 
 void controller::handle_connection_connect(
                   std::shared_ptr<irc::connection> connection) {
@@ -22,31 +36,17 @@ void controller::handle_connection_connect(
 	);
 	auto& session=sessions.back();
 
-
 	auto sess_win=util::make_unique<session_window>(*session);
-
 	windows.push_back(std::move(sess_win));
+	set_channels();
 	
-
-	session->connect_on_motd(
-		std::bind(
-			&controller::handle_session_motd,
-			this,
-			ph::_1
-		)
-	);
+	//this will create a new window view
 	session->connect_on_join_channel(
 		std::bind(
 			&controller::handle_session_join_channel,
 			this,
 			ph::_1
 		)
-	);
-
-	session->connect_on_notice(
-		[&](const std::string& msg) {
-			view.append_message("notice: "+msg);
-		}
 	);
 }
 
@@ -142,6 +142,7 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 		}
 	);
 	windows.push_back(std::move(ch_win));
+	set_channels();
 }
 
 void controller::handle_channel_message(irc::channel& chan, 

@@ -14,6 +14,13 @@
 #include <vector>
 #include <functional>
 
+//helper
+struct win_get_name {
+	using result_type=const std::string&;
+	std::string operator()(const std::unique_ptr<window>& win) const;
+}; //win_get_name
+
+
 class controller {
 	void start_connection(const std::string& server_name);
 
@@ -44,6 +51,9 @@ class controller {
 
 	void handle_channel_topic_change(irc::channel& chan, 
 	                                 const std::string& msg);
+//internals
+	void set_channels();
+
 //varaibles
 	boost::asio::io_service                       io_service;
 	ui                                            view;

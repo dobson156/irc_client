@@ -81,7 +81,9 @@ void ui::set_users(Iterator first, Iterator last) {
 template<typename Iterator>
 void ui::set_channels(Iterator first, Iterator last) {
 	//TODO make an iterate inserter
-	std::copy(first, last, std::inserter(channel_list, channel_list.end()));
+	//assert(false);
+	channel_list.clear();
+	std::copy(first, last, std::inserter(channel_list, channel_list.begin()));
 	channel_list.refresh();
 }
 

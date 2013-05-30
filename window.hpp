@@ -12,13 +12,16 @@ class message;
 
 class window {
 protected:
+	std::string name;
 	std::vector<std::shared_ptr<message>> messages;	
 
 	boost::signal<void(window&, const std::string& topic)> on_topic_change;
 	boost::signal<void(window&, const std::shared_ptr<message>&)> on_new_msg;
 public:
-	window()=default;
+	window(std::string str);
+
 	virtual ~window(){}
+	const std::string& get_name() const;
 
 	template<typename F>
 	boost::signals::connection connect_on_new_message(F&& f);

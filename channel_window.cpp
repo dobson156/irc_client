@@ -8,7 +8,8 @@
 
 
 channel_window::channel_window(irc::channel& chan_) 
-:	chan ( chan_ )
+:	window { chan_.get_name() }
+,	chan   ( chan_            )
 {
 	//TODO: make the signal handlers exception safe
 	auto usr_sig=chan.connect_on_user_join(
