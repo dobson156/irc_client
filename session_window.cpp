@@ -10,27 +10,24 @@ session_window::session_window(irc::session& session_)
 :	window  { "channel"  }
 ,	session ( session_            )
 {
-	auto ntc_sig=session.connect_on_notice(
-		[&](const std::string& notice) {
+	connections.push_back(
+		session.connect_on_notice(
+			[&](const std::string& notice) {
 
-		}
+			}
+		)
 	);
-
-	auto motd_sig=session.connect_on_motd(
-		[&](const std::string& motd) {
-			
-		}
+	connections.push_back(
+		session.connect_on_motd(
+			[&](const std::string& motd) {
+				
+			}
+		)
 	);
-
-	//Didn't really want any more nested functions
-	connections.assign( { 
-		std::move(ntc_sig), 
-		std::move(motd_sig)
-	} );
 }
 
 
 session_window::~session_window() {
-	for(auto& con : connections) con.disconnect();
+	//should auto-destroy with unique_connection
 }
 

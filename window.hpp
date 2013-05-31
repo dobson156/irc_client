@@ -1,6 +1,8 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
+#include "unique_connection.hpp"
+
 #include "irc/types.hpp"
 
 #include <boost/signals.hpp>
@@ -56,8 +58,8 @@ public:
 
 
 class session_window : public window {
-	irc::session&                      session;
-	std::vector<irc::bsig::connection> connections;
+	irc::session&                  session;
+	std::vector<unique_connection> connections;
 
 	session_window(session_window&&)                =delete;
 	session_window(const session_window&)           =delete;
