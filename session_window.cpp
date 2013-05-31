@@ -20,7 +20,8 @@ session_window::session_window(irc::session& session_)
 	connections.push_back(
 		session.connect_on_motd(
 			[&](const std::string& motd) {
-				
+				messages.push_back(std::make_shared<motd_message>(motd));
+				on_new_msg(*this, messages.back());
 			}
 		)
 	);

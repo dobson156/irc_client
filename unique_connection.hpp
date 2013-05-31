@@ -1,3 +1,6 @@
+#ifndef UNIQUE_CONNECTION_HPP
+#define UNIQUE_CONNECTION_HPP
+
 #include <boost/signals/connection.hpp>
 
 class unique_connection {
@@ -13,3 +16,5 @@ public:
 	unique_connection& operator=(unique_connection&&);
 	unique_connection& operator=(boost::signals::connection sig);
 }; //class unique_connection
+
+#endif //UNIQUE_CONNECTION_HPP

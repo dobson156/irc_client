@@ -74,3 +74,16 @@ const irc::prefix& part_message::get_prefix() const {
 const irc::optional_string& part_message::get_message() const {
 	return message;
 }
+
+
+motd_message::motd_message(std::string motd_) 
+:	motd { std::move(motd_) }
+{	}
+
+void motd_message::visit(message_vistor& visitor) {
+	visitor(*this);
+}
+
+const std::string& motd_message::get_motd() const {
+	return motd;
+}

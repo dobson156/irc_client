@@ -33,7 +33,15 @@ void controller::handle_connection_connect(
 	);
 	auto& session=sessions.back();
 
+
 	auto sess_win=util::make_unique<session_window>(*session);
+	sess_win->connect_on_new_message(
+		[&](const window&, std::shared_ptr<message> msg_ptr) {
+			view.append_message(std::move(msg_ptr));
+		}
+	);
+
+
 	windows.push_back(std::move(sess_win));
 	set_channels();
 	

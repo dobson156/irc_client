@@ -40,12 +40,9 @@ void message_stencil::operator()(chan_message& msg) {
 	last=cons::point{dim.x, pos.y+1};
 }
 
-
-
 void message_stencil::operator()(join_message& msg) {
 	assert(frame_ && "frame was not valid");
 	cons::frame& frame=*frame_;
-
 	frame_=nullptr;
 
 	cons::point pos {0,0};
@@ -70,7 +67,6 @@ void message_stencil::operator()(join_message& msg) {
 void message_stencil::operator()(part_message& msg) {
 	assert(frame_ && "frame was not valid");
 	cons::frame& frame=*frame_;
-
 	frame_=nullptr;
 
 	cons::point pos {0,0};
@@ -92,6 +88,20 @@ void message_stencil::operator()(part_message& msg) {
 			pos=frame.write(pos, *msg.get_message());
 		}
 		pos=frame.write(pos, oss.str());
+	}
+	last=cons::point{dim.x, pos.y+1};
+}
+
+void message_stencil::operator()(motd_message& msg) {
+	assert(frame_ && "frame was not valid");
+	cons::frame& frame=*frame_;
+	frame_=nullptr;
+
+	cons::point pos {0,0}, dim=frame.get_dimension();
+	std::istringstream iss { msg.get_motd() };
+	std::string line;
+	for(int i=0; i!=dim.y && std::getline(iss, line); ++i) {
+		pos=frame.write({0,i}, line);
 	}
 	last=cons::point{dim.x, pos.y+1};
 }

@@ -74,4 +74,18 @@ public:
 	const irc::optional_string& get_message() const;
 }; //chan_message
 
+class motd_message : public message {
+	std::string motd;
+public:
+	motd_message(std::string motd_);
+	motd_message(motd_message&&)                =default;
+	motd_message(const motd_message&)           =default;
+	motd_message& operator=(motd_message&&)     =default;
+	motd_message& operator=(const motd_message&)=default;
+
+	void visit(message_vistor& visitor) override;
+
+	const std::string& get_motd() const;
+}; //chan_message
+
 #endif //MESSAGE_HPP
