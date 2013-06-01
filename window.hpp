@@ -13,17 +13,22 @@
 class message;
 
 class window {
+	using container_type=std::vector<std::shared_ptr<message>>;
+	using const_iterator=container_type::const_iterator;
 protected:
-	std::string name;
-	std::vector<std::shared_ptr<message>> messages;	
+	std::string    name;
+	container_type messages;	
 
 	boost::signal<void(window&, const std::string& topic)> on_topic_change;
 	boost::signal<void(window&, const std::shared_ptr<message>&)> on_new_msg;
 public:
 	window(std::string str);
+	virtual ~window();
 
-	virtual ~window(){}
-	const std::string& get_name() const;
+	const std::string&         get_name()       const;
+	virtual const std::string& get_topic()      const;
+	const_iterator             messages_begin() const;
+	const_iterator             messages_end()   const;
 
 	template<typename F>
 	boost::signals::connection connect_on_new_message(F&& f);

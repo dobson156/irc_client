@@ -51,9 +51,12 @@ class controller {
 	void handle_channel_topic_change(irc::channel& chan, 
 	                                 const std::string& msg);
 //internals
+	//TODO: more descriptive names
+	void set_channel(window& win);
 	void set_channels();
 
 //varaibles
+	unique_connection                             win_msg, win_tpc;
 	boost::asio::io_service                       io_service;
 	ui                                            view;
 

@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include <fstream>
+
 namespace cons {
 
 async_input_box::async_input_box(unique_window_ptr ptr, 
@@ -52,9 +54,8 @@ void async_input_box::handle_read_complete(std::string str) {
 	for(auto it = str.begin(); it != str.end(); ++it) {
 
 		char c = *it;
-		arrow_key is_arrow_key_;
-
-		if((is_arrow_key_=is_arrow_key(it, str.end())) != arrow_key::none) {
+		arrow_key is_arrow_key_=is_arrow_key(it, str.end());
+		if(is_arrow_key_ != arrow_key::none) {
 			switch(is_arrow_key_) {
 			case arrow_key::left: { 
 				it+=2; 
@@ -72,11 +73,10 @@ void async_input_box::handle_read_complete(std::string str) {
 				break;
 			}
 		}
-		else if(c==0x08 || c==0x7f) {
+		else if(c==0x08 || c==0x7f) { //handle backspace
 			if(!value.empty() && pos != 0) {
 				value.erase(pos-1, 1);
 				--pos;
-				//value.pop_back();
 				do_refresh=true;		
 			}
 		}
@@ -87,6 +87,14 @@ void async_input_box::handle_read_complete(std::string str) {
 			value.insert(value.begin()+pos, c);
 			++pos;
 			do_refresh=true;		
+		}
+		if(c==0x1b) {
+			assert(false);
+		}
+		else {	
+
+			std::ofstream out { "err", std::ofstream::app };
+			out << std::distance(it, str.end()) << "   " << std::hex << int(c) << std::endl;
 		}
 	}	
 	if(do_refresh) refresh();
@@ -99,10 +107,9 @@ void async_input_box::set() {
 	wmove(frame_.get_handle(), pos.y, pos.x);
 	frame_.refresh();
 
+	//TODO: handle  error
 	in_manager.async_read(
-		std::bind(&async_input_box::handle_read_complete, this, ph::_1)
-	//	std::bind(&async_input_box::handle_read_error,    this, ph::_1)
-	);
+		std::bind(&async_input_box::handle_read_complete, this, ph::_1));
 }
 
 bool async_input_box::grow(point pt) {

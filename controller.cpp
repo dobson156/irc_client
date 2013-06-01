@@ -16,6 +16,28 @@ const std::string& win_get_name::operator()(
 }
 
 
+void controller::set_channel(window& win) {
+	//TODO: reverse on throw exceptionsafe?
+	view.set_title(win.get_topic());	
+	view.assign_messages(
+		win.messages_begin(),
+		win.messages_end()
+	);
+
+	//This unset callbacks for the old window and resets then for the new
+	//unsetting is done via RAII with unique_connection
+	win_msg=win.connect_on_new_message(
+		[&](const window&, std::shared_ptr<message> msg_ptr) {
+			view.append_message(std::move(msg_ptr));
+		}
+	);
+	win_tpc=win.connect_on_topic_change(
+		[&](const window&, const std::string& topic) {
+			view.set_title(topic);
+		}
+	);
+}
+
 void controller::set_channels() {
 	view.set_channels( //iterate over channels as strings
 		boost::make_transform_iterator(windows.begin(), win_get_name()),
@@ -79,6 +101,7 @@ void controller::handle_text_input(const std::string& str) {
 	view.set_input({});
 }
 void controller::handle_special_char(int) {
+	assert(false);
 }
 
 void controller::handle_join(const std::vector<std::string>& chans) {

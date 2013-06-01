@@ -1,5 +1,6 @@
 #ifndef CONSOLE_UI_HPP
 #define CONSOLE_UI_HPP
+#define BOOST_RESULT_OF_USE_DECLTYPE
 
 #include "message.hpp"
 #include "message_stencil.hpp"
@@ -64,6 +65,9 @@ public:
 	void append_message(const message_p& msg);
 	void append_message(const std::string& msg);
 
+	template<typename Iterator> //*Iterator==unique_ptr<message>
+	void assign_messages(Iterator first, Iterator last);
+
 	template<typename Iterator> //*Iterator==std::string
 	void set_channels(Iterator first, Iterator last);
 
@@ -73,15 +77,21 @@ public:
 
 
 //IMPL
+template<typename Iterator> //*Iterator==shared_ptr<message>
+void ui::assign_messages(Iterator first, Iterator last) {
+	message_list.clear();
+	std::copy(first, last, std::inserter(message_list, message_list.end()));
+	message_list.refresh();
+}
+
 template<typename Iterator>
 void ui::set_users(Iterator first, Iterator last) {
+	assert(false); //depricated
 	std::copy(first, last, std::inserter(message_list, message_list.end()));
-	channel_list.refresh();
 }
 template<typename Iterator>
 void ui::set_channels(Iterator first, Iterator last) {
 	//TODO make an iterate inserter
-	//assert(false);
 	channel_list.clear();
 	std::copy(first, last, std::inserter(channel_list, channel_list.begin()));
 	channel_list.refresh();
