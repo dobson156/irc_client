@@ -76,7 +76,7 @@ public:
 			const auto dime=get_dimension();
 
 
-			//without this, it is bugged
+			//ensure inrange
 			auto max_idx=size()-1;
 			if(selected > max_idx) {
 				selected=max_idx;
@@ -95,15 +95,9 @@ public:
 			//the amount of verticle space used by the pads so far
 			int y_used=0;
 
-			//idx of current top and bottom elements
-			//TODO: use iterators
-
-
 			//start with the selected message
 			message_frames.push_back(message_to_pad<stencil_type>(stencil, *selected_it, dime));
 			y_used=message_frames.back().get_dimension().y;
-
-
 
 
 			//true whilst there are still more upper & lower values
@@ -142,10 +136,6 @@ public:
 		}
 		frame_.refresh();
 	}
-
-
-
-
 
 	void set_position(const point& position) override { 
 		frame_.set_position(position); 

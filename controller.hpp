@@ -48,8 +48,6 @@ class controller {
 	                            const irc::user& user, 
 	                            const std::string& msg);
 
-	void handle_channel_topic_change(irc::channel& chan, 
-	                                 const std::string& msg);
 //internals
 	//TODO: more descriptive names
 	void set_channel(window& win);
@@ -64,9 +62,6 @@ class controller {
 
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
-
-	std::vector<std::shared_ptr<message>>         messages;
-
 
 	std::vector<std::unique_ptr<window>>          windows;
 public:

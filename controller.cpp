@@ -55,14 +55,8 @@ void controller::handle_connection_connect(
 	);
 	auto& session=sessions.back();
 
-
 	auto sess_win=util::make_unique<session_window>(*session);
-	sess_win->connect_on_new_message(
-		[&](const window&, std::shared_ptr<message> msg_ptr) {
-			view.append_message(std::move(msg_ptr));
-		}
-	);
-
+	set_channel(*sess_win);
 
 	windows.push_back(std::move(sess_win));
 	set_channels();
@@ -136,13 +130,15 @@ void controller::handle_text(const std::string& text) {
 		selected_channel->async_send_message(text);
 		auto msg_ptr=std::make_shared<chan_message>(sessions[0]->get_nick(), text);
 		view.append_message(msg_ptr);
-		messages.push_back(std::move(msg_ptr));
 	}
 }
 void controller::handle_exec(const std::string& exec) {
 }
 void controller::handle_quit() {
 	view.stop();
+	for(auto& sess : sessions) {
+		sess->stop();
+	}
 }
 
 void controller::handle_session_join_channel(irc::channel& chan) {
@@ -150,16 +146,7 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 	selected_channel=&chan;	
 
 	auto ch_win=util::make_unique<channel_window>(chan);
-	ch_win->connect_on_new_message(
-		[&](const window&, std::shared_ptr<message> msg_ptr) {
-			view.append_message(std::move(msg_ptr));
-		}
-	);
-	ch_win->connect_on_topic_change(
-		[&](const window&, const std::string& topic) {
-			view.set_title(topic);
-		}
-	);
+	set_channel(*ch_win);	
 	windows.push_back(std::move(ch_win));
 	set_channels();
 }
@@ -174,14 +161,6 @@ void controller::handle_channel_message(irc::channel& chan,
 
 		auto msg_ptr=std::make_shared<chan_message>(user.get_nick(), msg);
 		view.append_message(msg_ptr);
-		messages.push_back(std::move(msg_ptr));
-	}
-}
-
-void controller::handle_channel_topic_change(irc::channel& chan, 
-                                             const std::string& msg) {
-	if(selected_channel==&chan) {
-		view.set_title(msg);
 	}
 }
 
