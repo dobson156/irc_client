@@ -63,7 +63,6 @@ public:
 	void set_title(const std::string& title);
 
 	void append_message(const message_p& msg);
-	void append_message(const std::string& msg);
 
 	template<typename Iterator> //*Iterator==unique_ptr<message>
 	void assign_messages(Iterator first, Iterator last);

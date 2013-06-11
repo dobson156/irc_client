@@ -23,6 +23,15 @@ ui::ui(boost::asio::io_service& io_service_)
 
 //	channel_list.insert(channel_list.begin(), "channel");
 //	message_list.insert(message_list.begin(), "message");
+
+	input.reg_on_grow(
+		[&](const point& pt) {
+			input_anchor.set_partition(pt.y);
+			input_anchor.refresh();
+			return true;
+		}
+	);
+
 	message_list.selected_idx(1000);
 	refresh();
 //	parent.refresh();
@@ -65,8 +74,4 @@ void ui::append_message(const message_p& msg) {
 	message_list.refresh();
 }
 
-void ui::append_message(const std::string& msg) {
-	//message_list.insert(message_list.end(), msg);
-	//message_list.refresh();
-}
 } //namespace ui_impl

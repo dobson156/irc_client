@@ -88,13 +88,15 @@ void async_input_box::handle_read_complete(std::string str) {
 			++pos;
 			do_refresh=true;		
 		}
-		if(c==0x1b) {
-			assert(false);
-		}
+		//if(c==0x1b) {
+			//assert(false);
+		//}
 		else {	
 
 			std::ofstream out { "err", std::ofstream::app };
-			out << std::distance(it, str.end()) << "   " << std::hex << int(c) << std::endl;
+			out << std::distance(it, str.end()) << "   " << std::hex; 		
+				
+			std::copy(it, str.end(), std::ostream_iterator<int>(out, "  "));
 		}
 	}	
 	if(do_refresh) refresh();

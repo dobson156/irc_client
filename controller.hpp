@@ -43,10 +43,6 @@ class controller {
 	void handle_connection_connect(std::shared_ptr<irc::connection>);
 //session handlers
 	void handle_session_join_channel(irc::channel& chan);
-//channel handlers 
-	void handle_channel_message(irc::channel& chan, 
-	                            const irc::user& user, 
-	                            const std::string& msg);
 
 //internals
 	//TODO: more descriptive names

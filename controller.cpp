@@ -74,7 +74,7 @@ void controller::handle_connection_connect(
 void controller::start_connection(const std::string& server) {
 	auto ic=irc::connection::make_shared(io_service, server, "6667");
 	ic->connect_on_resolve(
-		[&]{ view.append_message("connection resolved"); });
+		[&]{ /*TODO repport success */ });
 	ic->connect_on_connect(
 		std::bind(
 			&controller::handle_connection_connect,
@@ -82,6 +82,7 @@ void controller::start_connection(const std::string& server) {
 			ic
 		)
 	);
+	connections.push_back(std::move(ic));
 }
 
 
@@ -111,7 +112,6 @@ void controller::handle_part(const std::string& chan, const std::string msg) {
 }
 
 void controller::handle_connect(const std::string& chan) {
-	 view.append_message("attempting to connect to: " + chan);
 	 start_connection(chan);
 }
 
@@ -139,6 +139,9 @@ void controller::handle_quit() {
 	for(auto& sess : sessions) {
 		sess->stop();
 	}
+	for(auto& conn : connections) {
+		conn->stop();
+	}
 }
 
 void controller::handle_session_join_channel(irc::channel& chan) {
@@ -149,19 +152,6 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 	set_channel(*ch_win);	
 	windows.push_back(std::move(ch_win));
 	set_channels();
-}
-
-void controller::handle_channel_message(irc::channel& chan, 
-                                        const irc::user& user, 
-                                        const std::string& msg) {
-	if(selected_channel != nullptr
-	&& &chan == selected_channel) {
-		std::ostringstream oss;
-		oss << user.get_nick() << " said: " << msg;
-
-		auto msg_ptr=std::make_shared<chan_message>(user.get_nick(), msg);
-		view.append_message(msg_ptr);
-	}
 }
 
 controller::controller() 
