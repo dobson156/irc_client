@@ -21,9 +21,6 @@ ui::ui(boost::asio::io_service& io_service_)
 	title.set_background(COLOR_CYAN);
 	status.set_background(COLOR_CYAN);
 
-//	channel_list.insert(channel_list.begin(), "channel");
-//	message_list.insert(message_list.begin(), "message");
-
 	input.reg_on_grow(
 		[&](const point& pt) {
 			input_anchor.set_partition(pt.y);
@@ -34,7 +31,6 @@ ui::ui(boost::asio::io_service& io_service_)
 
 	message_list.selected_idx(1000);
 	refresh();
-//	parent.refresh();
 }
 
 void ui::refresh() {
@@ -58,7 +54,6 @@ void ui::reg_on_special_char(std::function<void(int)> action){
 }
 
 void ui::set_input(const std::string& str) {
-		//input.get_value()=str;
 		input.set_value(str);
 		input.refresh();
 }

@@ -6,7 +6,7 @@ LFLAGS?=
 
 LIB   =../console.o -lncurses -lpthread -lboost_system
 
-PROGS=frames anchors ui_test input_box_test simple typing_game async_input_box_test #async_term
+PROGS=frames anchors ui_test input_box_test simple typing_game async_input_box_test input_manager_test #async_term
 all: $(PROGS)
 
 %: %.cpp 
