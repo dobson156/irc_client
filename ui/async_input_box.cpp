@@ -1,6 +1,8 @@
 #include "assert.hpp"
 #include "async_input_box.hpp"
 
+#include "ctrl_char_parser.hpp"
+
 #include <algorithm>
 
 #include <fstream>
@@ -51,10 +53,53 @@ async_input_box::arrow_key async_input_box::is_arrow_key(
 void async_input_box::handle_read_complete(std::string str) {
 	bool do_refresh=false;
 
-	for(auto it = str.begin(); it != str.end(); ++it) {
+	for(auto it = str.begin(); it < str.end(); ++it) {
 
 		char c = *it;
-		arrow_key is_arrow_key_=is_arrow_key(it, str.end());
+
+		ctrl_char cht;
+		std::tie(cht, it)=parse_ctrl_char(it, end(str));
+
+		//arrow_key is_arrow_key_=is_arrow_key(it, str.end());
+
+		
+		switch(cht) {
+		case ctrl_char::none:
+			if(c=='\r') {
+				if(on_input) on_input(value);
+			}
+			else if(std::isprint(c)) {
+				value.insert(value.begin()+pos, *it);
+				++pos;
+				do_refresh=true;		
+			}
+			break;
+		case ctrl_char::arrow_right:
+			if(pos < value.size()) 
+				++pos; 
+			break;
+		case ctrl_char::arrow_left:
+			if(pos > 0) 
+				--pos; 
+			break;
+		case ctrl_char::backspace:
+			if(!value.empty() && pos != 0) {
+				value.erase(pos-1, 1);
+				--pos;
+				do_refresh=true;		
+			}
+			break;
+		default:
+
+			break;
+		}
+		
+
+
+
+
+
+		/*
 		if(is_arrow_key_ != arrow_key::none) {
 			switch(is_arrow_key_) {
 			case arrow_key::left: { 
@@ -98,6 +143,7 @@ void async_input_box::handle_read_complete(std::string str) {
 				
 			std::copy(it, str.end(), std::ostream_iterator<int>(out, "  "));
 		}
+		*/
 	}	
 	if(do_refresh) refresh();
 	set();
