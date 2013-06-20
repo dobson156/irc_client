@@ -60,9 +60,6 @@ void async_input_box::handle_read_complete(std::string str) {
 		ctrl_char cht;
 		std::tie(cht, it)=parse_ctrl_char(it, end(str));
 
-		//arrow_key is_arrow_key_=is_arrow_key(it, str.end());
-
-		
 		switch(cht) {
 		case ctrl_char::none:
 			if(c=='\r') {
@@ -90,60 +87,10 @@ void async_input_box::handle_read_complete(std::string str) {
 			}
 			break;
 		default:
-
+			//All other cases are passed on to the user
+			on_ctrl_char(cht);
 			break;
 		}
-		
-
-
-
-
-
-		/*
-		if(is_arrow_key_ != arrow_key::none) {
-			switch(is_arrow_key_) {
-			case arrow_key::left: { 
-				it+=2; 
-				if(pos > 0) 
-					--pos; 
-				break;
-			} 
-			case arrow_key::right: { 
-				it+=2; 
-				if(pos < value.size()) 
-					++pos; 
-				break;
-			}
-			default: 
-				break;
-			}
-		}
-		else if(c==0x08 || c==0x7f) { //handle backspace
-			if(!value.empty() && pos != 0) {
-				value.erase(pos-1, 1);
-				--pos;
-				do_refresh=true;		
-			}
-		}
-		else if(c=='\r') {
-			if(on_input) on_input(value);
-		}
-		else if(std::isprint(c)) {
-			value.insert(value.begin()+pos, c);
-			++pos;
-			do_refresh=true;		
-		}
-		//if(c==0x1b) {
-			//assert(false);
-		//}
-		else {	
-
-			std::ofstream out { "err", std::ofstream::app };
-			out << std::distance(it, str.end()) << "   " << std::hex; 		
-				
-			std::copy(it, str.end(), std::ostream_iterator<int>(out, "  "));
-		}
-		*/
 	}	
 	if(do_refresh) refresh();
 	set();

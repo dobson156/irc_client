@@ -2,6 +2,7 @@
 #define ASYNC_INPUT_BOX_HPP
 
 #include "basic.hpp"
+#include "ctrl_char.hpp"
 #include "input_manager.hpp"
 #include "string_stencil.hpp"
 
@@ -12,13 +13,16 @@ namespace cons {
 
 class async_input_box : public base {
 public:
-	enum class arrow_key { none = 0, left, right };
-	using grow_cb =std::function<bool(point)>;
-	using input_cb=std::function<void(std::string)>;
+	//TODO use boost::signals
+	using grow_cb     =std::function<bool(point)>;
+	using input_cb    =std::function<void(std::string)>;
+	using ctrl_char_cb=std::function<void(ctrl_char)>;
 private:
 	grow_cb                  on_grow;
 	input_cb                 on_input;
+	ctrl_char_ch             on_ctrl_char;	
 
+	
 	frame                    frame_;
 	std::string              value;
 	unsigned                 pos = 0;

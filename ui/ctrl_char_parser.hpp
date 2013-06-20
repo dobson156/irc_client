@@ -10,9 +10,7 @@
 #include <boost/spirit/include/qi_symbols.hpp>
 #include <boost/spirit/include/qi_operator.hpp>
 
-enum class ctrl_char {
-	none, arrow_left, arrow_right, backspace
-};
+namespace cons {
 
 template<typename Iter>
 std::pair<ctrl_char, Iter> parse_ctrl_char(Iter first, Iter last) {
@@ -21,15 +19,19 @@ std::pair<ctrl_char, Iter> parse_ctrl_char(Iter first, Iter last) {
 
 	qi::symbols<char, ctrl_char> ctrl_map;
 	ctrl_map.add
-		("\x1b\x5b\x43", ctrl_char::arrow_right)
-		("\x1b\x5b\x44", ctrl_char::arrow_left)
-		("\x08",         ctrl_char::backspace)
-		("\x7f",         ctrl_char::backspace)
+		("\x1b\x5b\x43",             ctrl_char::arrow_right)
+		("\x1b\x5b\x44",             ctrl_char::arrow_left)
+		("\x1b\x5b\x31\x3b\x35\x44", ctrl_char::ctrl_arrow_left)
+		("\x1b\x5b\x31\x3b\x35\x43", ctrl_char::ctrl_arrow_right)
+		("\x08",                     ctrl_char::backspace)
+		("\x7f",                     ctrl_char::backspace)
 		;
 
 	qi::attr_type attr;
 	qi::parse(first, last, ctrl_map | attr(ctrl_char::none) , cht);
 	return std::make_pair(cht, first);
 }
+
+} //namespace cons
 
 #endif //CTRL_CHAR_PARSER_HPP
