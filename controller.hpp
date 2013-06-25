@@ -29,7 +29,7 @@ class controller {
 	void parse_text(const std::string& text);
 //view callbacks
 	void handle_text_input(const std::string& str);
-	void handle_special_char(int);
+	void handle_ctrl_char(cons::ctrl_char);
 //parser handlers
 	void handle_join   (const std::vector<std::string>& input);
 	void handle_part   (const std::string& chan, const std::string msg);

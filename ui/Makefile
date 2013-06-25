@@ -2,8 +2,8 @@
 #export CPP  ?=g++
 export CPP  =g++
 
-OPTS         =-O3
-#OPTS         =-O0 
+#OPTS         =-O3
+OPTS         =-O0 -ggdb
 #-ggdb -DCONS_FAST_COMPILE
 #-D_GLIBCXX_DEBUG
 

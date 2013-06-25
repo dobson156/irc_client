@@ -95,7 +95,7 @@ void controller::handle_text_input(const std::string& str) {
 	parse_text(str);
 	view.set_input({});
 }
-void controller::handle_special_char(int) {
+void controller::handle_ctrl_char(cons::ctrl_char ch) {
 	assert(false);
 }
 
@@ -160,8 +160,8 @@ controller::controller()
 	view.reg_on_text_input(
 		std::bind(&controller::handle_text_input, this, ph::_1));
 
-	view.reg_on_special_char(
-		std::bind(&controller::handle_special_char, this, ph::_1));
+	view.connect_on_ctrl_char(
+		std::bind(&controller::handle_ctrl_char, this, ph::_1));
 }
 
 void controller::run() {

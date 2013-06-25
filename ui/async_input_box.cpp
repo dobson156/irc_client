@@ -34,22 +34,6 @@ void async_input_box::handle_read_error(const boost::system::error_code&) {
 
 }
 
-async_input_box::arrow_key async_input_box::is_arrow_key(
-                                        std::string::const_iterator it, 
-					                    std::string::const_iterator last) {
-	if(std::distance(it, last) >= 3
-	&& it[0] == 0x1b && it[1] == 0x5b) {
-		switch(it[2]) {
-		default:   return arrow_key::none;
-		case 0x43: return arrow_key::right;
-		case 0x44: return arrow_key::left;
-		}
-	}
-	else {
-		return arrow_key::none;
-	}
-}
-
 void async_input_box::handle_read_complete(std::string str) {
 	bool do_refresh=false;
 
@@ -62,14 +46,15 @@ void async_input_box::handle_read_complete(std::string str) {
 
 		switch(cht) {
 		case ctrl_char::none:
-			if(c=='\r') {
-				if(on_input) on_input(value);
-			}
-			else if(std::isprint(c)) {
+			if(std::isprint(c)) {
 				value.insert(value.begin()+pos, *it);
 				++pos;
 				do_refresh=true;		
 			}
+			break;
+		case ctrl_char::newline: //fall through
+		case ctrl_char::carriage_ret:
+			on_input(value);
 			break;
 		case ctrl_char::arrow_right:
 			if(pos < value.size()) 
@@ -108,9 +93,9 @@ void async_input_box::set() {
 }
 
 bool async_input_box::grow(point pt) {
-	return on_grow 
-		 ? on_grow(pt) 
-		 : false;
+	//TODO ensure this works as expected in the
+	//true, false and unconnected cases
+	return on_grow(pt);
 }
 
 void async_input_box::refresh() {
@@ -151,15 +136,6 @@ void async_input_box::set_value(const std::string& str) {
 }
 const std::string& async_input_box::get_value() const { 
 	return value; 
-}
-
-//watch thread safety
-//what happens if a thread on this callback modifies this value?
-void async_input_box::reg_on_grow(grow_cb gcb) {
-	on_grow=std::move(gcb);
-}
-void async_input_box::reg_on_input(input_cb cb) {
-	on_input=std::move(cb);
 }
 
 //Overrides

@@ -4,7 +4,7 @@ INC   =-I../.
 CFLAGS?= -O0 -g -std=c++11 -pedantic -Wall -Wextra -D_GLIBCXX_DEBUG
 LFLAGS?= 
 
-LIB   =../console.o -lncurses -lpthread -lboost_system
+LIB   =../console.o -lncurses -lpthread -lboost_system -lboost_signals
 
 PROGS=frames anchors ui_test input_box_test simple typing_game async_input_box_test input_manager_test #async_term
 all: $(PROGS)

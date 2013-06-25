@@ -21,11 +21,17 @@ ui::ui(boost::asio::io_service& io_service_)
 	title.set_background(COLOR_CYAN);
 	status.set_background(COLOR_CYAN);
 
-	input.reg_on_grow(
+	input.connect_on_grow(
 		[&](const point& pt) {
 			input_anchor.set_partition(pt.y);
 			input_anchor.refresh();
 			return true;
+		}
+	);
+
+	input.connect_on_ctrl_char(
+		[&](cons::ctrl_char ch) {
+			on_ctrl_char(ch);
 		}
 	);
 
@@ -46,11 +52,7 @@ void ui::stop() {
 //perhaps use the event system
 void ui::reg_on_text_input(std::function<void(std::string)> action){
 	on_text_input=std::move(action);
-	input.reg_on_input(on_text_input);
-}
-
-void ui::reg_on_special_char(std::function<void(int)> action){ 
-	on_special_char=std::move(action);
+	input.connect_on_input(on_text_input);
 }
 
 void ui::set_input(const std::string& str) {

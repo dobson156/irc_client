@@ -10,6 +10,8 @@
 #include <boost/spirit/include/qi_symbols.hpp>
 #include <boost/spirit/include/qi_operator.hpp>
 
+#include "ctrl_char.hpp"
+
 namespace cons {
 
 template<typename Iter>
@@ -25,6 +27,8 @@ std::pair<ctrl_char, Iter> parse_ctrl_char(Iter first, Iter last) {
 		("\x1b\x5b\x31\x3b\x35\x43", ctrl_char::ctrl_arrow_right)
 		("\x08",                     ctrl_char::backspace)
 		("\x7f",                     ctrl_char::backspace)
+		("\r",                       ctrl_char::carriage_ret)
+		("\n",                       ctrl_char::carriage_ret)
 		;
 
 	qi::attr_type attr;

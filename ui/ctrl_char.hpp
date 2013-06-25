@@ -7,7 +7,8 @@ enum class ctrl_char {
 	none, 
 	arrow_left, arrow_right, 
 	ctrl_arrow_left, ctrl_arrow_right,
-	backspace
+	backspace,
+	carriage_ret, newline
 };
 
 } //namespace cons

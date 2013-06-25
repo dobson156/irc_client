@@ -2,6 +2,7 @@
 #define ASYNC_INPUT_BOX_HPP
 
 #include "basic.hpp"
+#include "signals.hpp"
 #include "ctrl_char.hpp"
 #include "input_manager.hpp"
 #include "string_stencil.hpp"
@@ -14,14 +15,14 @@ namespace cons {
 class async_input_box : public base {
 public:
 	//TODO use boost::signals
-	using grow_cb     =std::function<bool(point)>;
-	using input_cb    =std::function<void(std::string)>;
-	using ctrl_char_cb=std::function<void(ctrl_char)>;
+	//using grow_cb     =std::function<bool(point)>;
+	//reference of some kind
+	//using input_cb    =std::function<void(std::string)>;
+	//using ctrl_char_cb=std::function<void(ctrl_char)>;
 private:
-	grow_cb                  on_grow;
-	input_cb                 on_input;
-	ctrl_char_ch             on_ctrl_char;	
-
+	sig_pt                  on_grow;
+	sig_s                   on_input;
+	sig_ctrl_ch             on_ctrl_char;	
 	
 	frame                    frame_;
 	std::string              value;
@@ -36,8 +37,6 @@ public:
 	point calc_cursor_position() const;
 
 	void handle_read_error(const boost::system::error_code&);
-	arrow_key is_arrow_key(std::string::const_iterator it, 
-	                       std::string::const_iterator last);
 	void handle_read_complete(std::string str);
 	void set();
 	bool grow(point pt);
@@ -45,10 +44,6 @@ public:
 	void clear();
 	void set_value(const std::string& str);
 	const std::string& get_value() const;
-	//watch thread safety
-	//what happens if a thread on this callback modifies this value?
-	void reg_on_grow(grow_cb gcb);
-	void reg_on_input(input_cb cb);
 //Overrides
 	void set_position(const point& position) override;
 	void set_dimension(const point& dimension) override;
@@ -61,7 +56,34 @@ public:
 	void set_foreground(short fg);
 	short get_background() const;
 	short get_foreground() const;
+
+	//watch thread safety
+	//what happens if a thread on this callback modifies this value?
+	template<typename F>
+	bsig::connection connect_on_grow(F&& f);
+
+	template<typename F>
+	bsig::connection connect_on_input(F&& f);
+
+	template<typename F>
+	bsig::connection connect_on_ctrl_char(F&& f);
 }; //class async_input_box
+
+
+
+template<typename F>
+bsig::connection async_input_box::connect_on_grow(F&& f) {
+	return on_grow.connect(std::forward<F>(f));
+}
+template<typename F>
+bsig::connection async_input_box::connect_on_input(F&& f) {
+	return on_input.connect(std::forward<F>(f));
+}
+template<typename F>
+bsig::connection async_input_box::connect_on_ctrl_char(F&& f) {
+	return on_ctrl_char.connect(std::forward<F>(f));
+}
+
 
 } //namespace cons
 

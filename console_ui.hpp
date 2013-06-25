@@ -5,6 +5,7 @@
 #include "message.hpp"
 #include "message_stencil.hpp"
 
+#include "ui/signals.hpp"
 #include "ui/console.hpp"
 
 #include <boost/asio/io_service.hpp>
@@ -48,7 +49,7 @@ class ui {
 //Callbacks
 	boost::asio::io_service *io_service;
 	action_str               on_text_input;
-	action_int               on_special_char;
+	cons::sig_ctrl_ch        on_ctrl_char;
 
 	void refresh();
 public:
@@ -56,7 +57,6 @@ public:
 	void stop();
 //event handlers	
 	void reg_on_text_input(std::function<void(std::string)> action);
-	void reg_on_special_char(std::function<void(int)> action);
 //setters
 	void set_input(const std::string& str);
 
@@ -72,6 +72,9 @@ public:
 
 	template<typename Iterator> //*Iterator==std::string
 	void set_users(Iterator first, Iterator last);
+
+	template<typename F>
+	cons::bsig::connection connect_on_ctrl_char(F&& f);
 };
 
 
@@ -94,6 +97,11 @@ void ui::set_channels(Iterator first, Iterator last) {
 	channel_list.clear();
 	std::copy(first, last, std::inserter(channel_list, channel_list.begin()));
 	channel_list.refresh();
+}
+
+template<typename F>
+cons::bsig::connection ui::connect_on_ctrl_char(F&& f) {
+	return on_ctrl_char.connect(std::forward<F>(f));
 }
 
 } //namespace ui_impl

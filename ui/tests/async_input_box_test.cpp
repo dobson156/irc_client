@@ -23,7 +23,7 @@ int main() {
 	//text2.set_background(COLOR_GREEN);
 	//input.setup();
 
-	input.reg_on_input([&](std::string str) {
+	input.connect_on_input([&](std::string str) {
 		text.set_content(str);
 		text.refresh();
 	});
