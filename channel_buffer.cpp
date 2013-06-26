@@ -1,5 +1,5 @@
 #include "message.hpp"
-#include "window.hpp"
+#include "buffer.hpp"
 
 #include "irc/channel.hpp"
 #include "irc/user.hpp"
@@ -7,8 +7,8 @@
 #include <string>
 
 
-channel_window::channel_window(irc::channel& chan_) 
-:	window { chan_.get_name() }
+channel_buffer::channel_buffer(irc::channel& chan_) 
+:	buffer { chan_.get_name() }
 ,	chan   ( chan_            )
 {
 	//TODO: make the signal handlers exception safe
@@ -60,7 +60,7 @@ channel_window::channel_window(irc::channel& chan_)
 }
 
 
-channel_window::~channel_window() {
+channel_buffer::~channel_buffer() {
 	for(auto& con : connections) con.disconnect();
 }
 

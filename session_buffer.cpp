@@ -1,13 +1,13 @@
 #include "message.hpp"
-#include "window.hpp"
+#include "buffer.hpp"
 
 #include "irc/session.hpp"
 
 #include <string>
 
 
-session_window::session_window(irc::session& session_) 
-:	window  { "channel"  }
+session_buffer::session_buffer(irc::session& session_) 
+:	buffer  { "channel"  }
 ,	session ( session_            )
 {
 	connections.push_back(
@@ -28,7 +28,7 @@ session_window::session_window(irc::session& session_)
 }
 
 
-session_window::~session_window() {
+session_buffer::~session_buffer() {
 	//should auto-destroy with unique_connection
 }
 

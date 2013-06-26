@@ -11,12 +11,12 @@
 #include <iostream>
 
 const std::string& win_get_name::operator()(
-                      const std::unique_ptr<window>& win) const {
+                      const std::unique_ptr<buffer>& win) const {
 	return win->get_name();
 }
 
 
-void controller::set_channel(window& win) {
+void controller::set_channel(buffer& win) {
 	//TODO: reverse on throw exceptionsafe?
 	view.set_title(win.get_topic());	
 	view.assign_messages(
@@ -24,15 +24,15 @@ void controller::set_channel(window& win) {
 		win.messages_end()
 	);
 
-	//This unset callbacks for the old window and resets then for the new
+	//This unset callbacks for the old buffer and resets then for the new
 	//unsetting is done via RAII with unique_connection
 	win_msg=win.connect_on_new_message(
-		[&](const window&, std::shared_ptr<message> msg_ptr) {
+		[&](const buffer&, std::shared_ptr<message> msg_ptr) {
 			view.append_message(std::move(msg_ptr));
 		}
 	);
 	win_tpc=win.connect_on_topic_change(
-		[&](const window&, const std::string& topic) {
+		[&](const buffer&, const std::string& topic) {
 			view.set_title(topic);
 		}
 	);
@@ -40,8 +40,8 @@ void controller::set_channel(window& win) {
 
 void controller::set_channels() {
 	view.set_channels( //iterate over channels as strings
-		boost::make_transform_iterator(windows.begin(), win_get_name()),
-		boost::make_transform_iterator(windows.end(),   win_get_name())
+		boost::make_transform_iterator(buffers.begin(), win_get_name()),
+		boost::make_transform_iterator(buffers.end(),   win_get_name())
 	);
 }
 
@@ -55,13 +55,13 @@ void controller::handle_connection_connect(
 	);
 	auto& session=sessions.back();
 
-	auto sess_win=util::make_unique<session_window>(*session);
+	auto sess_win=util::make_unique<session_buffer>(*session);
 	set_channel(*sess_win);
 
-	windows.push_back(std::move(sess_win));
+	buffers.push_back(std::move(sess_win));
 	set_channels();
 	
-	//this will create a new window view
+	//this will create a new buffer view
 	session->connect_on_join_channel(
 		std::bind(
 			&controller::handle_session_join_channel,
@@ -96,7 +96,7 @@ void controller::handle_text_input(const std::string& str) {
 	view.set_input({});
 }
 void controller::handle_ctrl_char(cons::ctrl_char ch) {
-	assert(false);
+		
 }
 
 void controller::handle_join(const std::vector<std::string>& chans) {
@@ -148,9 +148,9 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 	//TODO: if on auto change
 	selected_channel=&chan;	
 
-	auto ch_win=util::make_unique<channel_window>(chan);
+	auto ch_win=util::make_unique<channel_buffer>(chan);
 	set_channel(*ch_win);	
-	windows.push_back(std::move(ch_win));
+	buffers.push_back(std::move(ch_win));
 	set_channels();
 }
 

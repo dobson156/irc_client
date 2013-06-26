@@ -12,18 +12,18 @@
 
 class message;
 
-class window {
+class buffer {
 	using container_type=std::vector<std::shared_ptr<message>>;
 	using const_iterator=container_type::const_iterator;
 protected:
 	std::string    name;
 	container_type messages;	
 
-	boost::signal<void(window&, const std::string& topic)> on_topic_change;
-	boost::signal<void(window&, const std::shared_ptr<message>&)> on_new_msg;
+	boost::signal<void(buffer&, const std::string& topic)> on_topic_change;
+	boost::signal<void(buffer&, const std::shared_ptr<message>&)> on_new_msg;
 public:
-	window(std::string str);
-	virtual ~window();
+	buffer(std::string str);
+	virtual ~buffer();
 
 	const std::string&         get_name()       const;
 	virtual const std::string& get_topic()      const;
@@ -34,45 +34,45 @@ public:
 	boost::signals::connection connect_on_new_message(F&& f);
 	template<typename F>
 	boost::signals::connection connect_on_topic_change(F&& f);
-}; //window
+}; //buffer
 
 
 template<typename F>
-boost::signals::connection window::connect_on_new_message(F&& f) {
+boost::signals::connection buffer::connect_on_new_message(F&& f) {
 		return on_new_msg.connect(std::forward<F>(f));
 }
 template<typename F>
-boost::signals::connection window::connect_on_topic_change(F&& f) {
+boost::signals::connection buffer::connect_on_topic_change(F&& f) {
 		return on_topic_change.connect(std::forward<F>(f));
 }
 
 
 
-class channel_window : public window {
+class channel_buffer : public buffer {
 	irc::channel&                      chan;
 	std::vector<irc::bsig::connection> connections;
 
-	channel_window(channel_window&&)                =delete;
-	channel_window(const channel_window&)           =delete;
-	channel_window& operator=(channel_window&&)     =delete;
-	channel_window& operator=(const channel_window&)=delete;
+	channel_buffer(channel_buffer&&)                =delete;
+	channel_buffer(const channel_buffer&)           =delete;
+	channel_buffer& operator=(channel_buffer&&)     =delete;
+	channel_buffer& operator=(const channel_buffer&)=delete;
 public:
-	channel_window(irc::channel& chan);
-	~channel_window();
-}; //channel_window
+	channel_buffer(irc::channel& chan);
+	~channel_buffer();
+}; //channel_buffer
 
 
-class session_window : public window {
+class session_buffer : public buffer {
 	irc::session&                  session;
 	std::vector<unique_connection> connections;
 
-	session_window(session_window&&)                =delete;
-	session_window(const session_window&)           =delete;
-	session_window& operator=(session_window&&)     =delete;
-	session_window& operator=(const session_window&)=delete;
+	session_buffer(session_buffer&&)                =delete;
+	session_buffer(const session_buffer&)           =delete;
+	session_buffer& operator=(session_buffer&&)     =delete;
+	session_buffer& operator=(const session_buffer&)=delete;
 public:
-	session_window(irc::session& session_);
-	~session_window();
-}; //session_window
+	session_buffer(irc::session& session_);
+	~session_buffer();
+}; //session_buffer
 
 #endif //WINDOW_HPP

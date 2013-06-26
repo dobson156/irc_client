@@ -4,7 +4,7 @@
 #include "irc/session.hpp"
 #include "irc/connection.hpp"
 
-#include "window.hpp"
+#include "buffer.hpp"
 #include "message.hpp"
 #include "console_ui.hpp"
 
@@ -14,10 +14,11 @@
 #include <vector>
 #include <functional>
 
-//helper
+//This is required for boost::transform_iterator as it requires a c++98 functor
+//with `result_type` typedef that a lambda doesn't provide
 struct win_get_name {
 	using result_type=const std::string&;
-	const std::string& operator()(const std::unique_ptr<window>& win) const;
+	const std::string& operator()(const std::unique_ptr<buffer>& win) const;
 }; //struct win_get_name
 
 
@@ -46,7 +47,7 @@ class controller {
 
 //internals
 	//TODO: more descriptive names
-	void set_channel(window& win);
+	void set_channel(buffer& win);
 	void set_channels();
 
 //varaibles
@@ -59,7 +60,7 @@ class controller {
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
 
-	std::vector<std::unique_ptr<window>>          windows;
+	std::vector<std::unique_ptr<buffer>>          buffers;
 public:
 	controller();
 	void run();

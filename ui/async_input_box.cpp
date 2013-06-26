@@ -11,9 +11,9 @@ namespace cons {
 
 async_input_box::async_input_box(unique_window_ptr ptr, 
                                  boost::asio::io_service& io_service)
-:	frame_        { std::move(ptr) }
+:	frame_        { std::move(ptr)               }
 ,	in_manager    { make_tty_manager(io_service) }
-,	io_service    { &io_service    }
+,	io_service    { &io_service                  }
 {	
 	set();
 }
@@ -37,12 +37,12 @@ void async_input_box::handle_read_error(const boost::system::error_code&) {
 void async_input_box::handle_read_complete(std::string str) {
 	bool do_refresh=false;
 
-	for(auto it = str.begin(); it < str.end(); ++it) {
+	for(auto it=str.cbegin(); it < str.cend(); ++it) {
 
 		char c = *it;
 
 		ctrl_char cht;
-		std::tie(cht, it)=parse_ctrl_char(it, end(str));
+		std::tie(cht, it)=parse_ctrl_char(it, str.cend());
 
 		switch(cht) {
 		case ctrl_char::none:
