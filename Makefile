@@ -9,13 +9,13 @@ OPTS         =-O0 -ggdb
 INC          =
 LIB          =-lncurses -lboost_system -lboost_signals -lpthread
 
-export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter
+export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors
 
 export LFLAGS=$(OPTS)
 
 #slow objects are library elements and spirit parsers 
 SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o
-FAST_OBJS=controller.o program.o console_ui.o message.o message_stencil.o channel_buffer.o session_buffer.o buffer.o unique_connection.o
+FAST_OBJS=controller.o program.o console_ui.o message.o message_stencil.o channel_buffer.o session_buffer.o buffer.o unique_connection.o window.o
 OBJS=$(SLOW_OBJS) $(FAST_OBJS)
 
 all: irc_client

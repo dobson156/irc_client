@@ -75,13 +75,10 @@ void controller::start_connection(const std::string& server) {
 	auto ic=irc::connection::make_shared(io_service, server, "6667");
 	ic->connect_on_resolve(
 		[&]{ /*TODO repport success */ });
+
 	ic->connect_on_connect(
-		std::bind(
-			&controller::handle_connection_connect,
-			this,
-			ic
-		)
-	);
+		[&]{ handle_connection_connect(ic); });
+
 	connections.push_back(std::move(ic));
 }
 
@@ -96,7 +93,23 @@ void controller::handle_text_input(const std::string& str) {
 	view.set_input({});
 }
 void controller::handle_ctrl_char(cons::ctrl_char ch) {
-		
+	switch(ch) {
+	default: break;
+	//retarget current window
+	case cons::ctrl_char::ctrl_arrow_right:
+		/*
+		const auto& buffer=window.get_buffer();
+		auto first=begin(buffers), last=end(buffers);
+		auto it=std::find(first, last, buffer);
+		assert(it!=last);
+		++it;
+		if(it==last) it=first;
+		window.set_buffer(*it);
+		*/
+		break;
+	case cons::ctrl_char::ctrl_arrow_left:
+		break;
+	}
 }
 
 void controller::handle_join(const std::vector<std::string>& chans) {

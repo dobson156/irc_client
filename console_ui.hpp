@@ -35,7 +35,7 @@ class ui {
 	using action_str   =std::function<void(std::string)>;
 	using action_int   =std::function<void(int)>;
 //Member variables
-//GUI elements
+//UI elements
 	anchor_top          parent;
 	anchor_bottom&      input_anchor;
 	anchor_bottom&      status_anchor;

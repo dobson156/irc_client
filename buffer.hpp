@@ -1,4 +1,4 @@
-#ifndef WINDOW_HPP
+#ifndef BUFFER_HPP
 #define WINDOW_HPP
 
 #include "unique_connection.hpp"
@@ -75,4 +75,5 @@ public:
 	~session_buffer();
 }; //session_buffer
 
-#endif //WINDOW_HPP
+#endif //BUFFER_HPP
+

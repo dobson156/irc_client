@@ -47,9 +47,17 @@ public:
 	{	}
 //Mutuate
 	iterator insert(iterator it, value_type value) {
-		//return values.insert(it, std::move(value));
-		return values.insert(it, value);
+		return values.insert(it, std::move(value));
 	}
+
+	template<typename Iter>
+	iterator insert(iterator pos, Iter first, Iter last) {
+		//TODO: when GCC has fixed insert just directly return it's value
+		auto dist=std::distance(begin(), pos);
+		values.insert(pos, first, last);
+		return values.begin() + dist;
+	}
+
 	iterator erase(iterator it) {
 		return values.erase(it);
 	}
