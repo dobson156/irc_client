@@ -47,6 +47,7 @@ void controller::set_channels() {
 
 void controller::handle_connection_connect(
                   std::shared_ptr<irc::connection> connection) {
+	assert(connection && "can not craete sesion with invalid connection");
 	sessions.push_back(
 		util::make_unique<irc::session>(
 			std::move(connection), 
@@ -77,7 +78,7 @@ void controller::start_connection(const std::string& server) {
 		[&]{ /*TODO repport success */ });
 
 	ic->connect_on_connect(
-		[&]{ handle_connection_connect(ic); });
+		[=]{ handle_connection_connect(ic); });
 
 	connections.push_back(std::move(ic));
 }
