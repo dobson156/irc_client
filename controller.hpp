@@ -50,6 +50,9 @@ class controller {
 	void set_channel(buffer& win);
 	void set_channels();
 
+	//boost::optional<std::reference_wrapper<channel>> 
+	//try_get_channel_by_name(const std::string& name);
+
 //varaibles
 	unique_connection                             win_msg, win_tpc;
 	boost::asio::io_service                       io_service;
@@ -61,6 +64,8 @@ class controller {
 	std::vector<std::unique_ptr<irc::session>>    sessions;
 
 	std::vector<std::unique_ptr<buffer>>          buffers;
+
+	bool                                          show_errors { true };
 public:
 	controller();
 	void run();

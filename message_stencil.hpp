@@ -18,6 +18,7 @@ public:
 	void operator()(join_message&) override;
 	void operator()(part_message&) override;
 	void operator()(motd_message&) override;
+	void operator()(error_message&) override;
 }; //message_stencil
 
 #endif //MESSAGE_STENCIL_HPP

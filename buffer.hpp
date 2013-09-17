@@ -75,5 +75,17 @@ public:
 	~session_buffer();
 }; //session_buffer
 
-#endif //BUFFER_HPP
+class error_buffer : public buffer {
+	error_buffer(error_buffer&&)                =delete;
+	error_buffer(const error_buffer&)           =delete;
+	error_buffer& operator=(error_buffer&&)     =delete;
+	error_buffer& operator=(const error_buffer&)=delete;
 
+public:
+	error_buffer() : buffer("error") {};
+	~error_buffer() {}
+	void push_back_error(const std::string& error_msg);
+}; //error_buffer
+
+
+#endif //BUFFER_HPP

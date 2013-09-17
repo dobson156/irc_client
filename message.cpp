@@ -87,3 +87,16 @@ void motd_message::visit(message_vistor& visitor) {
 const std::string& motd_message::get_motd() const {
 	return motd;
 }
+
+
+error_message::error_message(std::string error_) 
+:	error { std::move(error_) }
+{	}
+
+void error_message::visit(message_vistor& visitor) {
+	visitor(*this);
+}
+
+const std::string& error_message::get_error() const {
+	return error;
+}

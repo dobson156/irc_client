@@ -88,4 +88,22 @@ public:
 	const std::string& get_motd() const;
 }; //chan_message
 
+
+class error_message : public message {
+	std::string error;
+public:
+	error_message(std::string error_);
+	error_message(error_message&&)                =default;
+	error_message(const error_message&)           =default;
+	error_message& operator=(error_message&&)     =default;
+	error_message& operator=(const error_message&)=default;
+
+	void visit(message_vistor& visitor) override;
+
+	const std::string& get_error() const;
+}; //chan_message
+
+
+
+
 #endif //MESSAGE_HPP

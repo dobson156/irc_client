@@ -185,20 +185,29 @@ void controller::run() {
 			break; //io service has run to completion
 		}
 		catch(const std::exception& e) {
-//			auto it=std::find_if(
-//				windows.begin(), windows.end(), [](const std::unique_ptr<window>& win) {
-//					return win.get_name() == "error";
-//				}
-//			);
-//			if(it!=windows.end()) {
-//				auto error_win=dynamic_cast<error_window>(it->get());
-//				if(error_win) {
-//					error_win->add_error(e);
-//				}
-//			}
-//			else { //we'll just dump it to stdout
-				std::cerr << "Exception" << e.what() << std::endl;
-//			}
+			if(show_errors) {
+
+				auto it=std::find_if(
+					begin(buffers), end(buffers), [](const std::unique_ptr<buffer>& win) {
+						return win->get_name() == "error";
+					}
+				);
+
+				if(it!=end(buffers)) {
+					//OK better 
+					auto error_win=dynamic_cast<error_buffer*>(it->get());
+					assert(error_win && "error buffer not of type error_buffer");
+					//TODO: significantly improve error reporting
+					error_win->push_back_error(e.what());
+				}
+				else { //we'll just dump it to stdout
+					auto ebuff=util::make_unique<error_buffer>();				
+					ebuff->push_back_error(e.what());
+					set_channel(*ebuff);
+					buffers.push_back(std::move(ebuff));
+					set_channels();
+				}
+			}
 		}
 	}
 }

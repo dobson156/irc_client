@@ -8,7 +8,7 @@ window::window(unique_window_ptr        handle,
                boost::asio::io_service& io_service, 
 			   buffer&                  buf) 
 
-:	base          {                                                          }
+:	base          ( /*TODO: gcc 4.8 allows {} braces here */                 ) 
 
 ,	buf_          { buf                                                      }
 

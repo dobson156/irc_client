@@ -105,3 +105,17 @@ void message_stencil::operator()(motd_message& msg) {
 	}
 	last=cons::point{dim.x, pos.y+1};
 }
+
+void message_stencil::operator()(error_message& msg) {
+	assert(frame_ && "frame was not valid");
+	cons::frame& frame=*frame_;
+	frame_=nullptr;
+
+	cons::point pos {0,0}, dim=frame.get_dimension();
+	std::istringstream iss { msg.get_error() };
+	std::string line;
+	for(int i=0; i!=dim.y && std::getline(iss, line); ++i) {
+		pos=frame.write({0,i}, line);
+	}
+	last=cons::point{dim.x, pos.y+1};
+}

@@ -15,7 +15,7 @@ export LFLAGS=$(OPTS)
 
 #slow objects are library elements and spirit parsers 
 SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o
-FAST_OBJS=controller.o program.o console_ui.o message.o message_stencil.o channel_buffer.o session_buffer.o buffer.o unique_connection.o window.o
+FAST_OBJS=controller.o program.o console_ui.o message.o message_stencil.o channel_buffer.o session_buffer.o error_buffer.o buffer.o unique_connection.o window.o
 OBJS=$(SLOW_OBJS) $(FAST_OBJS)
 
 all: irc_client
