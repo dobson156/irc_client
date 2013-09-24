@@ -1,6 +1,6 @@
 #export CPP   =clang++
 export CPP  =g++
-export LNK =$(CPP)
+export LNK =$(CPP) -g
 
 #export OPTS         =-O3 -DNDEBUG
 OPTS         =-O0 -ggdb 
@@ -23,7 +23,7 @@ all: irc_client
 irc_client: $(OBJS)
 	cd ui && $(MAKE)
 	cd irc && $(MAKE)
-	$(LNK) $^ -o $@ $(LIB)
+	$(LNK) $(OPTS) $^ -o $@ $(LIB)
 
 ui/console.o:
 	cd ui && $(MAKE)

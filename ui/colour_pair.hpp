@@ -1,22 +1,35 @@
+#ifndef COLOUR_PAIR_HPP
+#define COLOUR_PAIR_HPP
+
+#include <vector>
+#include <utility>
+
 namespace cons {
 
 
 class colour_pair {
 	// the following vector identies how many colours pairs map to the ncurses
 	// colour pair with the id == the index in the vector+1 (ids start from 1)
-	static std::vector<unsigned> slots_counts;	
+public: //TODO remove public
+	static std::vector<unsigned> slot_counts;	
 
-
+private:
 	//Shorts are used as that is what is used by ncurses, see init_pair
 	static short find_slot_with_colour(short fg, short bg);
 	static short get_first_free_slot();
 	//returns the first matching slot or aquires a new one
-	static short get_any_slot(short fg, short bg);
-	static void release_id(short id); 
+	static short get_any_id(short fg, short bg);
+	static void release_idx(short id); 
 
 	short id { 0 };
 	std::pair<short, short> get_pair() const;
-	void init_pair_(short fg, short bg);
+
+	static void init_pair_with_id(short id, short fg, short bg);
+	
+	//returns the id, asserts
+	short get_pair_id() const;
+	//returns the idx for the slot associated with the colour pair
+	short get_slot_idx() const;
 public:
 //CTOR
 	colour_pair();
@@ -39,6 +52,6 @@ public:
 
 void swap(colour_pair& a, colour_pair& b);
 
-}
-
 } //namespace cons
+
+#endif // COLOUR_PAIR_HPP

@@ -1,6 +1,8 @@
 #ifndef BASIC_HPP 
 #define BASIC_HPP
 
+#include "colour_pair.hpp"
+
 #include <ncurses.h>
 
 #include <vector>
@@ -23,38 +25,8 @@ bool  operator==(const point& l, const point& r);
 point operator+ (const point& l, const point& r);
 point operator- (const point& l, const point& r);
 
-class colour_pair {
-	//As this lib is single thread async this is not a data race
-	static std::vector<bool> used_slots;	
-	static short get_free_id(); 
-	static void release_id(short id); 
-
-	short id { 0 };
-	std::pair<short, short> get_pair() const;
-	void init_pair_(short fg, short bg);
-public:
-//CTOR
-	colour_pair();
-	colour_pair(short foreground, short background);
-	colour_pair(colour_pair&& other);
-	colour_pair(const colour_pair& other);
-	~colour_pair();
-//OPS
-	colour_pair& operator=(colour_pair pair);
-	bool operator==(const colour_pair& other) const;
-//Mutator
-	void set_foreground(short foreground);
-	void set_background(short background);
-	void swap(colour_pair& other);
-//Accessor
-	short get_foreground() const;
-	short get_background() const;
-	short get_id() const;
-}; //class colour_pair
-
 using unique_window_ptr=std::unique_ptr<WINDOW, decltype(&::delwin)>;
 
-void swap(colour_pair& a, colour_pair& b);
 class base {
 public:
 	virtual ~base() { }
