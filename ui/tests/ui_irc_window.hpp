@@ -10,6 +10,9 @@
 #include <chrono>
 #include <iostream>
 
+#include <sys/ioctl.h>
+#include <ncurses.h>
+
 class irc_ui_window;
 irc_ui_window *current;
 void resize_handler(int sig);
@@ -46,6 +49,7 @@ public:
 	,	status         (status_anchor.emplace_anchor<text_box>("channel's status"))
 	,	input          (input_anchor.emplace_anchor<input_box>())
 	{
+
 		input.reg_on_grow(
 			[&](const point& pt) {
 				input_anchor.set_partition(pt.y);
@@ -54,6 +58,7 @@ public:
 			}
 		);
 
+		current=this;
 		std::signal(SIGWINCH, &resize_handler);
 
 		message_list.insert(message_list.begin(), "msg1");
@@ -75,8 +80,22 @@ public:
 	}
 
 	void rejig() {
-		endwin();
+		//FROM POSIX
+		struct winsize w;
+		ioctl(0, TIOCGWINSZ, &w);
+		//FROM curses
+
+		resizeterm(w.ws_row,w.ws_col);
+
+	   	endwin();
 		parent.reset(make_window());
+
+		std::ostringstream oss;
+		oss << parent.get_dimension() << "  COLS  " << COLS << "  LINES   " << LINES;
+		message_list.insert(message_list.end(), oss.str());
+
+		message_list.refresh();
+		input.refresh();
 	}
 
 	void run() {
@@ -98,6 +117,7 @@ public:
 void resize_handler(int sig) {
 	CONS_ASSERT(sig==SIGWINCH, "signal is not SIGWINCH");
 	current->rejig();
+	current->refresh();
 }
 
 #endif //UI_IRC_WINDOW_HPP

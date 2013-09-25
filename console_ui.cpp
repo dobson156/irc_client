@@ -37,6 +37,7 @@ ui::ui(boost::asio::io_service& io_service_)
 
 	message_list.selected_idx(1000);
 	refresh();
+	input.refresh();
 }
 
 void ui::refresh() {
@@ -56,19 +57,21 @@ void ui::reg_on_text_input(std::function<void(std::string)> action){
 }
 
 void ui::set_input(const std::string& str) {
-		input.set_value(str);
-		input.refresh();
+	input.set_value(str);
+	input.refresh();
 }
 
 //setters
 void ui::set_title(const std::string& text){ 
 	title.set_content(text);
 	title.refresh();
+	input.refresh();
 }
 
 void ui::append_message(const message_p& msg) {
 	message_list.insert(message_list.end(), msg);
 	message_list.refresh();
+	input.refresh();
 }
 
 } //namespace ui_impl
