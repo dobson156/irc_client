@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <boost/optional.hpp>
+
 #include <string>
 #include <limits>
 #include <stdexcept>
@@ -27,6 +29,8 @@ Unsigned stou(const std::string& str, std::size_t *idx=nullptr, int base=10) {
 
 	return result;
 }
+
+boost::optional<std::string> get_user_name();
 
 } //namespace util
 	
