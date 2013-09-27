@@ -2,6 +2,7 @@
 #define CONSOLE_UI_HPP
 #define BOOST_RESULT_OF_USE_DECLTYPE
 
+#include "window.hpp"
 #include "message.hpp"
 #include "message_stencil.hpp"
 
@@ -14,6 +15,7 @@
 #include <memory>
 #include <functional>
 
+class buffer;
 
 /*
 ** the detail namespace allows us to use the namespace cons
@@ -32,11 +34,20 @@ class ui {
 	using anchor_bottom=anchor_view<anchors::bottom>;
 	using anchor_left  =anchor_view<anchors::left>;
 
+
 	using action_str   =std::function<void(std::string)>;
 	using action_int   =std::function<void(int)>;
+
+
+
 //Member variables
 //UI elements
 	anchor_top          parent;
+	bordered&           channel_border;
+	text_list&          channel_list;
+	window&             window1; //todo vector of windows
+
+	/*
 	anchor_bottom&      input_anchor;
 	anchor_bottom&      status_anchor;
 	anchor_left&        channel_anchor;
@@ -46,6 +57,9 @@ class ui {
 	text_box&           title;
 	text_box&           status;
 	async_input_box&    input;
+	*/
+
+
 //Callbacks
 	boost::asio::io_service *io_service;
 	action_str               on_text_input;
@@ -53,7 +67,7 @@ class ui {
 
 	void refresh();
 public:
-	ui(boost::asio::io_service& io_service);
+	ui(boost::asio::io_service& io_service, buffer& buffer);
 	void stop();
 //event handlers	
 	void reg_on_text_input(std::function<void(std::string)> action);
@@ -81,22 +95,28 @@ public:
 //IMPL
 template<typename Iterator> //*Iterator==shared_ptr<message>
 void ui::assign_messages(Iterator first, Iterator last) {
+	/*
 	message_list.clear();
 	std::copy(first, last, std::inserter(message_list, message_list.end()));
 	message_list.refresh();
+	*/
 }
 
 template<typename Iterator>
 void ui::set_users(Iterator first, Iterator last) {
+	/*
 	assert(false); //depricated
 	std::copy(first, last, std::inserter(message_list, message_list.end()));
+	*/
 }
 template<typename Iterator>
 void ui::set_channels(Iterator first, Iterator last) {
+	/*
 	//TODO make an iterate inserter
 	channel_list.clear();
 	std::copy(first, last, std::inserter(channel_list, channel_list.begin()));
 	channel_list.refresh();
+	*/
 }
 
 template<typename F>

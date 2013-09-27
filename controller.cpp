@@ -169,7 +169,7 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 }
 
 controller::controller() 
-:	view { io_service }
+:	view { io_service, status_buffer }
 {
 	view.reg_on_text_input(
 		std::bind(&controller::handle_text_input, this, ph::_1));

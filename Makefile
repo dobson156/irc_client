@@ -9,7 +9,7 @@ OPTS         =-O0 -ggdb
 INC          =
 LIB          =-lncurses -lboost_system -lboost_signals -lpthread
 
-export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors
+export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors -DBOOST_SIGNALS_NO_DEPRECATION_WARNING
 
 export LFLAGS=$(OPTS)
 

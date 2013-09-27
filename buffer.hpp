@@ -1,5 +1,5 @@
 #ifndef BUFFER_HPP
-#define WINDOW_HPP
+#define BUFFER_HPP
 
 #include "unique_connection.hpp"
 
