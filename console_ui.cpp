@@ -6,14 +6,12 @@
 namespace ui_impl {
 
 ui::ui(boost::asio::io_service& io_service_, buffer& buffer           )  
-:	parent         { make_window(), 1                                 }	
+:	parent         { make_window(), 10                                }	
 ,	channel_border (parent.emplace_anchor<bordered>(borders::right)   )
 ,	channel_list   (channel_border.emplace_element<text_list>()       ) 
 ,	window1        ( parent.emplace_fill<window>(io_service_, buffer) )
 ,	io_service     { &io_service_                                     }
 {	
-	//title.set_background(COLOR_CYAN);
-	//status.set_background(COLOR_CYAN);
 
 	/*
 	input.connect_on_grow(
@@ -31,16 +29,14 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer           )
 	);
 
 	message_list.selected_idx(1000);
-	refresh();
-	input.refresh();
 	*/
+	refresh();
+	//input.refresh();
 }
 
 void ui::refresh() {
-	/*
 	parent.refresh();
-	input.refresh();
-	*/
+	//input.refresh();
 } 
 
 void ui::stop() {

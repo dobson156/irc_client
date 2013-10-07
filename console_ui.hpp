@@ -42,7 +42,7 @@ class ui {
 
 //Member variables
 //UI elements
-	anchor_top          parent;
+	anchor_left         parent;
 	bordered&           channel_border;
 	text_list&          channel_list;
 	window&             window1; //todo vector of windows
@@ -111,12 +111,10 @@ void ui::set_users(Iterator first, Iterator last) {
 }
 template<typename Iterator>
 void ui::set_channels(Iterator first, Iterator last) {
-	/*
 	//TODO make an iterate inserter
 	channel_list.clear();
 	std::copy(first, last, std::inserter(channel_list, channel_list.begin()));
 	channel_list.refresh();
-	*/
 }
 
 template<typename F>

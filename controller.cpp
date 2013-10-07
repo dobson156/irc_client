@@ -169,13 +169,27 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 }
 
 controller::controller() 
-:	view { io_service, status_buffer }
+//:	buffers     { util::make_unique<error_buffer>(), util::make_unique<error_buffer>() }
+
+
+:	buffers (  [] { //can not make a init_list<unique_ptr<buffer>>
+			std::vector<std::unique_ptr<buffer>> v;
+			v.push_back(util::make_unique<error_buffer>());
+			v.push_back(util::make_unique<error_buffer>());
+			return v;
+		}()
+	)
+,	err_buff    ( dynamic_cast<error_buffer&>(*buffers[0]))
+,	status_buff ( dynamic_cast<error_buffer&>(*buffers[1]))
+,	view        { io_service, status_buff        }
 {
 	view.reg_on_text_input(
 		std::bind(&controller::handle_text_input, this, ph::_1));
 
 	view.connect_on_ctrl_char(
 		std::bind(&controller::handle_ctrl_char, this, ph::_1));
+	
+	set_channels();
 }
 
 void controller::run() {

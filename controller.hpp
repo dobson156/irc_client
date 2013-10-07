@@ -53,7 +53,13 @@ class controller {
 	//boost::optional<std::reference_wrapper<channel>> 
 	//try_get_channel_by_name(const std::string& name);
 
+
+
 //varaibles
+	std::vector<std::unique_ptr<buffer>>          buffers;
+	error_buffer&                                 err_buff;
+	error_buffer&                                 status_buff;
+
 	unique_connection                             win_msg, win_tpc;
 	boost::asio::io_service                       io_service;
 	ui                                            view;
@@ -63,7 +69,6 @@ class controller {
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
 
-	std::vector<std::unique_ptr<buffer>>          buffers;
 
 	bool                                          show_errors { true };
 public:
