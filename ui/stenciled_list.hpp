@@ -71,7 +71,18 @@ public:
 	iterator       begin()        { return values.begin();  }
 	iterator       end()          { return values.end();    }
 	size_type      selected_idx() const { return selected;  } 
-	void           selected_idx(size_type n){ selected=n;   } 
+
+	void selected_idx(size_type n) { 
+		CONS_ASSERT(n < values.size(), "new value is out of range");
+		selected=n;
+	} 
+
+	const value_type& selected_value() const {
+		using std::begin;
+		auto it=begin(values);
+		std::advance(it, selected_idx());
+		return *it;
+	}
 //Overrides
 	void clear()   override {
 		frame_.clear();
