@@ -46,16 +46,10 @@ class controller {
 	const error_buffer& get_status_buffer() const;
 	//boost::optional<std::reference_wrapper<channel>> 
 
-
-	//must be inited before view
-	std::vector<std::unique_ptr<buffer>>          buffers;
-
-
-
 //varaibles
 	std::vector<std::unique_ptr<buffer>>          buffers;
-	error_buffer&                                 err_buff;
-	error_buffer&                                 status_buff;
+//	error_buffer&                                 err_buff;
+//	error_buffer&                                 status_buff;
 
 	unique_connection                             win_msg, win_tpc;
 	boost::asio::io_service                       io_service;

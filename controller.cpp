@@ -197,7 +197,6 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 }
 
 controller::controller() 
-<<<<<<< HEAD
 // can not init init list form r vals, hence lmbd hack
 :	buffers       {	[]{	std::vector<std::unique_ptr<buffer>> b; 
 	                  	b.push_back(util::make_unique<error_buffer>());

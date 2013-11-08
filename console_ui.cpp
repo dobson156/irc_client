@@ -68,21 +68,4 @@ void ui::set_input(const std::string& str) {
 	*/
 }
 
-//setters
-void ui::set_title(const std::string& text){ 
-	/*
-	title.set_content(text);
-	title.refresh();
-	input.refresh();
-	*/
-}
-
-void ui::append_message(const message_p& msg) {
-	/*
-	message_list.insert(message_list.end(), msg);
-	message_list.refresh();
-	input.refresh();
-	*/
-}
-
 } //namespace ui_impl
