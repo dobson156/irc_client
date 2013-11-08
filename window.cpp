@@ -17,7 +17,6 @@ window::window(unique_window_ptr        handle,
 ,	title_anchor  { std::move(handle), 1                                     }
 ,	input_anchor  ( title_anchor.emplace_fill<anchor_bottom>(1)              )
 ,	status_anchor ( input_anchor.emplace_fill<anchor_bottom>(1)              ) //check
-
 ,	title         ( title_anchor.emplace_anchor<text_box>("title")           )
 ,	input         ( input_anchor.emplace_anchor<async_input_box>(io_service) )
 ,	status        ( status_anchor.emplace_anchor<text_box>("status")         )
@@ -27,13 +26,19 @@ window::window(unique_window_ptr        handle,
 	status.set_background(COLOR_CYAN);
 	message_list.selected_idx(std::numeric_limits<msg_list::size_type>::max());
 	retarget_buffer();
+	title.set_background(COLOR_CYAN);
+	status.set_background(COLOR_CYAN);
 }
 
 
 void window::retarget_buffer() {
 	auto& buff=buf_.get();
 	message_list.clear(); //TODO implement assign
-	message_list.insert(message_list.begin(), buff.messages_begin(), buff.messages_end());
+	message_list.insert(
+		message_list.begin(), 
+		buff.messages_begin(), 
+		buff.messages_end()
+	);
 
 	con_topic_change=buff.connect_on_topic_change(
 		[&](buffer& b, const std::string& new_title) {

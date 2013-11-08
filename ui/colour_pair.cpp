@@ -124,7 +124,6 @@ short colour_pair::get_background() const {
 	return get_pair().second;
 }
 
-
 void colour_pair::set_foreground(short foreground) {
 	colour_pair tmp { foreground, get_background() };
 	swap(tmp);
@@ -138,7 +137,7 @@ short colour_pair::get_id() const {
 	return COLOR_PAIR(get_pair_id());
 }
 bool colour_pair::operator==(const colour_pair& other) const {
-	return other.get_pair() == get_pair();
+	return other.get_pair() == get_pair(); //id == id should work too
 }
 
 void colour_pair::swap(colour_pair& other) {

@@ -35,14 +35,14 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer           )
 	);
 
 	message_list.selected_idx(1000);
-	refresh();
-	input.refresh();
 	*/
+	refresh();
+	//input.refresh();
 }
 
 void ui::refresh() {
 	parent.refresh();
-//	input.refresh();
+	//input.refresh();
 } 
 
 void ui::stop() {
