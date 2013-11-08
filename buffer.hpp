@@ -47,7 +47,6 @@ boost::signals::connection buffer::connect_on_topic_change(F&& f) {
 }
 
 
-
 class channel_buffer : public buffer {
 	irc::channel&                      chan;
 	std::vector<irc::bsig::connection> connections;

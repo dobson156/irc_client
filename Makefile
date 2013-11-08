@@ -1,9 +1,9 @@
 #export CPP   =clang++
 export CPP  =g++
-export LNK =$(CPP) -g
+export LNK =$(CPP)
 
 #export OPTS         =-O3 -DNDEBUG
-OPTS         =-O0 -ggdb 
+export OPTS =-O0 -ggdb 
 #-DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 
 INC          =

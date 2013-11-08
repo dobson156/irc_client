@@ -1,6 +1,5 @@
 #ifndef CONSOLE_UI_HPP
 #define CONSOLE_UI_HPP
-#define BOOST_RESULT_OF_USE_DECLTYPE
 
 #include "window.hpp"
 #include "message.hpp"
@@ -39,10 +38,9 @@ class ui {
 	using action_int   =std::function<void(int)>;
 
 
-
 //Member variables
 //UI elements
-	anchor_top          parent;
+	anchor_left         parent;
 	bordered&           channel_border;
 	text_list&          channel_list;
 	window&             window1; //todo vector of windows
@@ -71,21 +69,22 @@ public:
 	void stop();
 //event handlers	
 	void reg_on_text_input(std::function<void(std::string)> action);
+
+//accessors
+	window& get_selected_window();
+	const window& get_selected_window() const;
 //setters
 	void set_input(const std::string& str);
 
-	void set_title(const std::string& title);
+	//void set_title(const std::string& title);
 
-	void append_message(const message_p& msg);
+	//void append_message(const message_p& msg);
 
-	template<typename Iterator> //*Iterator==unique_ptr<message>
-	void assign_messages(Iterator first, Iterator last);
+	//template<typename Iterator> //*Iterator==unique_ptr<message>
+	//void assign_messages(Iterator first, Iterator last);
 
-	template<typename Iterator> //*Iterator==std::string
-	void set_channels(Iterator first, Iterator last);
-
-	template<typename Iterator> //*Iterator==std::string
-	void set_users(Iterator first, Iterator last);
+	template<typename Iterator>
+	void assign_channels(Iterator first, Iterator last);
 
 	template<typename F>
 	cons::bsig::connection connect_on_ctrl_char(F&& f);
@@ -93,30 +92,21 @@ public:
 
 
 //IMPL
-template<typename Iterator> //*Iterator==shared_ptr<message>
-void ui::assign_messages(Iterator first, Iterator last) {
 	/*
+template<typename Iterator> // *Iterator==shared_ptr<message>
+void ui::assign_messages(Iterator first, Iterator last) {
 	message_list.clear();
 	std::copy(first, last, std::inserter(message_list, message_list.end()));
 	message_list.refresh();
-	*/
 }
+	*/
 
 template<typename Iterator>
-void ui::set_users(Iterator first, Iterator last) {
-	/*
-	assert(false); //depricated
-	std::copy(first, last, std::inserter(message_list, message_list.end()));
-	*/
-}
-template<typename Iterator>
-void ui::set_channels(Iterator first, Iterator last) {
-	/*
-	//TODO make an iterate inserter
+void ui::assign_channels(Iterator first, Iterator last) {
 	channel_list.clear();
-	std::copy(first, last, std::inserter(channel_list, channel_list.begin()));
+	//std::copy(first, last, std::inserter(channel_list, channel_list.begin()));
+	channel_list.insert(channel_list.begin(), first, last);
 	channel_list.refresh();
-	*/
 }
 
 template<typename F>

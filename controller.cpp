@@ -10,15 +10,14 @@
 #include <exception>
 #include <iostream>
 
-const std::string& win_get_name::operator()(
-                      const std::unique_ptr<buffer>& win) const {
-	return win->get_name();
-}
+void controller::set_channel(buffer& buff) {
+	auto& win=view.get_selected_window();
+	win.set_target_buffer(buff);
 
-
-void controller::set_channel(buffer& win) {
 	//TODO: reverse on throw exceptionsafe?
+	/*
 	view.set_title(win.get_topic());	
+
 	view.assign_messages(
 		win.messages_begin(),
 		win.messages_end()
@@ -36,15 +35,29 @@ void controller::set_channel(buffer& win) {
 			view.set_title(topic);
 		}
 	);
+	*/
 }
 
 void controller::set_channels() {
-	view.set_channels( //iterate over channels as strings
-		boost::make_transform_iterator(buffers.begin(), win_get_name()),
-		boost::make_transform_iterator(buffers.end(),   win_get_name())
+    auto get_name=[](const std::unique_ptr<buffer>& win) { 
+		return win->get_name(); 
+	};
+	view.assign_channels( //iterate over channels as strings
+		boost::make_transform_iterator(buffers.begin(), get_name),
+		boost::make_transform_iterator(buffers.end(),   get_name)
 	);
 }
 
+
+//TODO implement as a search on the correct name, with assertions
+/*
+error_buffer& controller::get_status_buffer() { 
+	  	return dynamic_cast<error_buffer&>(*buffers[0]); 
+}
+const error_buffer& controller::get_status_buffer() const { 
+	  	return dynamic_cast<const error_buffer&>(*buffers[0]); 
+}
+*/
 void controller::handle_connection_connect(
                   std::shared_ptr<irc::connection> connection) {
 	assert(connection && "can not craete sesion with invalid connection");
@@ -75,11 +88,19 @@ void controller::handle_connection_connect(
 void controller::start_connection(const std::string& server) {
 	auto ic=irc::connection::make_shared(io_service, server, "6667");
 	ic->connect_on_resolve(
-		[&]{ /*TODO repport success */ });
-
+		[=] {
+			auto& status_buf=get_status_buffer();
+			status_buf.push_back_error("successfully resolved host " + server);
+		}
+	);
 	ic->connect_on_connect(
-		[=]{ handle_connection_connect(ic); });
-
+		[=]{ 
+			auto& status_buf=get_status_buffer();
+			status_buf.push_back_error("successfully connected to host " + server);
+			//TODO: ic has an sp to itself? probably not good!!!
+			handle_connection_connect(ic); 
+		}
+	);
 	connections.push_back(std::move(ic));
 }
 
@@ -97,18 +118,23 @@ void controller::handle_ctrl_char(cons::ctrl_char ch) {
 	switch(ch) {
 	default: break;
 	//retarget current window
+
+	case cons::ctrl_char::ctrl_arrow_left:
+		break;
 	case cons::ctrl_char::ctrl_arrow_right:
-		/*
+		auto& window=view.get_selected_window();
 		const auto& buffer=window.get_buffer();
+
 		auto first=begin(buffers), last=end(buffers);
+		//urghh different pointer types :(
 		auto it=std::find(first, last, buffer);
-		assert(it!=last);
+
+		assert(it!=last); //is an actual existing buffer
+
 		++it;
 		if(it==last) it=first;
-		window.set_buffer(*it);
-		*/
-		break;
-	case cons::ctrl_char::ctrl_arrow_left:
+
+		window.set_target_buffer(**it);
 		break;
 	}
 }
@@ -140,11 +166,13 @@ void controller::handle_msg(const std::string& target, const std::string& msg) {
 }
 
 void controller::handle_text(const std::string& text) {
+	/*
 	if(selected_channel != nullptr) {
 		selected_channel->async_send_message(text);
 		auto msg_ptr=std::make_shared<chan_message>(sessions[0]->get_nick(), text);
 		view.append_message(msg_ptr);
 	}
+	*/
 }
 void controller::handle_exec(const std::string& exec) {
 }
@@ -169,13 +197,21 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 }
 
 controller::controller() 
-:	view { io_service, status_buffer }
+// can not init init list form r vals, hence lmbd hack
+:	buffers       {	[]{	std::vector<std::unique_ptr<buffer>> b; 
+	                  	b.push_back(util::make_unique<error_buffer>());
+						return b;
+	                }()
+                  }
+,	view          { io_service, *buffers[0]           }
 {
 	view.reg_on_text_input(
 		std::bind(&controller::handle_text_input, this, ph::_1));
 
 	view.connect_on_ctrl_char(
 		std::bind(&controller::handle_ctrl_char, this, ph::_1));
+	
+	set_channels();
 }
 
 void controller::run() {

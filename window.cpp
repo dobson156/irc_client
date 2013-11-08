@@ -2,6 +2,8 @@
 
 #include "buffer.hpp"
 
+#include <limits>
+
 namespace ui_impl {
 
 window::window(unique_window_ptr        handle, 
@@ -14,13 +16,16 @@ window::window(unique_window_ptr        handle,
 
 ,	title_anchor  { std::move(handle), 1                                     }
 ,	input_anchor  ( title_anchor.emplace_fill<anchor_bottom>(1)              )
-,	status_anchor ( status_anchor.emplace_fill<anchor_bottom>(1)             )
+,	status_anchor ( input_anchor.emplace_fill<anchor_bottom>(1)              ) //check
 
 ,	title         ( title_anchor.emplace_anchor<text_box>("title")           )
 ,	input         ( input_anchor.emplace_anchor<async_input_box>(io_service) )
 ,	status        ( status_anchor.emplace_anchor<text_box>("status")         )
 ,	message_list  ( status_anchor.emplace_fill<msg_list>()                   )
 {
+	title.set_background(COLOR_CYAN);
+	status.set_background(COLOR_CYAN);
+	message_list.selected_idx(std::numeric_limits<msg_list::size_type>::max());
 	retarget_buffer();
 }
 

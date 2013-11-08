@@ -6,12 +6,16 @@
 namespace ui_impl {
 
 ui::ui(boost::asio::io_service& io_service_, buffer& buffer           )  
-:	parent         { make_window(), 1                                 }	
+:	parent         { make_window(), 10                                }	
 ,	channel_border (parent.emplace_anchor<bordered>(borders::right)   )
 ,	channel_list   (channel_border.emplace_element<text_list>()       ) 
 ,	window1        ( parent.emplace_fill<window>(io_service_, buffer) )
 ,	io_service     { &io_service_                                     }
 {	
+	channel_border.set_background(COLOR_CYAN);
+	channel_border.set_foreground(COLOR_WHITE);
+	channel_list.highlight_selected(true);
+	refresh();
 	//title.set_background(COLOR_CYAN);
 	//status.set_background(COLOR_CYAN);
 
@@ -24,7 +28,7 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer           )
 		}
 	);
 
-	input.connect_on_ctrl_char(
+	nput.connect_on_ctrl_char(
 		[&](cons::ctrl_char ch) {
 			on_ctrl_char(ch);
 		}
@@ -37,10 +41,8 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer           )
 }
 
 void ui::refresh() {
-	/*
 	parent.refresh();
-	input.refresh();
-	*/
+//	input.refresh();
 } 
 
 void ui::stop() {
@@ -55,6 +57,9 @@ void ui::reg_on_text_input(std::function<void(std::string)> action){
 	input.connect_on_input(on_text_input);
 	*/
 }
+
+      window& ui::get_selected_window()       { return window1; }
+const window& ui::get_selected_window() const { return window1; }
 
 void ui::set_input(const std::string& str) {
 	/*

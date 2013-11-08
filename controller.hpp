@@ -14,14 +14,6 @@
 #include <vector>
 #include <functional>
 
-//This is required for boost::transform_iterator as it requires a c++98 functor
-//with `result_type` typedef that a lambda doesn't provide
-struct win_get_name {
-	using result_type=const std::string&;
-	const std::string& operator()(const std::unique_ptr<buffer>& win) const;
-}; //struct win_get_name
-
-
 class controller {
 	void start_connection(const std::string& server_name);
 
@@ -49,9 +41,14 @@ class controller {
 	//TODO: more descriptive names
 	void set_channel(buffer& win);
 	void set_channels();
-
+	
+	      error_buffer& get_status_buffer();
+	const error_buffer& get_status_buffer() const;
 	//boost::optional<std::reference_wrapper<channel>> 
-	//try_get_channel_by_name(const std::string& name);
+
+
+	//must be inited before view
+	std::vector<std::unique_ptr<buffer>>          buffers;
 
 //varaibles
 	unique_connection                             win_msg, win_tpc;
@@ -63,7 +60,6 @@ class controller {
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
 
-	std::vector<std::unique_ptr<buffer>>          buffers;
 
 	bool                                          show_errors { true };
 public:

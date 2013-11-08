@@ -276,7 +276,7 @@ void copy(frame& src, frame& dst,
 	if(::copywin(src.get_handle(),  dst.get_handle(),
                  src_upper_left.y,  src_upper_left.x,
                  dst_upper_left.y,  dst_upper_left.x,
-                 dst_lower_right.y, dst_lower_right.x, true)==ERR) {
+                 dst_lower_right.y, dst_lower_right.x, false)==ERR) {
 
 		std::ostringstream oss;
 		oss << "unable to copy window"

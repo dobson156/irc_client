@@ -3,6 +3,8 @@
 
 #include "basic.hpp"
 
+#include <boost/optional.hpp>
+
 #include <utility> //std::move
 #include <vector>
 #include <deque>
@@ -37,10 +39,13 @@ public:
 	using iterator      =typename container_type::iterator;
 	using const_iterator=typename container_type::const_iterator;
 private:
-	frame          frame_;
-	container_type values;
-	stencil_type   stencil;
-	size_type      selected { 0 };
+	frame                        frame_;
+	container_type               values;
+	stencil_type                 stencil;
+	size_type                    selected { 0 };
+
+	//if present then the hilighted colour is that, else not highlighted
+	boost::optional<colour_pair> selected_colour;
 public:
 	stenciled_list(unique_window_ptr handle)
 	:	frame_ { std::move(handle) }
@@ -88,6 +93,10 @@ public:
 		frame_.clear();
 		values.clear();
 	}
+
+	/*
+	** Okay, this function is hideous, but it works
+	*/
 	void refresh() override {
 		frame_.clear();
 		if(!empty()) {
@@ -116,7 +125,14 @@ public:
 
 			//start with the selected message
 			message_frames.push_back(message_to_pad<stencil_type>(stencil, *selected_it, dime));
+			if(selected_colour) {
+				message_frames.back().set_background(selected_colour->get_background());
+				message_frames.back().set_foreground(selected_colour->get_foreground());
+			}
+			//else assert(false);
+
 			y_used=message_frames.back().get_dimension().y;
+			
 
 
 			//true whilst there are still more upper & lower values
@@ -169,9 +185,20 @@ public:
 	}
 //Colour
 	void set_background();
-	void get_background() const;
-	short set_foreground();
-	short get_foreground() const;
+	void set_foreground();
+	short get_background() const { return frame_.get_background(); }
+	short get_foreground() const { return frame_.get_foreground(); }
+
+	bool highlight_selected() const { return selected_colour; }
+	void highlight_selected(bool v) { 
+		if(!selected_colour) {
+			//this is a hack, because I don't know how to get what the default
+			//actually represents whilst on an areoplane.
+			//TODO: fix
+			selected_colour=colour_pair { COLOR_BLACK, COLOR_WHITE };
+		}
+	}
+
 }; //class stenciled_list
 
 } //namespace cons
