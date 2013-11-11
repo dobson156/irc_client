@@ -78,7 +78,9 @@ public:
 	size_type      selected_idx() const { return selected;  } 
 
 	void selected_idx(size_type n) { 
-		CONS_ASSERT(n < values.size(), "new value is out of range");
+		//currently selected_idx can be largerr than size() 
+		//to indicate "stay at end" of set
+		//CONS_ASSERT(n < values.size(), "new value is out of range");
 		selected=n;
 	} 
 
@@ -126,10 +128,10 @@ public:
 			//start with the selected message
 			message_frames.push_back(message_to_pad<stencil_type>(stencil, *selected_it, dime));
 			if(selected_colour) {
+				//TODO: this must be optimised, by just passing the colour_piar
 				message_frames.back().set_background(selected_colour->get_background());
 				message_frames.back().set_foreground(selected_colour->get_foreground());
 			}
-			//else assert(false);
 
 			y_used=message_frames.back().get_dimension().y;
 			

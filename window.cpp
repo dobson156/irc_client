@@ -22,12 +22,12 @@ window::window(unique_window_ptr        handle,
 ,	status        ( status_anchor.emplace_anchor<text_box>("status")         )
 ,	message_list  ( status_anchor.emplace_fill<msg_list>()                   )
 {
-	title.set_background(COLOR_CYAN);
-	status.set_background(COLOR_CYAN);
+	title.set_background(COLOR_BLUE);
+	status.set_background(COLOR_BLUE);
 	message_list.selected_idx(std::numeric_limits<msg_list::size_type>::max());
 	retarget_buffer();
-	title.set_background(COLOR_CYAN);
-	status.set_background(COLOR_CYAN);
+	title.set_background(COLOR_BLUE);
+	status.set_background(COLOR_BLUE);
 }
 
 
@@ -39,6 +39,8 @@ void window::retarget_buffer() {
 		buff.messages_begin(), 
 		buff.messages_end()
 	);
+	status.set_content(buf_.get().get_topic());
+	title.set_content(buf_.get().get_topic());
 
 	con_topic_change=buff.connect_on_topic_change(
 		[&](buffer& b, const std::string& new_title) {

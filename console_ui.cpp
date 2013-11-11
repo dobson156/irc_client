@@ -12,12 +12,12 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer           )
 ,	window1        ( parent.emplace_fill<window>(io_service_, buffer) )
 ,	io_service     { &io_service_                                     }
 {	
-	channel_border.set_background(COLOR_CYAN);
+	channel_border.set_background(COLOR_BLUE);
 	channel_border.set_foreground(COLOR_WHITE);
 	channel_list.highlight_selected(true);
 	refresh();
-	//title.set_background(COLOR_CYAN);
-	//status.set_background(COLOR_CYAN);
+	//title.set_background(COLOR_BLUE);
+	//status.set_background(COLOR_BLUE);
 
 	/*
 	input.connect_on_grow(

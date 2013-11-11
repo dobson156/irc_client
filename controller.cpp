@@ -123,11 +123,13 @@ void controller::handle_ctrl_char(cons::ctrl_char ch) {
 		break;
 	case cons::ctrl_char::ctrl_arrow_right:
 		auto& window=view.get_selected_window();
-		const auto& buffer=window.get_buffer();
+		const auto& buff=window.get_buffer();
 
 		auto first=begin(buffers), last=end(buffers);
-		//urghh different pointer types :(
-		auto it=std::find(first, last, buffer);
+
+		auto it=std::find_if(first, last, 
+			[&](const std::unique_ptr<buffer>& b) { return b.get()==&buff; }
+		);
 
 		assert(it!=last); //is an actual existing buffer
 
@@ -135,6 +137,7 @@ void controller::handle_ctrl_char(cons::ctrl_char ch) {
 		if(it==last) it=first;
 
 		window.set_target_buffer(**it);
+
 		break;
 	}
 }
@@ -177,6 +180,7 @@ void controller::handle_text(const std::string& text) {
 void controller::handle_exec(const std::string& exec) {
 }
 void controller::handle_quit() {
+	assert(false);
 	view.stop();
 	for(auto& sess : sessions) {
 		sess->stop();
@@ -194,6 +198,24 @@ void controller::handle_session_join_channel(irc::channel& chan) {
 	set_channel(*ch_win);	
 	buffers.push_back(std::move(ch_win));
 	set_channels();
+}
+
+error_buffer& controller::get_status_buffer() {
+	for(const auto& p : buffers) {
+		if(p->get_name() == "status") 
+			return static_cast<error_buffer&>(*p);
+	}
+	assert(false && "status buffer missing");
+	throw std::runtime_error("status buffer missing");
+}
+
+const error_buffer& controller::get_status_buffer() const {
+	for(const auto& p : buffers) {
+		if(p->get_name() == "status") 
+			return static_cast<const error_buffer&>(*p);
+	}
+	assert(false && "status buffer missing");
+	throw std::runtime_error("status buffer missing");
 }
 
 controller::controller() 
