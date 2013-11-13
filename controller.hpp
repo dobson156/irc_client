@@ -1,18 +1,16 @@
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
-#include "irc/session.hpp"
-#include "irc/connection.hpp"
-
 #include "buffer.hpp"
-#include "message.hpp"
 #include "console_ui.hpp"
 
 #include <boost/asio/io_service.hpp>
 
 #include <string>
 #include <vector>
-#include <functional>
+#include <memory>
+
+namespace irc { class session; class connection; }
 
 class controller {
 	void start_connection(const std::string& server_name);
@@ -44,24 +42,15 @@ class controller {
 	
 	      error_buffer& get_status_buffer();
 	const error_buffer& get_status_buffer() const;
-	//boost::optional<std::reference_wrapper<channel>> 
 
 //varaibles
 	std::vector<std::unique_ptr<buffer>>          buffers;
-//	error_buffer&                                 err_buff;
-//	error_buffer&                                 status_buff;
-
-	unique_connection                             win_msg, win_tpc;
 	boost::asio::io_service                       io_service;
 	ui                                            view;
-
 	irc::channel                                 *selected_channel { nullptr };
-
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
-
-
-	bool                                          show_errors { true };
+	bool                                          show_errors      { true    };
 public:
 	controller();
 	void run();

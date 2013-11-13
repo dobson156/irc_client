@@ -59,7 +59,14 @@ public:
 	point get_position()  const                       override;
 	point get_dimension() const                       override;
 	unique_window_ptr reset(unique_window_ptr handle) override;
+
+	template<typename F> cons::bsig::connection connect_on_text_input(F&& f);
 }; //class window
+
+template<typename F>
+bsig::connection window::connect_on_text_input(F&& f) {
+	return input.connect_on_input(std::forward<F>(f));
+}
 
 } //namespace ui_impl
 

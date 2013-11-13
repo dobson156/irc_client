@@ -2,6 +2,7 @@
 #include "util.hpp"
 
 #include "irc/session.hpp"
+#include "irc/connection.hpp"
 #include "irc/channel.hpp"
 #include "irc/user.hpp"
 
@@ -13,29 +14,6 @@
 void controller::set_channel(buffer& buff) {
 	auto& win=view.get_selected_window();
 	win.set_target_buffer(buff);
-
-	//TODO: reverse on throw exceptionsafe?
-	/*
-	view.set_title(win.get_topic());	
-
-	view.assign_messages(
-		win.messages_begin(),
-		win.messages_end()
-	);
-
-	//This unset callbacks for the old buffer and resets then for the new
-	//unsetting is done via RAII with unique_connection
-	win_msg=win.connect_on_new_message(
-		[&](const buffer&, std::shared_ptr<message> msg_ptr) {
-			view.append_message(std::move(msg_ptr));
-		}
-	);
-	win_tpc=win.connect_on_topic_change(
-		[&](const buffer&, const std::string& topic) {
-			view.set_title(topic);
-		}
-	);
-	*/
 }
 
 void controller::set_channels() {
@@ -48,16 +26,6 @@ void controller::set_channels() {
 	);
 }
 
-
-//TODO implement as a search on the correct name, with assertions
-/*
-error_buffer& controller::get_status_buffer() { 
-	  	return dynamic_cast<error_buffer&>(*buffers[0]); 
-}
-const error_buffer& controller::get_status_buffer() const { 
-	  	return dynamic_cast<const error_buffer&>(*buffers[0]); 
-}
-*/
 void controller::handle_connection_connect(
                   std::shared_ptr<irc::connection> connection) {
 	assert(connection && "can not craete sesion with invalid connection");
@@ -159,12 +127,12 @@ void controller::handle_connect(const std::string& chan) {
 }
 
 
-
 void controller::handle_nick(const std::string& nick) {
 	if(!sessions.empty()) {
 		sessions[0]->async_change_nick(nick);	
 	}
 }
+
 void controller::handle_msg(const std::string& target, const std::string& msg) {
 }
 
@@ -180,7 +148,6 @@ void controller::handle_text(const std::string& text) {
 void controller::handle_exec(const std::string& exec) {
 }
 void controller::handle_quit() {
-	assert(false);
 	view.stop();
 	for(auto& sess : sessions) {
 		sess->stop();
@@ -227,7 +194,7 @@ controller::controller()
                   }
 ,	view          { io_service, *buffers[0]           }
 {
-	view.reg_on_text_input(
+	view.connect_on_text_input(
 		std::bind(&controller::handle_text_input, this, ph::_1));
 
 	view.connect_on_ctrl_char(
