@@ -21,3 +21,6 @@ buffer::const_iterator buffer::messages_end() const {
 	return messages.cend();
 }
 
+
+bool buffer::has_session() const { return false; }
+bool buffer::has_channel() const { return false; }

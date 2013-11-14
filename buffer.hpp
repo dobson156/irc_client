@@ -30,6 +30,9 @@ public:
 	const_iterator             messages_begin() const;
 	const_iterator             messages_end()   const;
 
+	bool                       has_session()    const;
+	bool                       has_channel()    const;
+
 	template<typename F>
 	boost::signals::connection connect_on_new_message(F&& f);
 	template<typename F>
