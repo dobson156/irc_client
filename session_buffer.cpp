@@ -7,8 +7,9 @@
 
 
 session_buffer::session_buffer(irc::session& session_) 
-:	buffer  { "channel"  }
-,	session ( session_            )
+:	buffer        { "channel" }
+,	session_bound ( session_  )
+,	session       ( session_  )
 {
 	connections.push_back(
 		session.connect_on_notice(

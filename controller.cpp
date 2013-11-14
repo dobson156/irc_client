@@ -13,12 +13,13 @@
 
 void controller::set_channel(buffer& buff) {
 	auto& win=view.get_selected_window();
+	view.set_selected_channel(buff.get_name());
 	win.set_target_buffer(buff);
 }
 
 void controller::set_channels() {
-    auto get_name=[](const std::unique_ptr<buffer>& win) { 
-		return win->get_name(); 
+    auto get_name=[](const std::unique_ptr<buffer>& bp) { 
+		return bp->get_name(); 
 	};
 	view.assign_channels( //iterate over channels as strings
 		boost::make_transform_iterator(buffers.begin(), get_name),
@@ -38,10 +39,11 @@ void controller::handle_connection_connect(
 	auto& session=sessions.back();
 
 	auto sess_win=util::make_unique<session_buffer>(*session);
-	set_channel(*sess_win);
 
 	buffers.push_back(std::move(sess_win));
 	set_channels();
+	//if auto change
+	set_channel(*buffers.back());
 	
 	//this will create a new buffer view
 	session->connect_on_join_channel(
@@ -58,13 +60,13 @@ void controller::start_connection(const std::string& server) {
 	ic->connect_on_resolve(
 		[=] {
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_error("successfully resolved host " + server);
+			status_buf.push_back_msg("successfully resolved host " + server);
 		}
 	);
 	ic->connect_on_connect(
-		[=]{ 
+		[=] {
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_error("successfully connected to host " + server);
+			status_buf.push_back_msg("successfully connected to host " + server);
 			//TODO: ic has an sp to itself? probably not good!!!
 			handle_connection_connect(ic); 
 		}
@@ -83,37 +85,41 @@ void controller::handle_text_input(const std::string& str) {
 	view.set_input({});
 }
 void controller::handle_ctrl_char(cons::ctrl_char ch) {
+	auto& window=view.get_selected_window();
+	const auto& buff=window.get_buffer();
+	auto first=begin(buffers), last=end(buffers);
+		
+	auto it=std::find_if(first, last, 
+		[&](const std::unique_ptr<buffer>& b) { return b.get()==&buff; }
+	);
+	assert(it!=last); //is an actual existing buffer
+
 	switch(ch) {
-	default: break;
-	//retarget current window
+	default: 
+		break;
 
 	case cons::ctrl_char::ctrl_arrow_left:
+		if(it==first) it=last;
+		--it;
+		set_channel(**it);
 		break;
 	case cons::ctrl_char::ctrl_arrow_right:
-		auto& window=view.get_selected_window();
-		const auto& buff=window.get_buffer();
-
-		auto first=begin(buffers), last=end(buffers);
-
-		auto it=std::find_if(first, last, 
-			[&](const std::unique_ptr<buffer>& b) { return b.get()==&buff; }
-		);
-
-		assert(it!=last); //is an actual existing buffer
-
 		++it;
 		if(it==last) it=first;
 
-		window.set_target_buffer(**it);
-
+		set_channel(**it);
 		break;
 	}
 }
 
 void controller::handle_join(const std::vector<std::string>& chans) {
-	if(!sessions.empty()) {
-		for(const auto& chan : chans) {
-			sessions[0]->async_join(chan);			
+	auto& win=view.get_selected_window();
+	auto& buf=win.get_buffer();
+
+	if(has_session hs { buf } ) {
+		auto& sess=hs.get_session();
+		for(const auto& ch : chans) {
+			sess.async_join(ch);
 		}
 	}
 }
@@ -140,15 +146,17 @@ void controller::handle_msg(const std::string& target, const std::string& msg) {
 void controller::handle_text(const std::string& text) {
 	auto& win=view.get_selected_window();
 	auto& buf=win.get_buffer();
-
-	if(buf.has_session()) {
-		//auto& sess=buf.get_channel();
-		//session->write_to(text);
+	
+	if(has_channel hc { buf } ) {
+		auto& chan=hc.get_channel();
+		chan.async_send_message(text);
 	}
 }
 
 void controller::handle_exec(const std::string& exec) {
+
 }
+
 void controller::handle_quit() {
 	view.stop();
 	for(auto& sess : sessions) {
@@ -160,38 +168,36 @@ void controller::handle_quit() {
 }
 
 void controller::handle_session_join_channel(irc::channel& chan) {
-	//TODO: if on auto change
-	auto ch_win=util::make_unique<channel_buffer>(chan);
-	set_channel(*ch_win);	
-	buffers.push_back(std::move(ch_win));
+	buffers.push_back(util::make_unique<channel_buffer>(chan));
 	set_channels();
+	set_channel(*buffers.back());	
 }
 
-error_buffer& controller::get_status_buffer() {
+log_buffer& controller::get_status_buffer() {
 	for(const auto& p : buffers) {
 		if(p->get_name() == "status") 
-			return static_cast<error_buffer&>(*p);
+			return static_cast<log_buffer&>(*p);
 	}
 	assert(false && "status buffer missing");
 	throw std::runtime_error("status buffer missing");
 }
 
-const error_buffer& controller::get_status_buffer() const {
+const log_buffer& controller::get_status_buffer() const {
 	for(const auto& p : buffers) {
 		if(p->get_name() == "status") 
-			return static_cast<const error_buffer&>(*p);
+			return static_cast<const log_buffer&>(*p);
 	}
 	assert(false && "status buffer missing");
 	throw std::runtime_error("status buffer missing");
 }
 
-error_buffer& controller::get_or_make_error_buffer() {
+log_buffer& controller::get_or_make_error_buffer() {
 	for(const auto& p : buffers) {
 		if(p->get_name() == "error") 
-			return static_cast<error_buffer&>(*p);
+			return static_cast<log_buffer&>(*p);
 	}
 
-	auto p=util::make_unique<error_buffer>();
+	auto p=util::make_unique<log_buffer>("error");
 	auto& r=*p;
 	buffers.push_back(std::move(p));
 	return r; 
@@ -201,7 +207,7 @@ error_buffer& controller::get_or_make_error_buffer() {
 controller::controller() 
 // can not init init list form r vals, hence lmbd hack
 :	buffers       {	[]{	std::vector<std::unique_ptr<buffer>> b; 
-	                  	b.push_back(util::make_unique<error_buffer>());
+	                  	b.push_back(util::make_unique<buffer>("status"));
 						return b;
 	                }()
                   }
@@ -225,7 +231,7 @@ void controller::run() {
 		catch(const std::exception& e) {
 			if(show_errors) {
 				auto& ebuff=get_or_make_error_buffer();
-				ebuff.push_back_error(e.what());
+				ebuff.push_back_msg(e.what());
 			}
 		}
 	}

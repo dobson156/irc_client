@@ -23,6 +23,3 @@ buffer::const_iterator buffer::messages_end() const {
 
 bool buffer::has_session() const { return false; }
 bool buffer::has_channel() const { return false; }
-
-
-

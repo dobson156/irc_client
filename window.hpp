@@ -61,11 +61,17 @@ public:
 	unique_window_ptr reset(unique_window_ptr handle) override;
 
 	template<typename F> cons::bsig::connection connect_on_text_input(F&& f);
+	template<typename F> cons::bsig::connection connect_on_ctrl_char(F&& f);
 }; //class window
 
 template<typename F>
 bsig::connection window::connect_on_text_input(F&& f) {
 	return input.connect_on_input(std::forward<F>(f));
+}
+
+template<typename F>
+bsig::connection window::connect_on_ctrl_char(F&& f) {
+	return input.connect_on_ctrl_char(std::forward<F>(f));
 }
 
 } //namespace ui_impl

@@ -12,6 +12,54 @@
 
 class message;
 
+
+class session_bound {
+	irc::session& sess;
+public:
+	session_bound(irc::session& sess_)
+	:	sess ( sess_ )
+	{	}
+	irc::session&       get_session()       { return sess; }
+	const irc::session& get_session() const { return sess; }
+};
+
+class channel_bound {
+	irc::channel& chan;
+public:
+	channel_bound(irc::channel& chan_)
+	:	chan ( chan_ )
+	{	}
+	irc::channel&       get_channel()       { return chan; }
+	const irc::channel& get_channel() const { return chan; }
+};
+
+class has_session {
+	irc::session* sess { nullptr };
+public:
+	template<typename T>
+	has_session(T& t) {
+		auto tp=dynamic_cast<session_bound*>(&t);
+		if(tp) sess=&tp->get_session();
+	}
+	operator bool()                   const { return sess;  }
+	irc::session       &get_session()       { return *sess; }
+	const irc::session &get_session() const { return *sess; }
+};
+
+class has_channel {
+	irc::channel* chan { nullptr };
+public:
+	template<typename T>
+	has_channel(T& t) {
+		auto tp=dynamic_cast<channel_bound*>(&t);
+		if(tp) chan=&tp->get_channel();
+	}
+	operator bool()                   const { return chan;  }
+	irc::channel       &get_channel()       { return *chan; }
+	const irc::channel &get_channel() const { return *chan; }
+};
+
+
 class buffer {
 	using container_type=std::vector<std::shared_ptr<message>>;
 	using const_iterator=container_type::const_iterator;
@@ -50,7 +98,7 @@ boost::signals::connection buffer::connect_on_topic_change(F&& f) {
 }
 
 
-class channel_buffer : public buffer {
+class channel_buffer : public buffer, public channel_bound {
 	irc::channel&                      chan;
 	std::vector<irc::bsig::connection> connections;
 
@@ -64,7 +112,7 @@ public:
 }; //channel_buffer
 
 
-class session_buffer : public buffer {
+class session_buffer : public buffer, public session_bound {
 	irc::session&                  session;
 	std::vector<unique_connection> connections;
 
@@ -77,17 +125,17 @@ public:
 	~session_buffer();
 }; //session_buffer
 
-class error_buffer : public buffer {
-	error_buffer(error_buffer&&)                =delete;
-	error_buffer(const error_buffer&)           =delete;
-	error_buffer& operator=(error_buffer&&)     =delete;
-	error_buffer& operator=(const error_buffer&)=delete;
+class log_buffer : public buffer {
+	log_buffer(log_buffer&&)                =delete;
+	log_buffer(const log_buffer&)           =delete;
+	log_buffer& operator=(log_buffer&&)     =delete;
+	log_buffer& operator=(const log_buffer&)=delete;
 
 public:
-	error_buffer() : buffer("error") {};
-	~error_buffer() {}
-	void push_back_error(const std::string& error_msg);
-}; //error_buffer
+	log_buffer(std::string name);
+	~log_buffer() {}
+	void push_back_msg(std::string msg);
+}; //log_buffer
 
 
 #endif //BUFFER_HPP

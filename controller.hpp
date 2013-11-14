@@ -40,10 +40,10 @@ class controller {
 	void set_channel(buffer& win);
 	void set_channels();
 	
-	      error_buffer& get_status_buffer();
-	const error_buffer& get_status_buffer() const;
+	      log_buffer& get_status_buffer();
+	const log_buffer& get_status_buffer() const;
 	
-	error_buffer& get_or_make_error_buffer();
+	log_buffer& get_or_make_error_buffer();
 
 //varaibles
 	std::vector<std::unique_ptr<buffer>>          buffers;

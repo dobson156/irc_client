@@ -59,6 +59,7 @@ void window::retarget_buffer() {
 			message_list.refresh();
 		}
 	);
+	refresh();
 }
 
 void window::set_target_buffer(buffer& buf) {
