@@ -118,7 +118,7 @@ void controller::handle_join(const std::vector<std::string>& chans) {
 	}
 }
 
-void controller::handle_part(const std::string& chan, const std::string msg) {
+void controller::handle_part(const std::string& chan, const std::string& msg) {
 
 }
 
@@ -134,17 +134,19 @@ void controller::handle_nick(const std::string& nick) {
 }
 
 void controller::handle_msg(const std::string& target, const std::string& msg) {
+
 }
 
 void controller::handle_text(const std::string& text) {
-	/*
-	if(selected_channel != nullptr) {
-		selected_channel->async_send_message(text);
-		auto msg_ptr=std::make_shared<chan_message>(sessions[0]->get_nick(), text);
-		view.append_message(msg_ptr);
+	auto& win=view.get_selected_window();
+	auto& buf=win.get_buffer();
+
+	if(buf.has_session()) {
+		//auto& sess=buf.get_channel();
+		//session->write_to(text);
 	}
-	*/
 }
+
 void controller::handle_exec(const std::string& exec) {
 }
 void controller::handle_quit() {
@@ -159,8 +161,6 @@ void controller::handle_quit() {
 
 void controller::handle_session_join_channel(irc::channel& chan) {
 	//TODO: if on auto change
-	selected_channel=&chan;	
-
 	auto ch_win=util::make_unique<channel_buffer>(chan);
 	set_channel(*ch_win);	
 	buffers.push_back(std::move(ch_win));
@@ -184,6 +184,19 @@ const error_buffer& controller::get_status_buffer() const {
 	assert(false && "status buffer missing");
 	throw std::runtime_error("status buffer missing");
 }
+
+error_buffer& controller::get_or_make_error_buffer() {
+	for(const auto& p : buffers) {
+		if(p->get_name() == "error") 
+			return static_cast<error_buffer&>(*p);
+	}
+
+	auto p=util::make_unique<error_buffer>();
+	auto& r=*p;
+	buffers.push_back(std::move(p));
+	return r; 
+}
+
 
 controller::controller() 
 // can not init init list form r vals, hence lmbd hack
@@ -211,28 +224,13 @@ void controller::run() {
 		}
 		catch(const std::exception& e) {
 			if(show_errors) {
-
-				auto it=std::find_if(
-					begin(buffers), end(buffers), [](const std::unique_ptr<buffer>& win) {
-						return win->get_name() == "error";
-					}
-				);
-
-				if(it!=end(buffers)) {
-					//OK better 
-					auto error_win=dynamic_cast<error_buffer*>(it->get());
-					assert(error_win && "error buffer not of type error_buffer");
-					//TODO: significantly improve error reporting
-					error_win->push_back_error(e.what());
-				}
-				else { //we'll just dump it to stdout
-					auto ebuff=util::make_unique<error_buffer>();				
-					ebuff->push_back_error(e.what());
-					set_channel(*ebuff);
-					buffers.push_back(std::move(ebuff));
-					set_channels();
-				}
+				auto& ebuff=get_or_make_error_buffer();
+				ebuff.push_back_error(e.what());
 			}
 		}
 	}
 }
+
+// This is required so that the implementation of 
+// irc::session isn't required in the header
+controller::~controller() { }

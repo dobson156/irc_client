@@ -33,8 +33,6 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer           )
 			on_ctrl_char(ch);
 		}
 	);
-
-	message_list.selected_idx(1000);
 	*/
 	refresh();
 	//input.refresh();

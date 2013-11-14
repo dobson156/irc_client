@@ -10,7 +10,7 @@
 #include <vector>
 #include <memory>
 
-namespace irc { class session; class connection; }
+namespace irc { class connection; class session; }
 
 class controller {
 	void start_connection(const std::string& server_name);
@@ -23,7 +23,7 @@ class controller {
 	void handle_ctrl_char(cons::ctrl_char);
 //parser handlers
 	void handle_join   (const std::vector<std::string>& input);
-	void handle_part   (const std::string& chan, const std::string msg);
+	void handle_part   (const std::string& chan, const std::string& msg);
 	void handle_connect(const std::string& chan);
 	void handle_nick   (const std::string& nick);
 	void handle_msg    (const std::string& target, const std::string& msg);
@@ -42,17 +42,20 @@ class controller {
 	
 	      error_buffer& get_status_buffer();
 	const error_buffer& get_status_buffer() const;
+	
+	error_buffer& get_or_make_error_buffer();
 
 //varaibles
 	std::vector<std::unique_ptr<buffer>>          buffers;
 	boost::asio::io_service                       io_service;
 	ui                                            view;
-	irc::channel                                 *selected_channel { nullptr };
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
 	bool                                          show_errors      { true    };
 public:
 	controller();
+	~controller();
+	controller(const controller&)=delete;
 	void run();
 }; //class controller
 

@@ -25,6 +25,9 @@ public:
 	buffer(std::string str);
 	virtual ~buffer();
 
+	bool                       has_session() const;
+	bool                       has_channel() const;
+
 	const std::string&         get_name()       const;
 	virtual const std::string& get_topic()      const;
 	const_iterator             messages_begin() const;
