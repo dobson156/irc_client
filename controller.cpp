@@ -81,8 +81,30 @@ void controller::parse_text(const std::string& text) {
 }
 
 void controller::handle_text_input(const std::string& str) {
-	parse_text(str);
-	view.set_input({});
+	if(str=="/list") {
+
+		auto& win=view.get_selected_window();
+		auto& buf=win.get_buffer();
+		auto& stat=get_status_buffer();
+		
+		if(has_channel hc { buf } ) {
+			auto& chan=hc.get_channel();
+
+			auto it=std::find_if(chan.user_begin(), chan.user_end(),
+				[](const irc::user& u) { return u.get_nick() == "test156"; });
+
+			if(it==chan.user_end()) {
+				stat.push_back_msg("name is contained");
+			}
+			else {
+				stat.push_back_msg("name not found");
+			}
+		}
+	}
+	else {
+		parse_text(str);
+		view.set_input({});
+	}
 }
 void controller::handle_ctrl_char(cons::ctrl_char ch) {
 	auto& window=view.get_selected_window();
