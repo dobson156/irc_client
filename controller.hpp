@@ -30,6 +30,7 @@ class controller {
 	void handle_text   (const std::string& text);
 	void handle_exec   (const std::string& exec);
 	void handle_quit   ();
+	void handle_names  ();
 //connection handlers
 	void handle_connection_connect(std::shared_ptr<irc::connection>);
 //session handlers

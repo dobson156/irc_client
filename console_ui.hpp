@@ -50,10 +50,10 @@ public:
 	window& get_selected_window();
 	const window& get_selected_window() const;
 //setters
-
 	void set_selected_channel(const std::string& channel_name);
 
 	void set_input(const std::string& str);
+	void destory_window(const window& win);
 
 	template<typename Iterator>
 	void assign_channels(Iterator first, Iterator last);

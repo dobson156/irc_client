@@ -10,6 +10,7 @@
 
 #include <exception>
 #include <iostream>
+#include <fstream>
 
 void controller::set_channel(buffer& buff) {
 	auto& win=view.get_selected_window();
@@ -81,30 +82,8 @@ void controller::parse_text(const std::string& text) {
 }
 
 void controller::handle_text_input(const std::string& str) {
-	if(str=="/list") {
-
-		auto& win=view.get_selected_window();
-		auto& buf=win.get_buffer();
-		auto& stat=get_status_buffer();
-		
-		if(has_channel hc { buf } ) {
-			auto& chan=hc.get_channel();
-
-			auto it=std::find_if(chan.user_begin(), chan.user_end(),
-				[](const irc::user& u) { return u.get_nick() == "test156"; });
-
-			if(it==chan.user_end()) {
-				stat.push_back_msg("name is contained");
-			}
-			else {
-				stat.push_back_msg("name not found");
-			}
-		}
-	}
-	else {
-		parse_text(str);
-		view.set_input({});
-	}
+	parse_text(str);
+	view.set_input({});
 }
 void controller::handle_ctrl_char(cons::ctrl_char ch) {
 	auto& window=view.get_selected_window();
@@ -147,7 +126,13 @@ void controller::handle_join(const std::vector<std::string>& chans) {
 }
 
 void controller::handle_part(const std::string& chan, const std::string& msg) {
-
+	auto& win=view.get_selected_window();
+	auto& buf=win.get_buffer();
+	
+	if(has_channel hc { buf } ) {
+		auto& chan=hc.get_channel();
+		chan.async_part();
+	}
 }
 
 void controller::handle_connect(const std::string& chan) {
@@ -189,7 +174,39 @@ void controller::handle_quit() {
 	}
 }
 
+void controller::handle_names() {
+	auto& win=view.get_selected_window();
+	auto& buf=win.get_buffer();
+	
+	if(has_channel hs { buf } ) {
+		auto& chan=hs.get_channel();
+		auto& status=get_status_buffer();
+		
+		std::for_each( chan.user_begin(), chan.user_end(),
+			[&](const irc::user& u) { status.push_back_msg(u.get_nick()); }
+		);
+
+	}
+}
+
 void controller::handle_session_join_channel(irc::channel& chan) {
+	chan.connect_on_channel_part(
+		[&](irc::channel& chand) {
+			auto it=std::find_if(begin(buffers), end(buffers),
+				[&](const std::unique_ptr<buffer>& b) {
+					assert(b);
+					has_channel hc { *b };
+					return &hc.get_channel() == &chan;
+				}
+			);
+			if(it!=end(buffers)) {
+				buffers.erase(it);
+				set_channels();
+				set_channel(get_status_buffer());
+			}
+		}
+	);
+
 	buffers.push_back(util::make_unique<channel_buffer>(chan));
 	set_channels();
 	set_channel(*buffers.back());	

@@ -8,9 +8,10 @@
 
 
 channel_buffer::channel_buffer(irc::channel& chan_) 
-:	buffer        { chan_.get_name() }
-,	channel_bound ( chan_            )
-,	chan          ( chan_            )
+:	buffer        { chan_.get_name()     }
+,	channel_bound ( chan_                )
+,	session_bound ( chan_.get_session()  )
+,	chan          ( chan_                )
 {
 	//TODO: make the signal handlers exception safe
 	auto usr_sig=chan.connect_on_user_join(
