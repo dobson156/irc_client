@@ -147,7 +147,13 @@ void controller::handle_nick(const std::string& nick) {
 }
 
 void controller::handle_msg(const std::string& target, const std::string& msg) {
+	auto& win=view.get_selected_window();
+	auto& buf=win.get_buffer();
 
+	if(has_session hs { buf }) {
+		auto& sess=hs.get_session();
+		sess.async_privmsg(target, msg);
+	}
 }
 
 void controller::handle_text(const std::string& text) {

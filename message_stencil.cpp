@@ -30,11 +30,13 @@ void message_stencil::operator()(chan_message& msg) {
 
 	int y=0;
 	auto dim=frame.get_dimension();
-	cons::point pos;
+	cons::point pos { 0, 0 };
 	if(dim.y > y) { //at least on line
 		auto ts=time_to_string(msg.get_time_stamp());
-		pos=frame.write({0,0}, ts);
+		pos=frame.write(pos, ts);
+		pos=frame.write(pos, ' ');
 		pos=frame.write(pos, msg.get_sender());
+		pos=frame.write(pos, ' ');
 		pos=frame.write(pos, msg.get_content());
 	}
 	last=cons::point{dim.x, pos.y+1};
