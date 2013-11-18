@@ -7,7 +7,7 @@ export OPTS ?=-O0 -ggdb
 INC          =
 LIB          =
 
-export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra 
+export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -DBOOST_SIGNALS_NO_DEPRECATION_WARNING -DBOOST_RESULT_OF_USE_DECLTYPE
 
 export LFLAGS=$(OPTS)
 

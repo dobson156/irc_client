@@ -8,12 +8,10 @@ namespace cons {
 
 
 class colour_pair {
+private:
 	// the following vector identies how many colours pairs map to the ncurses
 	// colour pair with the id == the index in the vector+1 (ids start from 1)
-public: //TODO remove public
 	static std::vector<unsigned> slot_counts;	
-
-private:
 	//Shorts are used as that is what is used by ncurses, see init_pair
 	static short find_slot_with_colour(short fg, short bg);
 	static short get_first_free_slot();

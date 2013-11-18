@@ -35,7 +35,9 @@ void message_stencil::operator()(chan_message& msg) {
 		auto ts=time_to_string(msg.get_time_stamp());
 		pos=frame.write(pos, ts);
 		pos=frame.write(pos, ' ');
+		frame.set_bold(true);
 		pos=frame.write(pos, msg.get_sender());
+		frame.set_bold(false);
 		pos=frame.write(pos, ' ');
 		pos=frame.write(pos, msg.get_content());
 	}
@@ -55,13 +57,20 @@ void message_stencil::operator()(join_message& msg) {
 		auto ts=time_to_string(msg.get_time_stamp());
 		pos=frame.write(pos, ts);
 
+
+
+		pos=frame.write(pos, ' ');
+		frame.set_bold(true);
+		pos=frame.write(pos, *pfx.nick);
+		frame.set_bold(false);
+		pos=frame.write(pos, " has joined ");
+
 		assert(pfx.nick);
 		std::ostringstream oss;
 		oss << pfx;
-
-		pos=frame.write(pos, *pfx.nick);
-		pos=frame.write(pos, " has joined ");
+		frame.set_dim(true);
 		pos=frame.write(pos, oss.str());
+		frame.set_dim(false);
 	}
 	last=cons::point{dim.x, pos.y+1};
 }

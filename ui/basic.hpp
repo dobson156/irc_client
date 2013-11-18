@@ -61,6 +61,7 @@ class frame : public base {
 
 	void apply_colour();
 	bool is_attr_on(int attr_on) const;
+	void set_attribute(bool set, int attr);
 public:
 //Ctor
 	frame()            =delete;
@@ -92,6 +93,11 @@ public:
 	short get_foreground() const;
 
 //Atributes
+	void set_underlined(bool set=true);
+	void set_blinking  (bool set=true);
+	void set_dim       (bool set=true);
+	void set_bold      (bool set=true);
+
 	bool is_underlined() const;
 	bool is_blinking()   const;
 	bool is_dim()        const;

@@ -59,7 +59,7 @@ void controller::handle_connection_connect(
 	// any priv_msgs
 	session->connect_on_new_user(
 		[](irc::user& u) {
-	//u.connect_on_direct_message(
+			u.connect_on_direct_message(
 				[](irc::user& u, const std::string&) {
 					//TODO implement privmsg here
 				}

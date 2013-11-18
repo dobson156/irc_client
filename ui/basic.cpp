@@ -240,6 +240,30 @@ short frame::get_foreground() const {
 }
 
 
+
+
+void frame::set_attribute(bool set, int attr) {
+	CONS_ASSERT(handle, "invalid handle");
+	int ret;
+	if(set)
+		ret=wattron(handle.get(), attr);
+	else 
+		ret=wattroff(handle.get(), attr);
+
+	if(ret!=OK) {
+		std::ostringstream oss;
+		oss << "failed to " << ( set ? "" : "un" ) 
+		    << "set attribute value: " << attr;
+		throw CONS_MAKE_EXCEPTION(oss.str());
+	}
+}
+
+void frame::set_underlined(bool set) { return set_attribute(set, A_UNDERLINE); }
+void frame::set_blinking  (bool set) { return set_attribute(set, A_BLINK); }
+void frame::set_dim       (bool set) { return set_attribute(set, A_DIM); }
+void frame::set_bold      (bool set) { return set_attribute(set, A_BOLD); }
+
+
 bool frame::is_attr_on(int attr_on) const {
 	CONS_ASSERT(handle, "invalid handle");
 	attr_t attr;
