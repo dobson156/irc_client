@@ -239,6 +239,20 @@ short frame::get_foreground() const {
 	return colours.get_foreground();
 }
 
+
+bool frame::is_attr_on(int attr_on) const {
+	CONS_ASSERT(handle, "invalid handle");
+	attr_t attr;
+	short pair;
+	wattr_get(handle.get(), &attr, &pair, nullptr);
+	return attr & attr_on;
+}
+
+bool frame::is_underlined() const { return is_attr_on(A_UNDERLINE); }
+bool frame::is_blinking()   const { return is_attr_on(A_BLINK); }
+bool frame::is_dim()        const { return is_attr_on(A_DIM); }
+bool frame::is_bold()       const { return is_attr_on(A_BOLD); }
+
 WINDOW *frame::get_handle() {
 	CONS_ASSERT(handle, "invalid handle");
 	return handle.get();

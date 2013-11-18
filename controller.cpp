@@ -54,6 +54,19 @@ void controller::handle_connection_connect(
 			ph::_1
 		)
 	);
+
+	// ne need to register all users so we can hook
+	// any priv_msgs
+	session->connect_on_new_user(
+		[](irc::user& u) {
+	//u.connect_on_direct_message(
+				[](irc::user& u, const std::string&) {
+					//TODO implement privmsg here
+				}
+			);
+
+		}
+	);
 }
 
 void controller::start_connection(const std::string& server) {
@@ -107,7 +120,6 @@ void controller::handle_ctrl_char(cons::ctrl_char ch) {
 	case cons::ctrl_char::ctrl_arrow_right:
 		++it;
 		if(it==last) it=first;
-
 		set_channel(**it);
 		break;
 	}

@@ -60,6 +60,7 @@ class frame : public base {
 	void set_cursor(const point& p);
 
 	void apply_colour();
+	bool is_attr_on(int attr_on) const;
 public:
 //Ctor
 	frame()            =delete;
@@ -89,6 +90,12 @@ public:
 	void set_foreground(short fg);
 	short get_background() const;
 	short get_foreground() const;
+
+//Atributes
+	bool is_underlined() const;
+	bool is_blinking()   const;
+	bool is_dim()        const;
+	bool is_bold()       const;
 
 	WINDOW *get_handle();
 

@@ -1,4 +1,4 @@
-export CPP  ?=g++
+export CPP  =g++
 export OPTS ?=-O0 -ggdb
 
 #-ggdb -DCONS_FAST_COMPILE
