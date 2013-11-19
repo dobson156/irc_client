@@ -7,6 +7,7 @@
 #include <string>
 
 
+
 channel_buffer::channel_buffer(irc::channel& chan_) 
 :	buffer        { chan_.get_name()     }
 ,	channel_bound ( chan_                )
@@ -66,3 +67,6 @@ channel_buffer::~channel_buffer() {
 	for(auto& con : connections) con.disconnect();
 }
 
+const std::string& channel_buffer::get_topic() const {
+	return chan.get_topic();
+}

@@ -109,6 +109,7 @@ class channel_buffer : public buffer, public channel_bound, public session_bound
 public:
 	channel_buffer(irc::channel& chan);
 	~channel_buffer();
+	const std::string& get_topic() const override;
 }; //channel_buffer
 
 
