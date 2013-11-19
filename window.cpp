@@ -31,13 +31,14 @@ window::window(unique_window_ptr        handle,
 	status.set_background(COLOR_BLUE);
 
 	timer.async_wait(
-		[&](const boost::system::error_code&) {
-			auto& b=buf_.get();
-			std::string name=b.get_name();
-			status.set_content(util::time_to_string() + " " + name);
-			status.refresh();
-		}
-	);
+		[&](const boost::system::error_code&) { set_status(); });
+}
+
+void window::set_status() {
+	auto& b=buf_.get();
+	std::string name=b.get_name();
+	status.set_content(util::time_to_string() + " " + name);
+	status.refresh();
 }
 
 

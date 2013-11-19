@@ -45,6 +45,7 @@ class window : public base {
 //helpers
 	//resets the internal routing for the buffer stored in buf_
 	void retarget_buffer();
+	void set_status();
 public:
 	window(unique_window_ptr        handle, 
 	       boost::asio::io_service& io_service, //for async_input_box
