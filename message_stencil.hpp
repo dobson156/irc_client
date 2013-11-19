@@ -5,8 +5,6 @@
 
 #include "message_visitor.hpp"
 
-std::string time_to_string(const std::chrono::system_clock::time_point& pt);
-
 class message_stencil : public message_vistor {
 	cons::frame *frame_;
 	cons::point last;

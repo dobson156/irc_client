@@ -1,10 +1,10 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
-#include <memory>
-
 #include <boost/optional.hpp>
 
+#include <memory>
+#include <chrono>
 #include <string>
 #include <limits>
 #include <stdexcept>
@@ -31,6 +31,10 @@ Unsigned stou(const std::string& str, std::size_t *idx=nullptr, int base=10) {
 }
 
 boost::optional<std::string> get_user_name();
+
+std::string time_to_string(const std::chrono::system_clock::time_point& pt=
+                                 std::chrono::system_clock::now());
+
 
 } //namespace util
 	

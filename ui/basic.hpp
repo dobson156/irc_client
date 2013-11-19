@@ -97,6 +97,7 @@ public:
 	void set_blinking  (bool set=true);
 	void set_dim       (bool set=true);
 	void set_bold      (bool set=true);
+	void set_colour    (const colour_pair& cp);
 
 	bool is_underlined() const;
 	bool is_blinking()   const;

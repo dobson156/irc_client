@@ -258,10 +258,11 @@ void frame::set_attribute(bool set, int attr) {
 	}
 }
 
-void frame::set_underlined(bool set) { return set_attribute(set, A_UNDERLINE); }
-void frame::set_blinking  (bool set) { return set_attribute(set, A_BLINK); }
-void frame::set_dim       (bool set) { return set_attribute(set, A_DIM); }
-void frame::set_bold      (bool set) { return set_attribute(set, A_BOLD); }
+void frame::set_underlined(bool set) { set_attribute(set, A_UNDERLINE); }
+void frame::set_blinking  (bool set) { set_attribute(set, A_BLINK); }
+void frame::set_dim       (bool set) { set_attribute(set, A_DIM); }
+void frame::set_bold      (bool set) { set_attribute(set, A_BOLD); }
+void frame::set_colour(const colour_pair& cp) { set_attribute(true, cp.get_id()); }
 
 
 bool frame::is_attr_on(int attr_on) const {

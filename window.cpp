@@ -1,5 +1,5 @@
+#include "util.hpp"
 #include "window.hpp"
-
 #include "buffer.hpp"
 
 #include <limits>
@@ -11,8 +11,9 @@ window::window(unique_window_ptr        handle,
 			   buffer&                  buf) 
 
 :	base          ( /*TODO: gcc 4.8 allows {} braces here */                 ) 
-
 ,	buf_          { buf                                                      }
+//,   timer         { io_service, boost::posix_time::minutes(1)                }
+,   timer         { io_service, boost::posix_time::seconds(1)                }
 
 ,	title_anchor  { std::move(handle), 1                                     }
 ,	input_anchor  ( title_anchor.emplace_fill<anchor_bottom>(1)              )
@@ -28,6 +29,15 @@ window::window(unique_window_ptr        handle,
 	retarget_buffer();
 	title.set_background(COLOR_BLUE);
 	status.set_background(COLOR_BLUE);
+
+	timer.async_wait(
+		[&](const boost::system::error_code&) {
+			auto& b=buf_.get();
+			std::string name=b.get_name();
+			status.set_content(util::time_to_string() + " " + name);
+			status.refresh();
+		}
+	);
 }
 
 

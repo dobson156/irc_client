@@ -58,14 +58,25 @@ void controller::handle_connection_connect(
 	// ne need to register all users so we can hook
 	// any priv_msgs
 	session->connect_on_new_user(
-		[](irc::user& u) {
+		[&](irc::user& u) {
 			u.connect_on_direct_message(
 				[](irc::user& u, const std::string&) {
 					//TODO implement privmsg here
 				}
 			);
 
+			/* Currently this functionality is in session buffer
+			u.connect_on_notice(
+				[&](irc::user& u, const std::string& msg) {
+					auto& status_buf=get_status_buffer();
+					std::ostringstream oss;
+					oss << "NOTICE: " << u.get_nick() << ": " << msg;
+					status_buf.push_back_msg(oss.str());
+				}
+			);
+			*/
 		}
+
 	);
 }
 

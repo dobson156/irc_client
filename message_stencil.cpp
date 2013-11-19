@@ -1,16 +1,10 @@
+#include "util.hpp"
 #include "message.hpp"
 #include "message_stencil.hpp"
 
 #include <sstream>
 #include <cassert>
 #include <chrono>
-
-std::string time_to_string(const std::chrono::system_clock::time_point& pt) {
-	std::time_t t=std::chrono::system_clock::to_time_t(pt);
-	std::string ts(6, '\0');
-	std::strftime(&ts[0], ts.size(), "%R", std::localtime(&t));
-	return ts; //TODO: shrink str
-}
 
 cons::point message_stencil::write_to(cons::frame& frame, const value_type& msg) {
 	assert(msg);
@@ -32,7 +26,7 @@ void message_stencil::operator()(chan_message& msg) {
 	auto dim=frame.get_dimension();
 	cons::point pos { 0, 0 };
 	if(dim.y > y) { //at least on line
-		auto ts=time_to_string(msg.get_time_stamp());
+		auto ts=util::time_to_string(msg.get_time_stamp());
 		pos=frame.write(pos, ts);
 		pos=frame.write(pos, ' ');
 		frame.set_bold(true);
@@ -52,23 +46,24 @@ void message_stencil::operator()(join_message& msg) {
 	cons::point pos {0,0};
 	auto dim=frame.get_dimension();
 
+	cons::colour_pair p { COLOR_CYAN, -1 };
+	frame.set_colour(p);
+
 	if(dim.y > 0) {
+		frame.set_dim(true);
 		const auto& pfx=msg.get_prefix();
-		auto ts=time_to_string(msg.get_time_stamp());
+		auto ts=util::time_to_string(msg.get_time_stamp());
 		pos=frame.write(pos, ts);
 
-
-
+		assert(pfx.nick);
 		pos=frame.write(pos, ' ');
 		frame.set_bold(true);
 		pos=frame.write(pos, *pfx.nick);
 		frame.set_bold(false);
 		pos=frame.write(pos, " has joined ");
 
-		assert(pfx.nick);
 		std::ostringstream oss;
 		oss << pfx;
-		frame.set_dim(true);
 		pos=frame.write(pos, oss.str());
 		frame.set_dim(false);
 	}
@@ -83,22 +78,29 @@ void message_stencil::operator()(part_message& msg) {
 	cons::point pos {0,0};
 	auto dim=frame.get_dimension();
 
+	cons::colour_pair p { COLOR_CYAN, -1 };
+	frame.set_colour(p);
+
 	if(dim.y > 0) {
+		frame.set_dim(true);
 		const auto& pfx=msg.get_prefix();
-		auto ts=time_to_string(msg.get_time_stamp());
+		auto ts=util::time_to_string(msg.get_time_stamp());
 		pos=frame.write(pos, ts);
+		pos=frame.write(pos, ' ');
 
-		assert(pfx.nick);
-		std::ostringstream oss;
-		oss << pfx;
-
+				frame.set_bold(true);
 		pos=frame.write(pos, *pfx.nick);
-		pos=frame.write(pos, " has parted ");
+		frame.set_bold(false);
+		pos=frame.write(pos, " has parted");
 		if(msg.get_message()) {
-			pos=frame.write(pos, "with ");
+			pos=frame.write(pos, " with: ");
 			pos=frame.write(pos, *msg.get_message());
 		}
+		assert(pfx.nick);
+		std::ostringstream oss;
+		oss << ' ' << pfx;
 		pos=frame.write(pos, oss.str());
+		frame.set_dim(false);
 	}
 	last=cons::point{dim.x, pos.y+1};
 }

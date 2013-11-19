@@ -2,6 +2,7 @@
 #define WINDOW_HPP
 
 #include <boost/asio/io_service.hpp>
+#include <boost/asio/deadline_timer.hpp>
 
 #include "ui/console.hpp"
 
@@ -26,10 +27,11 @@ class window : public base {
 	using text_box     =stenciled_frame<string_stencil>;
 	using msg_list     =stenciled_list<message_stencil>;
 //Member variables
-	unique_connection con_topic_change, 
-	                  con_new_msg;
-
+	unique_connection              con_topic_change, 
+	                               con_new_msg;
 	std::reference_wrapper<buffer> buf_;
+	boost::asio::deadline_timer    timer;
+
 //UI elements
 	anchor_top          title_anchor;
 	anchor_bottom&      input_anchor;
