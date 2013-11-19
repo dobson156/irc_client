@@ -46,7 +46,9 @@ void message_stencil::operator()(join_message& msg) {
 	cons::point pos {0,0};
 	auto dim=frame.get_dimension();
 
-	frame.set_colour({ COLOR_GREEN, -1 });
+	//This need to be static so the colours are consistant
+	static cons::colour_pair cyn { COLOR_CYAN,  -1 };
+	frame.set_colour(cyn);
 
 	if(dim.y > 0) {
 		const auto& pfx=msg.get_prefix();
@@ -56,7 +58,6 @@ void message_stencil::operator()(join_message& msg) {
 		assert(pfx.nick);
 		pos=frame.write(pos, ' ');
 		frame.set_bold(true);
-		frame.set_colour({ COLOR_CYAN, -1 });
 
 		pos=frame.write(pos, *pfx.nick);
 		frame.set_bold(false);
@@ -65,9 +66,9 @@ void message_stencil::operator()(join_message& msg) {
 		std::ostringstream oss;
 		oss << pfx;
 
-		frame.set_colour( { COLOR_BLUE, -1 } );
 		pos=frame.write(pos, oss.str());
 	}
+
 	last=cons::point{dim.x, pos.y+1};
 }
 
@@ -79,7 +80,7 @@ void message_stencil::operator()(part_message& msg) {
 	cons::point pos {0,0};
 	auto dim=frame.get_dimension();
 
-	cons::colour_pair p { COLOR_CYAN, -1 };
+	static cons::colour_pair p { COLOR_CYAN, -1 };
 	frame.set_colour(p);
 
 	if(dim.y > 0) {
@@ -89,7 +90,7 @@ void message_stencil::operator()(part_message& msg) {
 		pos=frame.write(pos, ts);
 		pos=frame.write(pos, ' ');
 
-				frame.set_bold(true);
+		frame.set_bold(true);
 		pos=frame.write(pos, *pfx.nick);
 		frame.set_bold(false);
 		pos=frame.write(pos, " has parted");

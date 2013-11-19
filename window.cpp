@@ -14,12 +14,9 @@ window::window(unique_window_ptr        handle,
 :	base          ( /*TODO: gcc 4.8 allows {} braces here */                 ) 
 ,	buf_          { buf                                                      }
 ,   timer         { io_service                                               }
-
 ,	title_anchor  { std::move(handle), 1                                     }
-,	input_anchor  ( title_anchor.emplace_fill<anchor_bottom>(1)              )
-,	status_anchor ( input_anchor.emplace_fill<anchor_bottom>(1)              ) //check
+,	status_anchor ( title_anchor.emplace_fill<anchor_bottom>(1)              ) //check
 ,	title         ( title_anchor.emplace_anchor<text_box>("title")           )
-,	input         ( input_anchor.emplace_anchor<async_input_box>(io_service) )
 ,	status        ( status_anchor.emplace_anchor<text_box>("status")         )
 ,	message_list  ( status_anchor.emplace_fill<msg_list>()                   )
 {

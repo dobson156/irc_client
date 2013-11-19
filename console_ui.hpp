@@ -24,16 +24,18 @@ class ui {
 	using message_p    =std::shared_ptr<message>;
 //Member types
 	using anchor_left  =anchor_view<anchors::left>;
+	using anchor_bottom=anchor_view<anchors::bottom>;
 	using text_list    =stenciled_list<string_stencil>;
 
 //Member variables
 //UI elements
 	anchor_left         parent;
+	anchor_bottom&      input_anchor;
 	bordered&           channel_border;
 	text_list&          channel_list;
+	async_input_box&    input;
 	window&             window1; //todo vector of windows
 
-	//async_input_box&    input;
 
 //Callbacks
 	boost::asio::io_service *io_service;
@@ -78,7 +80,7 @@ cons::bsig::connection ui::connect_on_ctrl_char(F&& f) {
 
 template<typename F>
 cons::bsig::connection ui::connect_on_text_input(F&& f) {
-	return window1.connect_on_text_input(std::forward<F>(f));
+	return input.connect_on_input(std::forward<F>(f));
 }
 
 } //namespace ui_impl
