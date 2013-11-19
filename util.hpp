@@ -35,6 +35,7 @@ boost::optional<std::string> get_user_name();
 std::string time_to_string(const std::chrono::system_clock::time_point& pt=
                                  std::chrono::system_clock::now());
 
+std::chrono::system_clock::time_point get_next_min();
 
 } //namespace util
 	

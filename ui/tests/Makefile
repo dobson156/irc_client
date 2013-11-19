@@ -7,7 +7,7 @@ LFLAGS?= $(OPTS)
 
 LIB   =../console.o -lncurses -lpthread -lboost_system -lboost_signals
 
-PROGS=frames anchors ui_test input_box_test simple typing_game async_input_box_test input_manager_test scroll_test #colour_cpy attrib_test async_term
+PROGS=frames anchors ui_test input_box_test simple typing_game async_input_box_test input_manager_test scroll_test colour_pallet colour_cpy attrib_test async_term
 all: $(PROGS)
 
 %: %.cpp 

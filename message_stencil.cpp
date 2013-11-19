@@ -46,11 +46,9 @@ void message_stencil::operator()(join_message& msg) {
 	cons::point pos {0,0};
 	auto dim=frame.get_dimension();
 
-	cons::colour_pair p { COLOR_CYAN, -1 };
-	frame.set_colour(p);
+	frame.set_colour({ COLOR_GREEN, -1 });
 
 	if(dim.y > 0) {
-		frame.set_dim(true);
 		const auto& pfx=msg.get_prefix();
 		auto ts=util::time_to_string(msg.get_time_stamp());
 		pos=frame.write(pos, ts);
@@ -58,14 +56,17 @@ void message_stencil::operator()(join_message& msg) {
 		assert(pfx.nick);
 		pos=frame.write(pos, ' ');
 		frame.set_bold(true);
+		frame.set_colour({ COLOR_CYAN, -1 });
+
 		pos=frame.write(pos, *pfx.nick);
 		frame.set_bold(false);
 		pos=frame.write(pos, " has joined ");
 
 		std::ostringstream oss;
 		oss << pfx;
+
+		frame.set_colour( { COLOR_BLUE, -1 } );
 		pos=frame.write(pos, oss.str());
-		frame.set_dim(false);
 	}
 	last=cons::point{dim.x, pos.y+1};
 }

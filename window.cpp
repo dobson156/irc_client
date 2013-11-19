@@ -3,6 +3,7 @@
 #include "buffer.hpp"
 
 #include <limits>
+#include <fstream>
 
 namespace ui_impl {
 
@@ -12,8 +13,7 @@ window::window(unique_window_ptr        handle,
 
 :	base          ( /*TODO: gcc 4.8 allows {} braces here */                 ) 
 ,	buf_          { buf                                                      }
-//,   timer         { io_service, boost::posix_time::minutes(1)                }
-,   timer         { io_service, boost::posix_time::seconds(1)                }
+,   timer         { io_service                                               }
 
 ,	title_anchor  { std::move(handle), 1                                     }
 ,	input_anchor  ( title_anchor.emplace_fill<anchor_bottom>(1)              )
@@ -28,19 +28,24 @@ window::window(unique_window_ptr        handle,
 	message_list.selected_idx(std::numeric_limits<msg_list::size_type>::max());
 	retarget_buffer();
 	title.set_background(COLOR_BLUE);
-	status.set_background(COLOR_BLUE);
 
-	timer.async_wait(
-		[&](const boost::system::error_code&) { set_status(); });
+	timer.expires_at(util::get_next_min());
+	timer.async_wait(std::bind(&window::timer_set_status, this, ph::_1));
 }
 
 void window::set_status() {
 	auto& b=buf_.get();
-	std::string name=b.get_name();
-	status.set_content(util::time_to_string() + " " + name);
+	status.set_content(util::time_to_string() + " " + b.get_name());
 	status.refresh();
 }
 
+void window::timer_set_status(const boost::system::error_code& ec) {
+	if(!ec) {
+		set_status();
+	}
+	timer.expires_at(util::get_next_min()); //resubscribe
+	timer.async_wait(std::bind(&window::timer_set_status, this, ph::_1));
+}
 
 void window::retarget_buffer() {
 	auto& buff=buf_.get();
@@ -50,7 +55,9 @@ void window::retarget_buffer() {
 		buff.messages_begin(), 
 		buff.messages_end()
 	);
-	status.set_content(buf_.get().get_topic());
+
+	set_status();
+
 	title.set_content(buf_.get().get_topic());
 
 	con_topic_change=buff.connect_on_topic_change(

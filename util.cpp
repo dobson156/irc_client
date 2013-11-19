@@ -17,7 +17,12 @@ std::string time_to_string(const std::chrono::system_clock::time_point& pt) {
 	std::string ts(6, '\0');
 	std::strftime(&ts[0], ts.size(), "%R", std::localtime(&t));
 	ts.pop_back();
-	return ts; //TODO: shrink str
+	return ts; 
+}
+
+std::chrono::system_clock::time_point get_next_min() {
+	return std::chrono::time_point_cast<std::chrono::minutes>(
+		std::chrono::system_clock::now() + std::chrono::minutes(1));
 }
 
 }

@@ -2,7 +2,7 @@
 #define WINDOW_HPP
 
 #include <boost/asio/io_service.hpp>
-#include <boost/asio/deadline_timer.hpp>
+#include <boost/asio/system_timer.hpp>
 
 #include "ui/console.hpp"
 
@@ -22,30 +22,30 @@ using namespace cons;
 
 class window : public base {
 //Member types
-	using anchor_top   =anchor_view<anchors::top>;
-	using anchor_bottom=anchor_view<anchors::bottom>;
-	using text_box     =stenciled_frame<string_stencil>;
-	using msg_list     =stenciled_list<message_stencil>;
+	using anchor_top              =anchor_view<anchors::top>;
+	using anchor_bottom           =anchor_view<anchors::bottom>;
+	using text_box                =stenciled_frame<string_stencil>;
+	using msg_list                =stenciled_list<message_stencil>;
 //Member variables
 	unique_connection              con_topic_change, 
 	                               con_new_msg;
 	std::reference_wrapper<buffer> buf_;
-	boost::asio::deadline_timer    timer;
-
+	boost::asio::system_timer      timer; //for updating the clock
 //UI elements
-	anchor_top          title_anchor;
-	anchor_bottom&      input_anchor;
-	anchor_bottom&      status_anchor;
+	anchor_top                     title_anchor;
+	anchor_bottom&                 input_anchor;
+	anchor_bottom&                 status_anchor;
 
-	text_box&           title;
-	async_input_box&    input;
-	text_box&           status;
-	msg_list&           message_list;
+	text_box&                      title;
+	async_input_box&               input;
+	text_box&                      status;
+	msg_list&                      message_list;
 
 //helpers
 	//resets the internal routing for the buffer stored in buf_
 	void retarget_buffer();
 	void set_status();
+	void timer_set_status(const boost::system::error_code&);
 public:
 	window(unique_window_ptr        handle, 
 	       boost::asio::io_service& io_service, //for async_input_box
