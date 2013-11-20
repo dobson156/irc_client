@@ -9,7 +9,6 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )
 :	parent         { make_window(), 16                                         }	
 ,	input_anchor   ( parent.emplace_fill<anchor_bottom>(1)                     )
 ,	channel_border ( parent.emplace_anchor<bordered>(borders::right)           )
-
 ,	channel_list   ( channel_border.emplace_element<text_list>()               ) 
 ,	input          ( input_anchor.emplace_anchor<async_input_box>(io_service_) )
 ,	window1        ( input_anchor.emplace_fill<window>(io_service_, buffer)    )

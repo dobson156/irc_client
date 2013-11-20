@@ -21,39 +21,32 @@ namespace ui_impl {
 using namespace cons;
 
 class ui {
-	using message_p    =std::shared_ptr<message>;
 //Member types
-	using anchor_left  =anchor_view<anchors::left>;
-	using anchor_bottom=anchor_view<anchors::bottom>;
-	using text_list    =stenciled_list<string_stencil>;
-
+	using message_p         =std::shared_ptr<message>;
+	using anchor_left       =anchor_view<anchors::left>;
+	using anchor_bottom     =anchor_view<anchors::bottom>;
+	using text_list         =stenciled_list<string_stencil>;
 //Member variables
 //UI elements
-	anchor_left         parent;
-	anchor_bottom&      input_anchor;
-	bordered&           channel_border;
-	text_list&          channel_list;
-	async_input_box&    input;
-	window&             window1; //todo vector of windows
-
-
-//Callbacks
+	anchor_left              parent;
+	anchor_bottom&           input_anchor;
+	bordered&                channel_border;
+	text_list&               channel_list;
+	async_input_box&         input;
+	window&                  window1; //todo vector of windows
 	boost::asio::io_service *io_service;
-	cons::sig_s              on_text_input;
+//Callbacks
 	cons::sig_ctrl_ch        on_ctrl_char;
 
 	void refresh();
 public:
 	ui(boost::asio::io_service& io_service, buffer& buffer);
 	void stop();
-//event handlers	
-
 //accessors
 	window& get_selected_window();
 	const window& get_selected_window() const;
 //setters
 	void set_selected_channel(const std::string& channel_name);
-
 	void set_input(const std::string& str);
 	void destory_window(const window& win);
 
@@ -62,7 +55,7 @@ public:
 
 	template<typename F> cons::bsig::connection connect_on_ctrl_char(F&& f);
 	template<typename F> cons::bsig::connection connect_on_text_input(F&& f);
-};
+}; //class ui
 
 
 //IMPL

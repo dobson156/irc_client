@@ -47,7 +47,7 @@ void message_stencil::operator()(join_message& msg) {
 	auto dim=frame.get_dimension();
 
 	//This need to be static so the colours are consistant
-	static cons::colour_pair cyn { COLOR_CYAN,  -1 };
+	static cons::colour_pair cyn { COLOR_GREEN,  -1 };
 	frame.set_colour(cyn);
 
 	if(dim.y > 0) {

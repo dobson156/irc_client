@@ -3,7 +3,6 @@
 #include "buffer.hpp"
 
 #include <limits>
-#include <fstream>
 
 namespace ui_impl {
 
@@ -31,7 +30,7 @@ window::window(unique_window_ptr        handle,
 }
 
 void window::set_status() {
-	auto& b=buf_.get();
+	auto& b=get_buffer();
 	status.set_content(util::time_to_string() + " " + b.get_name());
 	status.refresh();
 }
@@ -45,7 +44,7 @@ void window::timer_set_status(const boost::system::error_code& ec) {
 }
 
 void window::retarget_buffer() {
-	auto& buff=buf_.get();
+	auto& buff=get_buffer();
 	message_list.clear(); //TODO implement assign
 	message_list.insert(
 		message_list.begin(), 
@@ -55,11 +54,11 @@ void window::retarget_buffer() {
 
 	set_status();
 
-	title.set_content(buf_.get().get_topic());
+	title.set_content(get_buffer().get_topic());
 
 	con_topic_change=buff.connect_on_topic_change(
 		[&](buffer& b, const std::string& new_title) {
-			assert(&b==&buf_.get());
+			assert(&b==&get_buffer());
 
 			title.set_content(new_title);
 			title.refresh();
@@ -68,7 +67,7 @@ void window::retarget_buffer() {
 
 	con_new_msg=buff.connect_on_new_message(
 		[&](buffer& b, const std::shared_ptr<message>& msg) {
-			assert(&b==&buf_.get());
+			assert(&b==&get_buffer());
 
 			message_list.insert(message_list.end(), msg);
 			message_list.refresh();

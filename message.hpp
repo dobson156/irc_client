@@ -103,7 +103,4 @@ public:
 	const std::string& get_error() const;
 }; //chan_message
 
-
-
-
 #endif //MESSAGE_HPP

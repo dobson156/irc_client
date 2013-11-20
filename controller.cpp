@@ -9,8 +9,6 @@
 #include <boost/iterator/transform_iterator.hpp>
 
 #include <exception>
-#include <iostream>
-#include <fstream>
 
 void controller::set_channel(buffer& buff) {
 	auto& win=view.get_selected_window();
@@ -275,7 +273,7 @@ log_buffer& controller::get_or_make_error_buffer() {
 controller::controller() 
 // can not init init list form r vals, hence lmbd hack
 :	buffers       {	[]{	std::vector<std::unique_ptr<buffer>> b; 
-	                  	b.push_back(util::make_unique<buffer>("status"));
+	                  	b.push_back(util::make_unique<log_buffer>("status"));
 						return b;
 	                }()
                   }
