@@ -1,6 +1,8 @@
 #ifndef MESSAGE_HPP
 #define MESSAGE_HPP
 
+#include "irc/channel.hpp"
+#include "irc/user.hpp"
 #include "irc/prefix.hpp"
 
 #include <chrono>
@@ -102,5 +104,19 @@ public:
 
 	const std::string& get_error() const;
 }; //chan_message
+
+class names_list : public message {
+	struct nick_details { std::string user_nick; bool is_operator; };
+	std::vector<nick_details> nicks;
+
+	template<typename Iter>
+	names_list(Iter first, Iter last, const irc::channel& ch) {
+		std::transform(first, last, std::back_inserter(nicks),
+			[&](const irc::user& u) {
+				return { u.get_nick(), ch.is_operator(u) };
+			}
+		);
+	}
+};
 
 #endif //MESSAGE_HPP
