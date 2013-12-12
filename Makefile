@@ -6,15 +6,15 @@ export LNK =$(CPP)
 export OPTS =-O0 -ggdb 
 #-DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 
-INC          =
-LIB          =-lncurses -lboost_system -lboost_signals -lpthread
+INC          =-I /usr/include/python2.7
+LIB          =-lncurses -lboost_python -lboost_system -lboost_signals -lpthread -lpython2.7
 
-export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors -DBOOST_SIGNALS_NO_DEPRECATION_WARNING -DBOOST_RESULT_OF_USE_DECLTYPE
+export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors -DBOOST_SIGNALS_NO_DEPRECATION_WARNING -DBOOST_RESULT_OF_USE_DECLTYPE -DUSING_PYTHON
 
 export LFLAGS=$(OPTS)
 
 #slow objects are library elements and spirit parsers 
-SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o
+SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o python_interface.o
 FAST_OBJS=controller.o program.o console_ui.o message.o message_stencil.o channel_buffer.o session_buffer.o error_buffer.o buffer.o unique_connection.o window.o util.o
 OBJS=$(SLOW_OBJS) $(FAST_OBJS)
 

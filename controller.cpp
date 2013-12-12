@@ -32,11 +32,10 @@ void controller::handle_connection_connect(
 	sessions.push_back(
 		util::make_unique<irc::session>(
 			std::move(connection), 
-			"test156", "test156"
+			default_nick, default_username 
 		)
 	);
 	auto& session=sessions.back();
-
 	auto sess_win=util::make_unique<session_buffer>(*session);
 
 	buffers.push_back(std::move(sess_win));
@@ -76,6 +75,10 @@ void controller::handle_connection_connect(
 		}
 
 	);
+
+#ifdef USING_PYTHON
+	python_controller.accept_new_session(*session);
+#endif //USING_PYTHON
 }
 
 void controller::start_connection(const std::string& server) {
@@ -285,6 +288,16 @@ controller::controller()
 	view.connect_on_ctrl_char(
 		std::bind(&controller::handle_ctrl_char, this, ph::_1));
 	
+#ifdef USING_PYTHON
+	python_controller.connect_on_connect(
+		[this](const std::string& server) { start_connection(server); });
+	python_controller.connect_on_change_default_nick(
+		[this](const std::string s) { default_nick=s; });
+	python_controller.connect_on_change_default_username(
+		[this](const std::string s) { default_username=s; });
+	python_controller.reload_conf();
+#endif //USING_PYTHON
+
 	set_channels();
 }
 

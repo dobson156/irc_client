@@ -3,6 +3,9 @@
 
 #include "buffer.hpp"
 #include "console_ui.hpp"
+#ifdef USING_PYTHON
+	#include "python_interface.hpp"
+#endif //USING_PYTHON
 
 #include <boost/asio/io_service.hpp>
 
@@ -47,12 +50,19 @@ class controller {
 	log_buffer& get_or_make_error_buffer();
 
 //varaibles
+	std::string                                   default_nick,
+	                                              default_username;
 	std::vector<std::unique_ptr<buffer>>          buffers;
 	boost::asio::io_service                       io_service;
 	ui                                            view;
 	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
-	bool                                          show_errors      { true    };
+	bool                                          show_errors      { true };
+
+#ifdef USING_PYTHON
+	python_interface python_controller;
+#endif //USING_PYTHON
+
 public:
 	controller();
 	~controller();
