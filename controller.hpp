@@ -64,7 +64,7 @@ class controller {
 #endif //USING_PYTHON
 
 public:
-	controller();
+	controller(std::string pyton_config_file);
 	~controller();
 	controller(const controller&)=delete;
 	void run();

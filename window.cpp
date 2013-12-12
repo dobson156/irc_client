@@ -8,11 +8,11 @@ namespace ui_impl {
 
 window::window(unique_window_ptr        handle, 
                boost::asio::io_service& io_service, 
-			   buffer&                  buf) 
+               buffer&                  buf) 
 
 :	base          ( /*TODO: gcc 4.8 allows {} braces here */                 ) 
 ,	buf_          { buf                                                      }
-,   timer         { io_service                                               }
+,	timer         { io_service                                               }
 ,	title_anchor  { std::move(handle), 1                                     }
 ,	status_anchor ( title_anchor.emplace_fill<anchor_bottom>(1)              ) //check
 ,	title         ( title_anchor.emplace_anchor<text_box>("title")           )

@@ -273,14 +273,15 @@ log_buffer& controller::get_or_make_error_buffer() {
 }
 
 
-controller::controller() 
+controller::controller(std::string pyton_config_file_)
 // can not init init list form r vals, hence lmbd hack
 :	buffers       {	[]{	std::vector<std::unique_ptr<buffer>> b; 
-	                  	b.push_back(util::make_unique<log_buffer>("status"));
-						return b;
-	                }()
-                  }
-,	view          { io_service, *buffers[0]           }
+	                 		b.push_back(util::make_unique<log_buffer>("status"));
+							return b;
+	                 	}()
+                      }
+,	view              { io_service, *buffers[0]           }
+,	python_controller { std::move(pyton_config_file_)  }
 {
 	view.connect_on_text_input(
 		std::bind(&controller::handle_text_input, this, ph::_1));

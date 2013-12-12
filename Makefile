@@ -7,7 +7,7 @@ export OPTS =-O0 -ggdb
 #-DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 
 INC          =-I /usr/include/python2.7
-LIB          =-lncurses -lboost_python -lboost_system -lboost_signals -lpthread -lpython2.7
+LIB          =-lncurses -lboost_python -lboost_system -lboost_program_options -lboost_signals -lpthread -lpython2.7
 
 export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors -DBOOST_SIGNALS_NO_DEPRECATION_WARNING -DBOOST_RESULT_OF_USE_DECLTYPE -DUSING_PYTHON
 

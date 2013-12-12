@@ -113,7 +113,7 @@ class names_list : public message {
 	names_list(Iter first, Iter last, const irc::channel& ch) {
 		std::transform(first, last, std::back_inserter(nicks),
 			[&](const irc::user& u) {
-				return { u.get_nick(), ch.is_operator(u) };
+				return nick_details { u.get_nick(), ch.is_operator(u) };
 			}
 		);
 	}
