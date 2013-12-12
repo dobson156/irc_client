@@ -26,14 +26,15 @@ int main(int argc, char **argv) {
 			
 			const std::string& python_file= vm.count("config-script") > 0
 			                              ? vm["config-script"].as<std::string>()
-										  : "t.py"
-										  ;
+			                              : "t.py"
+			                              ;
 
 			controller ctrl { python_file };
 			ctrl.run();
 		}
 	}
 	catch(const std::exception& ex) {
+		std::cerr << ex.what() << std::endl;
 		return EXIT_FAILURE;
 	}
 	return EXIT_SUCCESS;
