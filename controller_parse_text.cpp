@@ -35,7 +35,7 @@ void controller::parse_text(std::string::const_iterator first,
 	qi::phrase_parse(
 		first,
 		last,
-		( !lit('/') >> str_to_end                 [ phx::bind( &::controller::handle_text,    this, _1 )     ]
+		( !lit('/') >> str_to_end                [ phx::bind( &::controller::handle_text,    this, _1 )     ]
 		|'/' 
 		>> ( cmd_nm('j', "oin" ) >> (+str)       [ phx::bind( &::controller::handle_join,    this, _1 )     ]
 		   | cmd_nm('m', "sg"  ) >> (str >> str) [ phx::bind( &::controller::handle_msg,     this, _1, _2 ) ]

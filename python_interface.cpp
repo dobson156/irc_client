@@ -114,14 +114,30 @@ python_interface::python_interface(std::string python_file_)
 	Py_Initialize();
 	initirc_client();
 
-	std::string error_redirect=//is it worth doing this is C++ instead
+	std::string error_redirect=//is it worth doing this is C++ instead?
 		"import sys\n"
 		"class stderr_redirect:\n"
+		"	def __init__(self):\n"
+		"		self.value=''\n"
 		"	def write(self, txt):\n"
-		"		irc.write_error(txt)\n\n"
+		"		self.value+=txt\n"
+		"		i=self.value.find('\\n')\n"
+		"		while(i != -1):\n"
+		"			v2=self.value[:i]\n"
+		"			irc.write_error(v2)\n"
+		"			self.value=self.value[i+1:]\n"
+		"			i=self.value.find('\\n')\n\n"
 		"class stdout_redirect:\n"
+		"	def __init__(self):\n"
+		"		self.value=''\n"
 		"	def write(self, txt):\n"
-		"		irc.write_output(txt)\n\n"
+		"		self.value+=txt\n"
+		"		i=self.value.find('\\n')\n"
+		"		while(i != -1):\n"
+		"			v2=self.value[:i]\n"
+		"			irc.write_output(v2)\n"
+		"			self.value=self.value[i+1:]\n"
+		"			i=self.value.find('\\n')\n\n"		
 		"ed=stderr_redirect()\n"
 		"od=stdout_redirect()\n"
 		"sys.stderr=ed\n"
