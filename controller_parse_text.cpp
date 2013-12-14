@@ -37,15 +37,15 @@ void controller::parse_text(std::string::const_iterator first,
 		last,
 		( !lit('/') >> str_to_end                 [ phx::bind( &::controller::handle_text,    this, _1 )     ]
 		|'/' 
-		>>  ( cmd_nm('j', "oin" ) >> (+str)       [ phx::bind( &::controller::handle_join,    this, _1 )     ]
-			| cmd_nm('m', "sg"  ) >> (str >> str) [ phx::bind( &::controller::handle_msg,     this, _1, _2 ) ]
-			| cmd_nm('l', "eave") >> (str >> str) [ phx::bind( &::controller::handle_part,    this, _1, _2 ) ]
-			| "connect"           >> str          [ phx::bind( &::controller::handle_connect, this, _1 )     ]
-			| "nick"              >> str          [ phx::bind( &::controller::handle_nick,    this, _1 )     ]
-			| "exec"              >> str          [ phx::bind( &::controller::handle_exec,    this, _1 )     ]
-			| lit("quit")                         [ phx::bind( &::controller::handle_quit,    this)          ]
-			| lit("names")                        [ phx::bind( &::controller::handle_names,   this)          ]
-			)
+		>> ( cmd_nm('j', "oin" ) >> (+str)       [ phx::bind( &::controller::handle_join,    this, _1 )     ]
+		   | cmd_nm('m', "sg"  ) >> (str >> str) [ phx::bind( &::controller::handle_msg,     this, _1, _2 ) ]
+		   | cmd_nm('l', "eave") >> (str >> str) [ phx::bind( &::controller::handle_part,    this, _1, _2 ) ]
+		   | "connect"           >> str          [ phx::bind( &::controller::handle_connect, this, _1 )     ]
+		   | "nick"              >> str          [ phx::bind( &::controller::handle_nick,    this, _1 )     ]
+		   | "exec"              >> str          [ phx::bind( &::controller::handle_exec,    this, _1 )     ]
+		   | lit("quit")                         [ phx::bind( &::controller::handle_quit,    this)          ]
+		   | lit("names")                        [ phx::bind( &::controller::handle_names,   this)          ]
+		   )
 		)
 		, 
 		space
