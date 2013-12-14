@@ -12,6 +12,7 @@ public:
 	virtual void operator()(part_message&)=0;
 	virtual void operator()(motd_message&)=0;
 	virtual void operator()(error_message&)=0;
+	virtual void operator()(list_message&)=0;
 };
 
 #endif //MESSAGE_HPP

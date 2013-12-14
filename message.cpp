@@ -100,3 +100,24 @@ void error_message::visit(message_vistor& visitor) {
 const std::string& error_message::get_error() const {
 	return error;
 }
+
+void list_message::visit(message_vistor& visitor) {
+	visitor(*this);
+}
+
+list_message::const_iterator list_message::begin() const {
+	return store.begin();
+}
+list_message::const_iterator list_message::end() const {
+	return store.end();
+}
+
+std::size_t list_message::max_element_size() const {
+	auto it=std::max_element(store.begin(), store.end(), 
+		[](const_reference a, const_reference b) {
+			return a.first.size() < b.first.size();
+		}
+	);
+	if(it==store.end()) return 0;
+	return it->first.size();
+}

@@ -4,8 +4,6 @@
 #include "irc/session.hpp"
 #include "irc/channel.hpp"
 
-#include <ncurses.h> //endwin
-
 #include <Python.h>
 #include <boost/python.hpp>
 

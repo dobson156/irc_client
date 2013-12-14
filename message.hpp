@@ -105,6 +105,7 @@ public:
 	const std::string& get_error() const;
 }; //chan_message
 
+/*
 class names_list : public message {
 	struct nick_details { std::string user_nick; bool is_operator; };
 	std::vector<nick_details> nicks;
@@ -118,5 +119,28 @@ class names_list : public message {
 		);
 	}
 };
+*/
+
+class list_message : public message {
+public:
+	//text, colour
+	using value_type     =std::pair<std::string, short>;
+	using const_reference=const value_type&;
+	using container_type =std::vector<value_type>;
+	using const_iterator =container_type::const_iterator;
+	
+	template<typename Iter>
+	list_message(Iter first, Iter last) 
+	:	store(first, last)
+	{   }
+
+	void visit(message_vistor& visitor) override;
+	std::size_t max_element_size() const;
+
+	const_iterator begin() const;
+	const_iterator end() const;
+private:
+	container_type store;
+}; //list_message
 
 #endif //MESSAGE_HPP

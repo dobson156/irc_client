@@ -60,8 +60,28 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 		std::move(usr_sig), std::move(usr_prt_sig), 
 		std::move(msg_sig), std::move(topic_sig) 
 	} );
+
+	connections.push_back(
+		chan.connect_on_list_users(
+			std::bind(&channel_buffer::list_names, this))
+	);
 }
 
+void channel_buffer::list_names() {
+	auto first=chan.begin_users(),
+	     last=chan.end_users();
+	
+	auto to_list_pair=[](const irc::user& u) {
+		return std::make_pair(u.get_nick(), -1);
+	};
+
+	messages.push_back(std::make_shared<list_message>(
+			boost::make_transform_iterator(first, to_list_pair),
+			boost::make_transform_iterator(last, to_list_pair)
+		)
+	);
+	on_new_msg(*this, messages.back());
+}
 
 channel_buffer::~channel_buffer() {
 	for(auto& con : connections) con.disconnect();

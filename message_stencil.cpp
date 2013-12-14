@@ -134,3 +134,37 @@ void message_stencil::operator()(error_message& msg) {
 	}
 	last=cons::point{dim.x, pos.y+1};
 }
+
+void message_stencil::operator()(list_message& msg) {
+	assert(frame_ && "frame was not valid");
+	cons::frame& frame=*frame_;
+	frame_=nullptr;
+
+	auto lement_wid=msg.max_element_size();
+	auto dim=frame.get_dimension();
+	auto time=util::time_to_string(msg.get_time_stamp());
+	cons::point pos{0,0};
+
+	if(dim.y > 0) {
+		pos=frame.write(pos, time);
+		pos=frame.write(pos, "in channel:");
+		
+		std::ostringstream oss;
+		std::for_each(msg.begin(), msg.end(),
+			[&](list_message::const_reference r) {
+				oss << r.first << ", ";
+			}
+		);
+		pos=frame.write(pos, oss.str());
+	}
+
+	/*
+	cons::point pos {0,0}, dim=frame.get_dimension();
+	std::istringstream iss { msg.get_error() };
+	std::string line;
+	for(int i=0; i!=dim.y && std::getline(iss, line); ++i) {
+		pos=frame.write({0,i}, line);
+	}
+	*/
+	last=cons::point{dim.x, pos.y+1};
+}

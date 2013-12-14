@@ -110,6 +110,7 @@ public:
 	channel_buffer(irc::channel& chan);
 	~channel_buffer();
 	const std::string& get_topic() const override;
+	void list_names();
 }; //channel_buffer
 
 
@@ -137,6 +138,5 @@ public:
 	~log_buffer() {}
 	void push_back_msg(std::string msg);
 }; //log_buffer
-
 
 #endif //BUFFER_HPP

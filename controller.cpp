@@ -212,7 +212,7 @@ void controller::handle_names() {
 		auto& chan=hs.get_channel();
 		auto& status=get_status_buffer();
 		
-		std::for_each( chan.user_begin(), chan.user_end(),
+		std::for_each( chan.begin_users(), chan.end_users(),
 			[&](const irc::user& u) { status.push_back_msg(u.get_nick()); }
 		);
 
@@ -308,12 +308,10 @@ controller::controller(std::string pyton_config_file_)
 	);
 	python_controller.connect_on_python_output(
 		[this](const std::string s) { 
-			//if(show_errors) {
-				auto& status_buf=get_status_buffer();
-				std::ostringstream oss;
-				oss << "PYTHON: " << s;
-				status_buf.push_back_msg(oss.str());
-			//}
+			auto& status_buf=get_status_buffer();
+			std::ostringstream oss;
+			oss << "PYTHON: " << s;
+			status_buf.push_back_msg(oss.str());
 		}
 	);
 	python_controller.reload_conf();
