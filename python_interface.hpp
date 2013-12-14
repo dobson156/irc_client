@@ -19,7 +19,9 @@ class python_interface {
 
 	sig_s          on_connect,
 	               on_change_default_nick,
-	               on_change_default_username;
+	               on_change_default_username,
+				   on_python_error,
+				   on_python_output;
 
 	py::object     main_module,
 	               main_namespace;
@@ -30,6 +32,8 @@ public:
 	void p_start_connection(const std::string& con);
 	void p_set_default_username(const std::string& con);
 	void p_set_default_nick(const std::string& con);
+	void p_write_error(const std::string& str);
+	void p_write_output(const std::string& str);
 
 	void accept_new_session(irc::session& connection);
 	//boost python doesn't like references without extra leg work
@@ -38,21 +42,29 @@ public:
 	template<typename F> void connect_on_connect(F&& f);
 	template<typename F> void connect_on_change_default_nick(F&& f);
 	template<typename F> void connect_on_change_default_username(F&& f);
+	template<typename F> void connect_on_python_error(F&& f);
+	template<typename F> void connect_on_python_output(F&& f);
 }; //class python_interface
 
 template<typename F> 
 void python_interface::connect_on_connect(F&& f) {
 	on_connect.connect(std::forward<F>(f));
 }
-
 template<typename F> 
 void python_interface::connect_on_change_default_nick(F&& f) {
 	on_change_default_nick.connect(std::forward<F>(f));
 }
-
 template<typename F> 
 void python_interface::connect_on_change_default_username(F&& f) {
 	on_change_default_username.connect(std::forward<F>(f));
+}
+template<typename F> 
+void python_interface::connect_on_python_error(F&& f) {
+	on_python_error.connect(std::forward<F>(f));
+}
+template<typename F> 
+void python_interface::connect_on_python_output(F&& f) {
+	on_python_output.connect(std::forward<F>(f));
 }
 
 #endif //PYTHON_INTERFACE

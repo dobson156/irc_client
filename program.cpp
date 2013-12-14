@@ -23,7 +23,6 @@ int main(int argc, char **argv) {
 			std::cout << desc << "\n";
 		}
 		else {
-			
 			const std::string& python_file= vm.count("config-script") > 0
 			                              ? vm["config-script"].as<std::string>()
 			                              : "t.py"

@@ -296,6 +296,26 @@ controller::controller(std::string pyton_config_file_)
 		[this](const std::string s) { default_nick=s; });
 	python_controller.connect_on_change_default_username(
 		[this](const std::string s) { default_username=s; });
+	python_controller.connect_on_python_error(
+		[this](const std::string s) { 
+			//if(show_errors) {
+				auto& status_buf=get_status_buffer();
+				std::ostringstream oss;
+				oss << "PYTHON ERROR: " << s;
+				status_buf.push_back_msg(oss.str());
+			//}
+		}
+	);
+	python_controller.connect_on_python_output(
+		[this](const std::string s) { 
+			//if(show_errors) {
+				auto& status_buf=get_status_buffer();
+				std::ostringstream oss;
+				oss << "PYTHON: " << s;
+				status_buf.push_back_msg(oss.str());
+			//}
+		}
+	);
 	python_controller.reload_conf();
 #endif //USING_PYTHON
 
