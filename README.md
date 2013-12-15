@@ -8,10 +8,10 @@ irc_client exposes a python interface to allow the user to configure and extend 
 
 Prerequisites
 ------------
- + A modern C++11 compiler (tested with g++ version: 4.7.2 and clang 3.2)
- + A modern boost installation (tested with boost 1.50 and newer)
+ + A modern C++11 compiler (tested with g++ version: 4.7.2, 4.82 and clang: 3.2)
+ + A modern boost installation (tested with boost 1.50 and 1.54)
  + ncurses libs
- + python2.7 libs (should also work with other python versions ify ou change the 
+ + python2.7 libs (should also work with other python versions ify ou change the Makefile
 
 You may need ot alter the $(LIB) and $(INC) in the `Makefile` at the root directory if your libraries are not in the normal places.
 
@@ -31,9 +31,6 @@ Basic Usage
     /connect <server name>
     /connect irc.freenode.net
 
-####TODO
-extend to allow nick and port numbers in this command
-     
 ###Joining a channel
 
 From the session or associated channel buffers you may issue the following to join a channel:
@@ -83,7 +80,7 @@ Please notify all error using stderr with `sys.stderr.write`, note you need to t
 
 	if(success):
 		print("success!")
-	else
+	else:
 		sys.stderr.write("failed!\n")
 
 ###Running python from the GUI
@@ -97,6 +94,24 @@ For example:
 	/python print "hello world"
 	/python execfile("my_py_file.py")
 	/python my_func() #assuming my_func is defined
+
+###Advice
+
+ * It is strongly recommend that you do not store any persistent references to sessions, channels, or users; instead get them from the API.
+ * It is recommended that you filter by registering handlers only the objects you are interested in. i.e.
+
+	#prefer
+	if(chan.get_nick() == interesting_chan):
+		chan.connect_on_message(
+			lambda u m:
+				foo(u, m)
+		)
+	#to
+	session.connect_on_message(
+		lambda chan, u m:
+			if(chan.get_nick()==interesting_nick):
+				foo(u, m)
+	)
 
 ###Thread safety
 
