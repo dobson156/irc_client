@@ -29,9 +29,6 @@ Basic Usage
 ###Connecting
 
     /connect <server name>
-
-ie
-
     /connect irc.freenode.net
 
 ####TODO
@@ -42,9 +39,6 @@ extend to allow nick and port numbers in this command
 From the session or associated channel buffers you may issue the following to join a channel:
 
     /join <channel name>
-    
-ie
-
     /join ##irc_client
     
 ###Leaving a channel
@@ -52,9 +46,6 @@ ie
 To leave a channel, on the associated channel buffer issue:
 
     /leave <your exit message>
-    
-ie
-
     /leave "goodbye cruel world" 
 
 Python (and config)
@@ -62,7 +53,6 @@ Python (and config)
 By default irc_client will look in your current directory for an `irc_config.py`, a specific config file may be specified with following flag:
 
 	irc_client --config-script=<your_script>
-ie
 	irc_client --config-script=my_annoying_irc_bot.py
 
 ###basic configuration
