@@ -1,3 +1,5 @@
+#include "../util.hpp"
+/*
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
@@ -31,3 +33,4 @@ Unsigned stou(const std::string& str, std::size_t *idx=nullptr, int base=10) {
 } //namespace util
 	
 #endif //UTIL_HPP
+*/

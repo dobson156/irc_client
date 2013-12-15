@@ -37,6 +37,24 @@ std::string time_to_string(const std::chrono::system_clock::time_point& pt=
 
 std::chrono::system_clock::time_point get_next_min();
 
+template<typename T>
+class assign_on_call {
+	T& val;
+public:
+	assign_on_call(T& val_)
+	:	val ( val_ )
+	{	}
+	
+	template<typename R>
+	void operator()(R&& r) { val=std::forward<R>(r); }
+}; //assign_on_call
+
+template<typename T>
+assign_on_call<T> make_assign_on_call(T& val) {
+	return { val };
+}
+
+
 } //namespace util
 	
 #endif //UTIL_HPP

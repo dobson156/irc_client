@@ -303,9 +303,9 @@ controller::controller(std::string pyton_config_file_)
 	python_controller.connect_on_connect(
 		[this](const std::string& server) { start_connection(server); });
 	python_controller.connect_on_change_default_nick(
-		[this](const std::string s) { default_nick=s; });
+		util::make_assign_on_call(default_nick));
 	python_controller.connect_on_change_default_username(
-		[this](const std::string s) { default_username=s; });
+		util::make_assign_on_call(default_username));
 	python_controller.connect_on_python_error(
 		[this](const std::string s) { 
 			if(show_errors) {
