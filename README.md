@@ -55,11 +55,26 @@ By default irc_client will look in your current directory for an `irc_config.py`
 	irc_client --config-script=<your_script>
 	irc_client --config-script=my_annoying_irc_bot.py
 
-###basic configuration
-The basic configuration setting used by the irc include
+###Basic configuration
+The basic configuration settings used by the irc_client include
 
     irc.default_username("myname145")
     irc.default_nick("mynick145")
+    irc.default_port("6667")
+
+of course, with this just being python you may do:
+
+	import getpass
+	#...
+	irc.default_username(getpass.getuser())
+
+Or whatever else you wish.
+
+###Connecting to a server
+You maybe initiate connections to a server from your config file.
+
+	irc.connect("<your_host_name>")
+	irc.connect("irc.freenode.net")
 
 ###IO
 You can print to the status buffer using python build in `print` statement.
@@ -70,6 +85,25 @@ Please notify all error using stderr with `sys.stderr.write`, note you need to t
 		print("success!")
 	else
 		sys.stderr.write("failed!\n")
+
+###Running python from the GUI
+
+You may run any valid python code from the GUI using:
+
+    /python <code>
+
+For example:
+
+	/python print "hello world"
+	/python execfile("my_py_file.py")
+	/python my_func() #assuming my_func is defined
+
+###Thread safety
+
+* Do not call into any of the exposed interface from any threads you may have spawned yourself
+* Do not block the main thread of execution (writing to a file is okay, waiting for a condition is not)
+
+This maybe relaxed later at a later date.
 
 License
 -------
