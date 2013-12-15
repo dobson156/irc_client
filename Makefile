@@ -2,16 +2,16 @@
 export CPP  =g++
 export LNK =$(CPP)
 
-#export OPTS         =-O3 -DNDEBUG
-export OPTS =-O0 -ggdb 
+export OPTS         =-Os
+#export OPTS =-O0 -ggdb 
 #-DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 
 INC          =-I /usr/include/python2.7
-LIB          =-lncurses -lboost_python -lboost_system -lboost_program_options -lboost_signals -lpthread -lpython2.7
+LIB          =-lncurses -lboost_python -lboost_system -lboost_program_options -lboost_signals -lpython2.7 -lpthread
+#LIB          =-Wl,-Bstatic -lncurses -lboost_python -lboost_system -lboost_program_options -lboost_signals -Wl,-Bdynamic -lpython2.7 -lpthread
 
-export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors -DBOOST_SIGNALS_NO_DEPRECATION_WARNING -DBOOST_RESULT_OF_USE_DECLTYPE -DUSING_PYTHON
-
-export LFLAGS=$(OPTS)
+export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors -DBOOST_SIGNALS_NO_DEPRECATION_WARNING -DBOOST_RESULT_OF_USE_DECLTYPE -DUSING_PYTHON -DNDEBUG
+export LFLAGS=$(OPTS) -flto
 
 #slow objects are library elements and spirit parsers 
 SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o python_interface.o
@@ -24,6 +24,7 @@ irc_client: $(OBJS)
 	cd ui && $(MAKE)
 	cd irc && $(MAKE)
 	$(LNK) $(OPTS) $^ -o $@ $(LIB)
+	strip $@
 
 ui/console.o:
 	cd ui && $(MAKE)

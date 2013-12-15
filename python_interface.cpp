@@ -56,11 +56,24 @@ static void channel_connect_on_message(irc::channel& chan, const py::object& fun
 		}
 	);
 }
-static void channel_connect_on_join(irc::channel& chan, const py::object& func) {
+static void channel_connect_on_user_join(irc::channel& chan, const py::object& func) {
 	chan.connect_on_user_join(
 		[&,func](irc::channel& chan, irc::user& user) {
 			try {
 				func(boost::ref(chan), boost::ref(user));
+			}
+			catch(const py::error_already_set&) {
+				PyErr_Print();
+			}
+		}
+	);
+}
+
+static void user_connect_on_channel_message(irc::user& user, const py::object& func) {
+	user.connect_on_channel_message(
+		[&,func](irc::channel& chan, irc::user& user, const std::string& msg) {
+			try {
+				func(boost::ref(chan), boost::ref(user), msg);
 			}
 			catch(const py::error_already_set&) {
 				PyErr_Print();
@@ -76,7 +89,7 @@ BOOST_PYTHON_MODULE(irc_client) {
 			py::return_value_policy<py::copy_const_reference>())
 		.def("send_message",            &irc::channel::async_send_message)
 		.def("connect_on_message",      &channel_connect_on_message)
-		.def("connect_on_join",         &channel_connect_on_join)
+		.def("connect_on_user_join",    &channel_connect_on_user_join)
 		;
 
 	py::object p_sess=py::class_<irc::session, boost::noncopyable>("session_t", py::no_init)
@@ -91,8 +104,9 @@ BOOST_PYTHON_MODULE(irc_client) {
 		;
 
 	py::object p_user=py::class_<irc::user, boost::noncopyable>("user_t", py::no_init)
-		.def("get_nick",                &irc::user::get_nick, 
+		.def("get_nick",                   &irc::user::get_nick, 
 			py::return_value_policy<py::copy_const_reference>())
+		.def("connect_on_channel_message", &user_connect_on_channel_message)
 		;
 
 	py::object p_irc=py::class_<python_interface, boost::noncopyable>("irc_t", py::no_init)

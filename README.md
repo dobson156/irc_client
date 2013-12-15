@@ -98,20 +98,24 @@ For example:
 ###Advice
 
  * It is strongly recommend that you do not store any persistent references to sessions, channels, or users; instead get them from the API.
- * It is recommended that you filter by registering handlers only the objects you are interested in. i.e.
+ * It is recommended that you filter by registering handlers only the objects you are interested in. For example:
 
-	#prefer
-	if(chan.get_nick() == interesting_chan):
-		chan.connect_on_message(
-			lambda u m:
-				foo(u, m)
+If you are only interested in certain users messages, prefer:
+
+	if(user.get_nick() == interesting_nick):
+		user.connect_on_channel_message(
+			lambda ch, us, m:
+				foo(ch, us, m)
 		)
-	#to
-	session.connect_on_message(
+to:
+
+	channel.connect_on_message(
 		lambda chan, u m:
-			if(chan.get_nick()==interesting_nick):
-				foo(u, m)
+			if(u.get_nick()==interesting_nick):
+				foo(ch, u, m)
 	)
+
+However if you wish to capture every users messages in a channel use the channel 
 
 ###Thread safety
 
