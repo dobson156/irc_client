@@ -27,6 +27,7 @@ class python_interface {
 	               main_namespace;
 public:
 	python_interface(std::string file_name="t.py"); 
+	void exec(const std::string& py_code);
 	void reload_conf();
 	void p_connect_new_session(py::object obj);
 	void p_start_connection(const std::string& con);

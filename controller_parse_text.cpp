@@ -45,6 +45,7 @@ void controller::parse_text(std::string::const_iterator first,
 		   | "exec"              >> str          [ phx::bind( &::controller::handle_exec,    this, _1 )     ]
 		   | lit("quit")                         [ phx::bind( &::controller::handle_quit,    this)          ]
 		   | lit("names")                        [ phx::bind( &::controller::handle_names,   this)          ]
+		   | "python"            >> str_to_end   [ phx::bind( &::controller::handle_python,  this, _1 )     ] 
 		   )
 		)
 		, 

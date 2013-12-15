@@ -190,6 +190,12 @@ void controller::handle_text(const std::string& text) {
 	}
 }
 
+void controller::handle_python(const std::string& py_code) {
+#ifdef USING_PYTHON
+	python_controller.exec(py_code);
+#endif //USING_PYTHON
+}
+
 void controller::handle_exec(const std::string& exec) {
 
 }

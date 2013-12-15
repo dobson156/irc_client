@@ -138,10 +138,8 @@ python_interface::python_interface(std::string python_file_)
 		"			irc.write_output(v2)\n"
 		"			self.value=self.value[i+1:]\n"
 		"			i=self.value.find('\\n')\n\n"		
-		"ed=stderr_redirect()\n"
-		"od=stdout_redirect()\n"
-		"sys.stderr=ed\n"
-		"sys.stdout=od\n"
+		"sys.stderr=stderr_redirect()\n"
+		"sys.stdout=stdout_redirect()\n"
 		;
 
 	main_module    =py::import("__main__");
@@ -154,6 +152,14 @@ python_interface::python_interface(std::string python_file_)
 	main_namespace["irc"]=py::ptr(this);
 }
 
+void python_interface::exec(const std::string& py_code) {
+	try {
+		py::exec(py_code.c_str(), main_namespace);
+	}
+	catch(const py::error_already_set&) {
+		PyErr_Print();
+	}
+}
 void python_interface::reload_conf() {
 	try {
 		auto result=py::exec_file(python_file.c_str(), main_namespace);

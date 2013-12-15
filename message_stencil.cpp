@@ -147,7 +147,7 @@ void message_stencil::operator()(list_message& msg) {
 
 	if(dim.y > 0) {
 		pos=frame.write(pos, time);
-		pos=frame.write(pos, "in channel:");
+		pos=frame.write(pos, " in channel: ");
 		
 		std::ostringstream oss;
 		std::for_each(msg.begin(), msg.end(),
