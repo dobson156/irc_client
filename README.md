@@ -35,8 +35,7 @@ ie
     /connect irc.freenode.net
 
 ####TODO
-
-     extend to allow nick and port numbers in this command
+extend to allow nick and port numbers in this command
      
 ###Joining a channel
 
@@ -63,9 +62,7 @@ Python (and config)
 By default irc_client will look in your current directory for an `irc_config.py`, a specific config file may be specified with following flag:
 
 	irc_client --config-script=<your_script>
-    
 ie
-
 	irc_client --config-script=my_annoying_irc_bot.py
 
 ###basic configuration
@@ -77,12 +74,12 @@ The basic configuration setting used by the irc include
 ###IO
 You can print to the status buffer using python build in `print` statement.
 
-Please notify all error using stderr with `sys.stderr.write("err")`
+Please notify all error using stderr with `sys.stderr.write`, note you need to terminate with a `\n` to flush to the status buffer.
 
-   if(success):
-       print("success!")
-   else
-       sys.stderr.write("failed!")
+	if(success):
+		print("success!")
+	else
+		sys.stderr.write("failed!\n")
 
 License
 -------

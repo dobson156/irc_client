@@ -157,14 +157,5 @@ void message_stencil::operator()(list_message& msg) {
 		);
 		pos=frame.write(pos, oss.str());
 	}
-
-	/*
-	cons::point pos {0,0}, dim=frame.get_dimension();
-	std::istringstream iss { msg.get_error() };
-	std::string line;
-	for(int i=0; i!=dim.y && std::getline(iss, line); ++i) {
-		pos=frame.write({0,i}, line);
-	}
-	*/
 	last=cons::point{dim.x, pos.y+1};
 }

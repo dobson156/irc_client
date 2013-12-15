@@ -165,8 +165,12 @@ void controller::handle_connect(const std::string& chan) {
 
 
 void controller::handle_nick(const std::string& nick) {
-	if(!sessions.empty()) {
-		sessions[0]->async_change_nick(nick);	
+	auto& win=view.get_selected_window();
+	auto& buf=win.get_buffer();
+
+	if(has_session hs { buf } ) {
+		auto& sess=hs.get_session();
+		sess.async_change_nick(nick);
 	}
 }
 
@@ -304,12 +308,12 @@ controller::controller(std::string pyton_config_file_)
 		[this](const std::string s) { default_username=s; });
 	python_controller.connect_on_python_error(
 		[this](const std::string s) { 
-			//if(show_errors) {
+			if(show_errors) {
 				auto& status_buf=get_status_buffer();
 				std::ostringstream oss;
 				oss << "PYTHON ERROR: " << s;
 				status_buf.push_back_msg(oss.str());
-			//}
+			}
 		}
 	);
 	python_controller.connect_on_python_output(
