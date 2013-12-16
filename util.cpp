@@ -1,14 +1,40 @@
 #include "util.hpp"
 
+#include <boost/algorithm/string.hpp>
+
 #include <cstdlib>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 namespace util {
 	
-boost::optional<std::string> get_user_name() {
+boost::optional<std::string> try_get_user_name() {
 	const char *usr=std::getenv("USER");
 	if(usr!=nullptr)
 		//return { usr };
 		return std::string{ usr };
+	return { };
+}
+
+
+
+boost::optional<std::string> try_get_full_name() {
+	//TODO: use regex
+	auto name=try_get_user_name();
+	if(!name) return { };
+	std::ifstream file { "/etc/passwd" };
+	std::string line, fn;
+	while(std::getline(file, line)) {
+		if(boost::starts_with(line, *name)) {
+			std::istringstream iss { line };
+			for(unsigned i=0; i!=4; ++i)
+				std::getline(iss, fn, ':');
+			if(std::getline(iss, fn, ','))
+				return fn;
+			return { };
+		}
+	}
 	return { };
 }
 

@@ -30,7 +30,9 @@ Unsigned stou(const std::string& str, std::size_t *idx=nullptr, int base=10) {
 	return result;
 }
 
-boost::optional<std::string> get_user_name();
+boost::optional<std::string> try_get_user_name();
+
+boost::optional<std::string> try_get_full_name();
 
 std::string time_to_string(const std::chrono::system_clock::time_point& pt=
                                  std::chrono::system_clock::now());
