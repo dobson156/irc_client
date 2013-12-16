@@ -2,6 +2,10 @@
 
 #include <boost/algorithm/string.hpp>
 
+#ifdef __unix__
+	#include <pwd.h>
+#endif
+
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
@@ -12,28 +16,25 @@ namespace util {
 boost::optional<std::string> try_get_user_name() {
 	const char *usr=std::getenv("USER");
 	if(usr!=nullptr)
-		//return { usr };
 		return std::string{ usr };
 	return { };
 }
 
-
-
 boost::optional<std::string> try_get_full_name() {
-	//TODO: use regex
 	auto name=try_get_user_name();
 	if(!name) return { };
-	std::ifstream file { "/etc/passwd" };
-	std::string line, fn;
-	while(std::getline(file, line)) {
-		if(boost::starts_with(line, *name)) {
-			std::istringstream iss { line };
-			for(unsigned i=0; i!=4; ++i)
-				std::getline(iss, fn, ':');
-			if(std::getline(iss, fn, ','))
-				return fn;
-			return { };
-		}
+
+	long bs=::sysconf(_SC_GETPW_R_SIZE_MAX);
+	if(bs==-1) bs=4096;
+
+	std::vector<char> buff ( bs );
+	passwd pwd, *res;
+
+	if(::getpwnam_r(name->c_str(), &pwd, buff.data(), buff.size(), &res)==0) {
+		std::string s=pwd.pw_gecos;
+		s.erase(std::find(begin(s), end(s), ','), end(s));
+		if(s.empty()) return { };
+		return s;
 	}
 	return { };
 }
