@@ -79,7 +79,7 @@ You can print to the status buffer using python build in `print` statement.
 Please notify all error using stderr with `sys.stderr.write`, note you need to terminate with a `\n` to flush to the status buffer.
 
 	if(success):
-		print("success!")
+		print "success!"
 	else:
 		sys.stderr.write("failed!\n")
 

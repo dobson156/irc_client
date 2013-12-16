@@ -16,7 +16,12 @@
 namespace irc { class connection; class session; }
 
 class controller {
-	void start_connection(const std::string& server_name);
+	void start_connection(const std::string& hostname);
+	void start_connection(const std::string& hostname, 
+                          const std::string& nickname, 
+                          const std::string& username,
+                          const std::string& fullname,
+                          const std::string& port);
 
 	void parse_text(std::string::const_iterator first, 
 	                std::string::const_iterator last);
@@ -50,9 +55,16 @@ class controller {
 	
 	log_buffer& get_or_make_error_buffer();
 
+	const std::string get_default_nick() const;
+	const std::string get_default_username() const;
+	const std::string get_default_fullname() const;
+	const std::string get_default_port() const;
+
 //varaibles
 	std::string                                   default_nick,
-	                                              default_username;
+	                                              default_username,
+	                                              default_fullname,
+	                                              default_port { "6667" };
 	std::vector<std::unique_ptr<buffer>>          buffers;
 	boost::asio::io_service                       io_service;
 	ui                                            view;

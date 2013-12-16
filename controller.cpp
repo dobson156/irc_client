@@ -32,7 +32,7 @@ void controller::handle_connection_connect(
 	sessions.push_back(
 		util::make_unique<irc::session>(
 			std::move(connection), 
-			default_nick, default_username 
+			default_nick, default_username, default_fullname
 		)
 	);
 	auto& session=sessions.back();
@@ -81,18 +81,26 @@ void controller::handle_connection_connect(
 #endif //USING_PYTHON
 }
 
-void controller::start_connection(const std::string& server) {
-	auto ic=irc::connection::make_shared(io_service, server, "6667");
+void controller::start_connection(const std::string& hostname) {
+	start_connection(hostname, get_default_nick(), get_default_username(), 
+		get_default_fullname(), get_default_port());
+}
+void controller::start_connection(const std::string& hostname, 
+                                  const std::string& nickname, 
+                                  const std::string& username,
+                                  const std::string& fullname,
+                                  const std::string& port) {
+	auto ic=irc::connection::make_shared(io_service, hostname, port);
 	ic->connect_on_resolve(
 		[=] {
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg("successfully resolved host " + server);
+			status_buf.push_back_msg("successfully resolved host " + hostname);
 		}
 	);
 	ic->connect_on_connect(
 		[=] {
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg("successfully connected to host " + server);
+			status_buf.push_back_msg("successfully connected to host " + hostname);
 			//TODO: ic has an sp to itself? probably not good!!!
 			handle_connection_connect(ic); 
 		}
@@ -282,6 +290,18 @@ log_buffer& controller::get_or_make_error_buffer() {
 	return r; 
 }
 
+const std::string controller::get_default_nick() const {
+	return default_nick;
+}
+const std::string controller::get_default_username() const {
+	return default_username;
+}
+const std::string controller::get_default_fullname() const {
+	return default_fullname;
+}
+const std::string controller::get_default_port() const {
+	return default_port;
+}
 
 controller::controller(std::string pyton_config_file_)
 // can not init init list form r vals, hence lmbd hack
@@ -293,6 +313,14 @@ controller::controller(std::string pyton_config_file_)
 ,	view              { io_service, *buffers[0]           }
 ,	python_controller { std::move(pyton_config_file_)  }
 {
+	auto username=util::try_get_user_name();
+	if(username) {
+		default_username=*username+"user";
+		default_nick=std::move(*username);
+	}
+	auto fullname=util::try_get_full_name();
+	if(fullname) default_fullname=std::move(*fullname);
+
 	view.connect_on_text_input(
 		std::bind(&controller::handle_text_input, this, ph::_1));
 
