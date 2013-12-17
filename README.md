@@ -55,9 +55,11 @@ By default irc_client will look in your current directory for an `irc_config.py`
 ###Basic configuration
 The basic configuration settings used by the irc_client include
 
-    irc.default_username("myname145")
-    irc.default_nick("mynick145")
-    irc.default_port("6667")
+```python
+irc.default_username("myname145")
+irc.default_nick("mynick145")
+irc.default_port("6667")
+```
 
 of course, with this just being python you may do:
 
