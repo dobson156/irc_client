@@ -74,18 +74,22 @@ Or whatever else you wish.
 ###Connecting to a server
 You maybe initiate connections to a server from your config file.
 
-	irc.connect("<your_host_name>")
-	irc.connect("irc.freenode.net")
+```python
+irc.connect("<your_host_name>")
+irc.connect("irc.freenode.net")
+```
 
 ###IO
 You can print to the status buffer using python build in `print` statement.
 
 Please notify all error using stderr with `sys.stderr.write`, note you need to terminate with a `\n` to flush to the status buffer.
 
-	if(success):
-		print "success!"
-	else:
-		sys.stderr.write("failed!\n")
+```python
+if(success):
+	print "success!"
+else:
+	sys.stderr.write("failed!\n")
+```
 
 ###Running python from the GUI
 
@@ -106,18 +110,22 @@ For example:
 
 If you are only interested in certain users messages, prefer:
 
-	if(user.get_nick() == interesting_nick):
-		user.connect_on_channel_message(
-			lambda ch, us, m:
-				foo(ch, us, m)
-		)
+```python
+if(user.get_nick() == interesting_nick):
+	user.connect_on_channel_message(
+		lambda ch, us, m:
+			foo(ch, us, m)
+	)
+```
 to:
 
-	channel.connect_on_message(
-		lambda chan, u m:
-			if(u.get_nick()==interesting_nick):
-				foo(ch, u, m)
-	)
+```python
+channel.connect_on_message(
+	lambda chan, u m:
+		if(u.get_nick()==interesting_nick):
+			foo(ch, u, m)
+)
+```
 
 However if you wish to capture every users messages in a channel use the channel 
 
