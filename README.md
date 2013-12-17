@@ -63,9 +63,11 @@ irc.default_port("6667")
 
 of course, with this just being python you may do:
 
-	import getpass
-	#...
-	irc.default_username(getpass.getuser())
+```python
+import getpass
+#...
+irc.default_username(getpass.getuser())
+```
 
 Or whatever else you wish.
 
