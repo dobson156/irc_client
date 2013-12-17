@@ -13,13 +13,15 @@ Prerequisites
  + ncurses libs
  + python2.7 libs (should also work with other python versions ify ou change the Makefile
 
-You may need ot alter the $(LIB) and $(INC) in the `Makefile` at the root directory if your libraries are not in the normal places.
+You may need ot alter the `$(LIB)` and `$(INC)` in the `Makefile` at the root directory if your libraries are not in the normal places.
 
 Building
 --------
 Ensuring that the prerequisites are met, we can simply build using:
 
-    make
+```bash
+make
+```
     
 Note you maybe speed up compilation by building in parallel (using `make -jN`) however note that building can be very memory hungry.
 
@@ -49,8 +51,10 @@ Python (and config)
 ------
 By default irc_client will look in your current directory for an `irc_config.py`, a specific config file may be specified with following flag:
 
-	irc_client --config-script=<your_script>
-	irc_client --config-script=my_annoying_irc_bot.py
+```bash
+irc_client --config-script=<your_script>
+irc_client --config-script=my_annoying_irc_bot.py
+```
 
 ###Basic configuration
 The basic configuration settings used by the irc_client include
@@ -121,7 +125,7 @@ to:
 
 ```python
 channel.connect_on_message(
-	lambda chan, u m:
+	lambda chan, u, m:
 		if(u.get_nick()==interesting_nick):
 			foo(ch, u, m)
 )
