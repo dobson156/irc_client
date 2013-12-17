@@ -27,13 +27,15 @@ void controller::set_channels() {
 }
 
 void controller::handle_connection_connect(
-                  std::shared_ptr<irc::connection> connection) {
+                  std::shared_ptr<irc::connection> connection,
+				  std::string nick,
+				  std::string username,
+				  std::string fullname) {
 	assert(connection && "can not craete sesion with invalid connection");
 	sessions.push_back(
 		util::make_unique<irc::session>(
-			std::move(connection), 
-			default_nick, default_username, default_fullname
-		)
+			std::move(connection), std::move(nick), 
+			std::move(username), std::move(fullname))
 	);
 	auto& session=sessions.back();
 	auto sess_win=util::make_unique<session_buffer>(*session);
@@ -102,7 +104,8 @@ void controller::start_connection(const std::string& hostname,
 			auto& status_buf=get_status_buffer();
 			status_buf.push_back_msg("successfully connected to host " + hostname);
 			//TODO: ic has an sp to itself? probably not good!!!
-			handle_connection_connect(ic); 
+			handle_connection_connect(ic, std::move(nickname),
+				std::move(username), std::move(fullname)); 
 		}
 	);
 	connections.push_back(std::move(ic));
