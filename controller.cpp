@@ -93,14 +93,12 @@ void controller::start_connection(const std::string& hostname,
                                   const std::string& fullname,
                                   const std::string& port) {
 	auto ic=irc::connection::make_shared(io_service, hostname, port);
-	ic->connect_on_resolve(
-		[=] {
+	ic->connect_on_resolve([=] {
 			auto& status_buf=get_status_buffer();
 			status_buf.push_back_msg("successfully resolved host " + hostname);
 		}
 	);
-	ic->connect_on_connect(
-		[=] {
+	ic->connect_on_connect([=] { //copying args to handle_connnection_connect
 			auto& status_buf=get_status_buffer();
 			status_buf.push_back_msg("successfully connected to host " + hostname);
 			//TODO: ic has an sp to itself? probably not good!!!

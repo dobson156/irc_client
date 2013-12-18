@@ -7,18 +7,57 @@
 #include <Python.h>
 #include <boost/python.hpp>
 
+
+//try catch, py catch, get it?
+template<typename F>
+struct py_catch {
+	F func;
+#if __GNUC_MINOR__ == 7
+	py_catch(F f) 
+	:	func ( std::move(f) )
+	{	}
+#else
+	template<typename F2>
+	py_catch(F2&& f) 
+	:	func ( std::forward<F2>(f) )
+	{	}
+#endif
+
+
+	py_catch(py_catch&&)=default;
+	py_catch(const py_catch&)=default;
+	py_catch& operator=(const py_catch&)=default;
+	py_catch& operator=(py_catch&&)=default;
+
+	template<typename... Args>
+	auto operator()(Args&&... args) 
+	-> decltype(func(std::forward<Args>(args)...)) {
+		try {
+			return func(std::forward<Args>(args)...);
+		}
+		catch(const py::error_already_set&) {
+			PyErr_Print();
+		}
+	}
+};
+
+template<typename F>
+py_catch<F> make_py_catch(F&& f) {
+	//return py_catch<F>( f );
+	return py_catch<F>( std::forward<F>(f) );
+}
+
+
+
 //TODO: code reduction, maybe a MACRO maybe not.
 static void session_connect_on_join_channel(irc::session& sess, const py::object& func) {
-	sess.connect_on_join_channel(
-		[&,func](irc::channel& chan) {
-			try {
-				func(boost::ref(chan));
-			}
-			catch(const py::error_already_set&) {
-				PyErr_Print();
-			}
-		}
-	);
+
+	sess.connect_on_join_channel(make_py_catch([&,func](irc::channel& chan) { func(boost::ref(chan)); }));
+
+//	sess.connect_on_join_channel(make_py_catch(
+//		std::move(f)
+		//	[&,func](irc::channel& chan) { func(boost::ref(chan)); })
+//	));
 }
 static void session_connect_on_user_notice(irc::session& sess, const py::object& func) {
 	sess.connect_on_user_notice(
