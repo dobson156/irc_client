@@ -10,19 +10,16 @@
 
 //try catch, py catch, get it?
 template<typename F>
-struct py_catch {
+class py_catch {
 	F func;
-#if __GNUC_MINOR__ == 7
-	py_catch(F f) 
-	:	func ( std::move(f) )
-	{	}
-#else
-	template<typename F2>
-	py_catch(F2&& f) 
+public:
+    template<
+		typename F2,
+		typename=typename std::enable_if<std::is_same<F2, F>::value, F>::type
+	> 
+    py_catch(F2&& f)
 	:	func ( std::forward<F2>(f) )
 	{	}
-#endif
-
 
 	py_catch(py_catch&&)=default;
 	py_catch(const py_catch&)=default;
@@ -40,85 +37,38 @@ struct py_catch {
 		}
 	}
 };
-
 template<typename F>
-py_catch<F> make_py_catch(F&& f) {
-	//return py_catch<F>( f );
-	return py_catch<F>( std::forward<F>(f) );
+py_catch<typename std::remove_reference<F>::type> make_py_catch(F&& f) {
+	return { std::forward<F>(f) };
 }
 
-
-
-//TODO: code reduction, maybe a MACRO maybe not.
 static void session_connect_on_join_channel(irc::session& sess, const py::object& func) {
-
-	sess.connect_on_join_channel(make_py_catch([&,func](irc::channel& chan) { func(boost::ref(chan)); }));
-
-//	sess.connect_on_join_channel(make_py_catch(
-//		std::move(f)
-		//	[&,func](irc::channel& chan) { func(boost::ref(chan)); })
-//	));
+	sess.connect_on_join_channel(make_py_catch(
+		[&,func](irc::channel& chan) { func(boost::ref(chan)); }));
 }
 static void session_connect_on_user_notice(irc::session& sess, const py::object& func) {
-	sess.connect_on_user_notice(
-		[&,func](irc::user& user, const std::string& msg) {
-			try {
-				func(boost::ref(user), msg);
-			}
-			catch(const py::error_already_set&) {
-				PyErr_Print();
-			}
-		}
-	);
+	sess.connect_on_user_notice(make_py_catch(
+		[&,func](irc::user& user, const std::string& msg) { 
+			func(boost::ref(user), msg); })); 
 }
 static void session_connect_on_new_user(irc::session& sess, const py::object& func) {
-	sess.connect_on_new_user(
-		[&,func](irc::user& user) {
-			try {
-				func(boost::ref(user));
-			}
-			catch(const py::error_already_set&) {
-				PyErr_Print();
-			}
-		}
-	);
+	sess.connect_on_new_user(make_py_catch(
+		[&,func](irc::user& user) { func(boost::ref(user)); }));
 }
 static void channel_connect_on_message(irc::channel& chan, const py::object& func) {
-	chan.connect_on_message(
+	chan.connect_on_message(make_py_catch(
 		[&,func](irc::channel& chan, irc::user& user, const std::string& str) {
-			try {
-				func(boost::ref(chan), boost::ref(user), str);
-			}
-			catch(const py::error_already_set&) {
-				PyErr_Print();
-			}
-		}
-	);
+				func(boost::ref(chan), boost::ref(user), str); }));
 }
 static void channel_connect_on_user_join(irc::channel& chan, const py::object& func) {
-	chan.connect_on_user_join(
+	chan.connect_on_user_join(make_py_catch(
 		[&,func](irc::channel& chan, irc::user& user) {
-			try {
-				func(boost::ref(chan), boost::ref(user));
-			}
-			catch(const py::error_already_set&) {
-				PyErr_Print();
-			}
-		}
-	);
+				func(boost::ref(chan), boost::ref(user)); }));
 }
-
 static void user_connect_on_channel_message(irc::user& user, const py::object& func) {
-	user.connect_on_channel_message(
+	user.connect_on_channel_message(make_py_catch(
 		[&,func](irc::channel& chan, irc::user& user, const std::string& msg) {
-			try {
-				func(boost::ref(chan), boost::ref(user), msg);
-			}
-			catch(const py::error_already_set&) {
-				PyErr_Print();
-			}
-		}
-	);
+				func(boost::ref(chan), boost::ref(user), msg); }));
 }
 
 BOOST_PYTHON_MODULE(irc_client) {
