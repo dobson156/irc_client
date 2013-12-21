@@ -13,11 +13,11 @@ template<typename F>
 class py_catch {
 	F func;
 public:
-    template<
+	template<
 		typename F2,
-		typename=typename std::enable_if<std::is_same<F2, F>::value, F>::type
+		typename=typename std::enable_if<std::is_same<F2, F>::value>::type
 	> 
-    py_catch(F2&& f)
+	py_catch(F2&& f)
 	:	func ( std::forward<F2>(f) )
 	{	}
 
@@ -26,8 +26,7 @@ public:
 	py_catch& operator=(const py_catch&)=default;
 	py_catch& operator=(py_catch&&)=default;
 
-	template<typename... Args>
-	auto operator()(Args&&... args) 
+	template<typename... Args> auto operator()(Args&&... args) 
 	-> decltype(func(std::forward<Args>(args)...)) {
 		try {
 			return func(std::forward<Args>(args)...);
@@ -114,45 +113,41 @@ BOOST_PYTHON_MODULE(irc_client) {
 python_interface::python_interface(std::string python_file_) 
 :	python_file { std::move(python_file_) }
 {
-	Py_Initialize();
-	initirc_client();
 
-	std::string error_redirect=//is it worth doing this is C++ instead?
-		"import sys\n"
-		"class stderr_redirect:\n"
-		"	def __init__(self):\n"
-		"		self.value=''\n"
-		"	def write(self, txt):\n"
-		"		self.value+=txt\n"
-		"		i=self.value.find('\\n')\n"
-		"		while(i != -1):\n"
-		"			v2=self.value[:i]\n"
-		"			irc.write_error(v2)\n"
-		"			self.value=self.value[i+1:]\n"
-		"			i=self.value.find('\\n')\n\n"
-		"class stdout_redirect:\n"
-		"	def __init__(self):\n"
-		"		self.value=''\n"
-		"	def write(self, txt):\n"
-		"		self.value+=txt\n"
-		"		i=self.value.find('\\n')\n"
-		"		while(i != -1):\n"
-		"			v2=self.value[:i]\n"
-		"			irc.write_output(v2)\n"
-		"			self.value=self.value[i+1:]\n"
-		"			i=self.value.find('\\n')\n\n"		
-		"sys.stderr=stderr_redirect()\n"
-		"sys.stdout=stdout_redirect()\n"
-		;
+	try {
+		Py_Initialize();
+		initirc_client();
 
-	main_module    =py::import("__main__");
-	main_namespace =main_module.attr("__dict__");
-	py::object icm =py::import("irc_client");
-	auto icn       =icm.attr("__dict__");
+		std::string error_redirect=//is it worth doing this is C++ instead?
+			"import sys\n"
+			"class redirect_io:\n"
+			"	def __init__(self, func_):\n"
+			"		self.value=''\n"
+			"		self.func=func_\n"
+			"	def write(self, txt):\n"
+			"		self.value+=txt\n"
+			"		i=self.value.find('\\n')\n"
+			"		while(i != -1):\n"
+			"			v2=self.value[:i]\n"
+			"			self.func(v2)\n"
+			"			self.value=self.value[i+1:]\n"
+			"			i=self.value.find('\\n')\n\n"
+			"sys.stderr=redirect_io(irc.write_error)\n"
+			"sys.stdout=redirect_io(irc.write_output)\n"
+			;
 
-	py::exec(error_redirect.c_str(), main_namespace);
+		main_module    =py::import("__main__");
+		main_namespace =main_module.attr("__dict__");
+		py::object icm =py::import("irc_client");
+		auto icn       =icm.attr("__dict__");
 
-	main_namespace["irc"]=py::ptr(this);
+		main_namespace["irc"]=py::ptr(this);
+		py::exec(error_redirect.c_str(), main_namespace);
+	}
+	catch(const py::error_already_set&) {
+		PyErr_Print();
+	}
+
 }
 
 void python_interface::exec(const std::string& py_code) {
