@@ -106,6 +106,12 @@ void controller::start_connection(const std::string& hostname,
 				std::move(username), std::move(fullname)); 
 		}
 	);
+	ic->connect_on_network_error(
+		[this](const std::string& e) {
+			auto& sb=get_status_buffer();
+			sb.push_back_msg("NETWORK: " + e);
+		}
+	);
 	connections.push_back(std::move(ic));
 }
 
@@ -312,11 +318,13 @@ controller::controller(std::string pyton_config_file_)
 	                 	}()
                       }
 ,	view              { io_service, *buffers[0]           }
+#ifdef USING_PYTHON
 ,	python_controller { std::move(pyton_config_file_)  }
+#endif //USING_PYTHON
 {
 	auto username=util::try_get_user_name();
 	if(username) {
-		default_username=*username+"user";
+		default_username=*username;
 		default_nick=std::move(*username);
 	}
 	auto fullname=util::try_get_full_name();
@@ -367,7 +375,8 @@ void controller::run() {
 		}
 		catch(const std::exception& e) {
 			if(show_errors) {
-				auto& ebuff=get_or_make_error_buffer();
+				//auto& ebuff=get_or_make_error_buffer();
+				auto& ebuff=get_status_buffer();
 				ebuff.push_back_msg(e.what());
 			}
 		}
