@@ -2,7 +2,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 	#include <pwd.h>
 #endif
 
@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace util {
 	
