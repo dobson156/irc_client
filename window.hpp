@@ -5,6 +5,7 @@
 #include <boost/asio/system_timer.hpp>
 
 #include "ui/console.hpp"
+#include "ui/stenciled_logger.hpp"
 
 #include "message.hpp"
 #include "message_stencil.hpp"
@@ -25,7 +26,7 @@ class window : public base {
 	using anchor_top              =anchor_view<anchors::top>;
 	using anchor_bottom           =anchor_view<anchors::bottom>;
 	using text_box                =stenciled_frame<string_stencil>;
-	using msg_list                =stenciled_list<message_stencil>;
+	using msg_list                =stenciled_logger<message_stencil>;
 //Member variables
 	unique_connection              con_topic_change, 
 	                               con_new_msg;

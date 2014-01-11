@@ -21,7 +21,9 @@ window::window(unique_window_ptr        handle,
 {
 	title.set_background(COLOR_BLUE);
 	status.set_background(COLOR_BLUE);
-	message_list.selected_idx(std::numeric_limits<msg_list::size_type>::max());
+
+	//message_list.selected_idx(std::numeric_limits<msg_list::size_type>::max());
+
 	retarget_buffer();
 	title.set_background(COLOR_BLUE);
 
@@ -45,12 +47,9 @@ void window::timer_set_status(const boost::system::error_code& ec) {
 
 void window::retarget_buffer() {
 	auto& buff=get_buffer();
-	message_list.clear(); //TODO implement assign
-	message_list.insert(
-		message_list.begin(), 
-		buff.messages_begin(), 
-		buff.messages_end()
-	);
+
+	message_list.clear();
+	message_list.assign(buff.messages_begin(), buff.messages_end());
 
 	set_status();
 
@@ -69,7 +68,7 @@ void window::retarget_buffer() {
 		[&](buffer& b, const std::shared_ptr<message>& msg) {
 			assert(&b==&get_buffer());
 
-			message_list.insert(message_list.end(), msg);
+			message_list.push_back(msg);
 			message_list.refresh();
 		}
 	);

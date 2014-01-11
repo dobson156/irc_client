@@ -5,8 +5,6 @@
 
 #include "irc/types.hpp"
 
-#include <boost/signals.hpp>
-
 #include <memory>
 #include <vector>
 
@@ -67,8 +65,8 @@ protected:
 	std::string    name;
 	container_type messages;	
 
-	boost::signal<void(buffer&, const std::string& topic)> on_topic_change;
-	boost::signal<void(buffer&, const std::shared_ptr<message>&)> on_new_msg;
+	bsig::signal<void(buffer&, const std::string& topic)> on_topic_change;
+	bsig::signal<void(buffer&, const std::shared_ptr<message>&)> on_new_msg;
 public:
 	buffer(std::string str);
 	virtual ~buffer();
@@ -82,18 +80,18 @@ public:
 	const_iterator             messages_end()   const;
 
 	template<typename F>
-	boost::signals::connection connect_on_new_message(F&& f);
+	bsig::connection connect_on_new_message(F&& f);
 	template<typename F>
-	boost::signals::connection connect_on_topic_change(F&& f);
+	bsig::connection connect_on_topic_change(F&& f);
 }; //buffer
 
 
 template<typename F>
-boost::signals::connection buffer::connect_on_new_message(F&& f) {
+bsig::connection buffer::connect_on_new_message(F&& f) {
 		return on_new_msg.connect(std::forward<F>(f));
 }
 template<typename F>
-boost::signals::connection buffer::connect_on_topic_change(F&& f) {
+bsig::connection buffer::connect_on_topic_change(F&& f) {
 		return on_topic_change.connect(std::forward<F>(f));
 }
 

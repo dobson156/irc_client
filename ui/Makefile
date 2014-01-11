@@ -11,7 +11,7 @@ export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -DBOOST_SIGNALS_NO_DEPR
 
 export LFLAGS=$(OPTS)
 
-OBJS=basic.o string_stencil.o async_input_box.o input_manager.o colour_pair.o
+OBJS=basic.o string_stencil.o async_input_box.o input_manager.o colour_pair.o scrolling_frame.o
 
 all: console.o console.a tests
 

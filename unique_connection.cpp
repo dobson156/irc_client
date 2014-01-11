@@ -6,7 +6,7 @@ unique_connection::unique_connection(unique_connection&& other) {
 	swap(other.connection, connection);
 }
 
-unique_connection::unique_connection(boost::signals::connection sig) 
+unique_connection::unique_connection(bsig::connection sig) 
 :	 connection { std::move(sig) }
 {	}
 
@@ -20,8 +20,7 @@ unique_connection& unique_connection::operator=(unique_connection&& other) {
 	return *this;
 }
 
-unique_connection& unique_connection::operator=(
-				boost::signals::connection sig) {
+unique_connection& unique_connection::operator=(bsig::connection sig) {
 	connection.disconnect();
 	connection=std::move(sig);
 	return *this;

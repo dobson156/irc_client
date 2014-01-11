@@ -52,7 +52,28 @@ unique_window_ptr make_window(WINDOW *parent, const point& position,
 //Makes a new pad
 unique_window_ptr make_pad(const point& dimension);
 
-class frame : public base {
+class output_pane {
+public:
+	virtual point get_position()  const                                    =0;
+	virtual point get_dimension() const                                    =0;
+
+	virtual point write(const point& pt, char ch)                          =0;
+	virtual point write(const point& pt, const std::string& str)           =0;
+	virtual point write(const point& pt, const std::string& str, int n )   =0;
+	virtual point write(const point& pt, std::string::const_iterator first, 
+	                                     std::string::const_iterator last) =0;
+	virtual bool is_underlined() const                                     =0;
+	virtual bool is_blinking()   const                                     =0;
+	virtual bool is_dim()        const                                     =0;
+	virtual bool is_bold()       const                                     =0;
+	virtual void set_underlined(bool set=true)                             =0;
+	virtual void set_blinking  (bool set=true)                             =0;
+	virtual void set_dim       (bool set=true)                             =0;
+	virtual void set_bold      (bool set=true)                             =0;
+	virtual void set_colour    (const colour_pair& cp)                     =0;
+}; //class output_pane
+
+class frame : public base, public output_pane {
 	unique_window_ptr handle;
 	colour_pair       colours;
 
@@ -72,11 +93,11 @@ public:
 //Operator
 	frame& operator=(frame&&)=default;
 //Content
-	point write(const point& pt, char ch);
-	point write(const point& pt, const std::string& str);
-	point write(const point& pt, const std::string& str, int n);
+	point write(const point& pt, char ch)                          override;
+	point write(const point& pt, const std::string& str)           override;
+	point write(const point& pt, const std::string& str, int n)    override;
 	point write(const point& pt, std::string::const_iterator first, 
-	                             std::string::const_iterator last);
+	                             std::string::const_iterator last) override;
 //Overrides
 	void clear()                               override;
 	void refresh()                             override;
@@ -93,16 +114,16 @@ public:
 	short get_foreground() const;
 
 //Atributes
-	void set_underlined(bool set=true);
-	void set_blinking  (bool set=true);
-	void set_dim       (bool set=true);
-	void set_bold      (bool set=true);
-	void set_colour    (const colour_pair& cp);
+	void set_underlined(bool set=true)         override;
+	void set_blinking  (bool set=true)         override;
+	void set_dim       (bool set=true)         override;
+	void set_bold      (bool set=true)         override;
+	void set_colour    (const colour_pair& cp) override;
 
-	bool is_underlined() const;
-	bool is_blinking()   const;
-	bool is_dim()        const;
-	bool is_bold()       const;
+	bool is_underlined() const override;
+	bool is_blinking()   const override;
+	bool is_dim()        const override;
+	bool is_bold()       const override;
 
 	WINDOW *get_handle();
 

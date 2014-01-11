@@ -1,17 +1,24 @@
+#LIB          =-Wl,-Bstatic -lncurses -lboost_python -lboost_system -lboost_program_options -lboost_signals -Wl,-Bdynamic -lpython2.7 -lpthread-lboost_signals 
+#-DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 #export CPP   =clang++
 export CPP  =g++
 export LNK =$(CPP)
 
-#export OPTS         =-Os
-export OPTS =-O0 -ggdb 
-#-DCONS_FAST_COMPILE -D_GLIBCXX_DEBUG
 
 INC          =-I /usr/include/python2.7
-LIB          =-lncurses -lboost_python -lboost_system -lboost_program_options -lboost_signals -lpython2.7 -lpthread
-#LIB          =-Wl,-Bstatic -lncurses -lboost_python -lboost_system -lboost_program_options -lboost_signals -Wl,-Bdynamic -lpython2.7 -lpthread
-#-DNDEBUG
-export CFLAGS=$(OPTS) -std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -Wfatal-errors -DBOOST_SIGNALS_NO_DEPRECATION_WARNING -DBOOST_RESULT_OF_USE_DECLTYPE -DUSING_PYTHON 
-export LFLAGS=$(OPTS) -flto
+LIB          =-lncurses -lboost_python -lboost_system -lboost_program_options -lpython2.7 -lpthread
+
+export CFLAGS=-std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -DBOOST_RESULT_OF_USE_DECLTYPE -DUSING_PYTHON 
+
+BUILD_TYPE=dbg
+ifeq ($(BUILD_TYPE), dbg)
+	COMPILE_FLAGS=-ggdb -O0 $(CFLAGS) $(INC) 
+	LFLAGS=
+else
+	COMPILE_FLAGS=-O3 -DNDEBUG $(CFLAGS) $(INC) 
+	LFLAGS=-flto
+endif
+
 
 #slow objects are library elements and spirit parsers 
 SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o python_interface.o
@@ -23,7 +30,7 @@ all: irc_client
 irc_client: $(OBJS)
 	cd ui && $(MAKE)
 	cd irc && $(MAKE)
-	$(LNK) $(OPTS) $^ -o $@ $(LIB)
+	$(LNK) $(LFLAGS) $^ -o $@ $(LIB)
 
 ui/console.o:
 	cd ui && $(MAKE)
@@ -32,7 +39,7 @@ irc/irc.o:
 	cd irc && $(MAKE)
 
 %.o: %.cpp 
-	$(CPP) -c $(CFLAGS) $(INC) $< -o $@ 
+	$(CPP) -c $(COMPILE_FLAGS) $< -o $@ 
 
 clean:
 	rm -rf $(OBJS) irc_client

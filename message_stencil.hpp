@@ -6,11 +6,11 @@
 #include "message_visitor.hpp"
 
 class message_stencil : public message_vistor {
-	cons::frame *frame_;
+	cons::output_pane *frame_;
 	cons::point last;
 public:	
 	using value_type=std::shared_ptr<message>;
-	cons::point write_to(cons::frame&, const value_type&);
+	cons::point write_to(cons::output_pane&, const value_type&);
 	void operator()(message&)      override;
 	void operator()(chan_message&) override;
 	void operator()(join_message&) override;

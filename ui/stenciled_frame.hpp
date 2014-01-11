@@ -12,11 +12,7 @@ class stenciled_frame : public base {
 public:
 	using stencil_type=StencilType;
 	using value_type  =typename stencil_type::value_type;
-private:
-	frame        frame_;
-	value_type   value;
-	stencil_type stencil;
-public:
+
 	stenciled_frame(unique_window_ptr handle, value_type value_)
 	:	frame_ { std::move(handle) }
 	,	value  ( std::move(value_) )
@@ -51,6 +47,10 @@ public:
 	void set_foreground(short fg) { frame_.set_foreground(fg); }
 	short get_background() const  { return frame_.get_background(); }
 	short get_foreground() const  { return frame_.get_foreground(); }
+private:
+	frame        frame_;
+	value_type   value;
+	stencil_type stencil;
 }; //class stenciled_frame
 
 } //namespace cons

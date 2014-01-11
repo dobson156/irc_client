@@ -6,7 +6,7 @@
 #include <cassert>
 #include <chrono>
 
-cons::point message_stencil::write_to(cons::frame& frame, const value_type& msg) {
+cons::point message_stencil::write_to(cons::output_pane& frame, const value_type& msg) {
 	assert(msg);
 	frame_=&frame;
 	msg->visit(*this);
@@ -19,7 +19,7 @@ void message_stencil::operator()(message& msg) {
 
 void message_stencil::operator()(chan_message& msg) {
 	assert(frame_);
-	cons::frame& frame=*frame_;
+	cons::output_pane& frame=*frame_;
 	frame_=nullptr;
 
 	int y=0;
@@ -40,7 +40,7 @@ void message_stencil::operator()(chan_message& msg) {
 
 void message_stencil::operator()(join_message& msg) {
 	assert(frame_ && "frame was not valid");
-	cons::frame& frame=*frame_;
+	cons::output_pane& frame=*frame_;
 	frame_=nullptr;
 
 	cons::point pos {0,0};
@@ -74,7 +74,7 @@ void message_stencil::operator()(join_message& msg) {
 
 void message_stencil::operator()(part_message& msg) {
 	assert(frame_ && "frame was not valid");
-	cons::frame& frame=*frame_;
+	cons::output_pane& frame=*frame_;
 	frame_=nullptr;
 
 	cons::point pos {0,0};
@@ -109,7 +109,7 @@ void message_stencil::operator()(part_message& msg) {
 
 void message_stencil::operator()(motd_message& msg) {
 	assert(frame_ && "frame was not valid");
-	cons::frame& frame=*frame_;
+	cons::output_pane& frame=*frame_;
 	frame_=nullptr;
 
 	cons::point pos {0,0}, dim=frame.get_dimension();
@@ -123,7 +123,7 @@ void message_stencil::operator()(motd_message& msg) {
 
 void message_stencil::operator()(error_message& msg) {
 	assert(frame_ && "frame was not valid");
-	cons::frame& frame=*frame_;
+	cons::output_pane& frame=*frame_;
 	frame_=nullptr;
 
 	cons::point pos {0,0}, dim=frame.get_dimension();
@@ -137,10 +137,10 @@ void message_stencil::operator()(error_message& msg) {
 
 void message_stencil::operator()(list_message& msg) {
 	assert(frame_ && "frame was not valid");
-	cons::frame& frame=*frame_;
+	cons::output_pane& frame=*frame_;
 	frame_=nullptr;
 
-	auto lement_wid=msg.max_element_size();
+	int max_wid=msg.max_element_size() + 2;
 	auto dim=frame.get_dimension();
 	auto time=util::time_to_string(msg.get_time_stamp());
 	cons::point pos{0,0};
@@ -148,14 +148,21 @@ void message_stencil::operator()(list_message& msg) {
 	if(dim.y > 0) {
 		pos=frame.write(pos, time);
 		pos=frame.write(pos, " in channel: ");
-		
-		std::ostringstream oss;
-		std::for_each(msg.begin(), msg.end(),
-			[&](list_message::const_reference r) {
-				oss << r.first << ", ";
+
+		int indent=pos.x;
+		int divisions=(dim.x-indent) / max_wid;
+		int i=0;
+
+		for(auto& e : msg) {
+			if(i==divisions) {
+				i=0;
+				++pos.y;
+				pos.x=indent;
 			}
-		);
-		pos=frame.write(pos, oss.str());
+			frame.write(frame.write(pos, e.first), ", ");
+			pos.x+=max_wid;
+			++i;
+		}
 	}
 	last=cons::point{dim.x, pos.y+1};
 }
