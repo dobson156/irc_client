@@ -19,25 +19,7 @@ public:
 //STENCIL INTERFACE
 	int required_y(int max_width, std::string::size_type chars) const;
 	
-	point write_to(frame& frame_, const std::string& str) const;
-
-/*
-	template<typename FrameType>
-	point write_to(FrameType& frame_, const std::string& str) const {
-		auto dim  =frame_.get_dimension();
-		auto rows =required_y(dim.x, str.size());
-
-		if(rows <= dim.y) {
-			frame_.write({0, 0}, str);
-			return { dim.x, rows };
-		}
-		else {
-			frame_.write({0, 0}, str.cbegin(), str.cbegin()+dim.y*dim.x-1);
-			return dim;
-		}
-	}
-	*/
-
+	point write_to(output_pane& frame_, const std::string& str) const;
 }; //class string_stencil
 
 } //namespace cons

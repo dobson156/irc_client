@@ -14,7 +14,6 @@
 					  << __func__ << std::endl;\
 			std::abort();\
 		}
-#endif
+#endif //NDEBUG
 
-//			std::abort();
-#endif // UI_ASSERT_HPP
+#endif //UI_ASSERT_HPP

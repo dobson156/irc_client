@@ -159,7 +159,12 @@ void controller::handle_join(const std::vector<std::string>& chans) {
 	if(has_session hs { buf } ) {
 		auto& sess=hs.get_session();
 		for(const auto& ch : chans) {
-			sess.async_join(ch);
+			if(!ch.empty()) { //shouldn't be necessary but still
+				if(ch.front() == '#') 
+					sess.async_join(ch);
+				else
+					sess.async_join('#' + ch);
+			}
 		}
 	}
 }

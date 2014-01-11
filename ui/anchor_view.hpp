@@ -2,6 +2,7 @@
 #define ANCHOR_VIEW_HPP
 
 #include "util.hpp"
+#include "assert_cast.hpp"
 
 #include "basic.hpp"
 #include "assert.hpp"
@@ -67,26 +68,12 @@ public:
 	template<typename ElementType=base>
 	ElementType& get_fill() {
 		CONS_ASSERT(fill!=nullptr, "fill pointer is null");
-	#ifdef NDEBUG 
-		return static_cast<ElementType&>(*fill);
-	#else
-		auto t=dynamic_cast<ElementType*>(fill.get());
-		CONS_ASSERT(t!=nullptr, 
-			"requested type does not meet type requirements");
-		return *t;
-	#endif
+		return assert_cast<ElementType&>(*anchor);
 	}
 	template<typename ElementType=base>
 	ElementType& get_anchor() {
 		CONS_ASSERT(anchor!=nullptr, "anchor pointer is null");
-	#if NDEBUG 
-		return static_cast<ElementType&>(*anchor);
-	#else
-		auto t=dynamic_cast<ElementType*>(anchor.get());
-		CON_ASSERT(t!=nullptr,
-			"requested type does not meet type requirements");
-		return *t;
-	#endif
+		return assert_cast<ElementType&>(*anchor);
 	}
 //Overrides
 	void clear() override {

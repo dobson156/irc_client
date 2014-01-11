@@ -16,7 +16,7 @@ int string_stencil::required_y(int max_width, std::string::size_type chars) cons
 	return chars/max_width+1;
 }
 
-point string_stencil::write_to(output_frame& frame_, const std::string& str) const {
+point string_stencil::write_to(output_pane& frame_, const std::string& str) const {
 	auto dim  =frame_.get_dimension();
 	auto rows =required_y(dim.x, str.size());
 
