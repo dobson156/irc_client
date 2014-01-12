@@ -9,6 +9,20 @@
 
 #include "ui/console.hpp"
 
+#include <csignal>
+#include <sys/ioctl.h>
+#include <ncurses.h>
+
+ui_impl::ui *term { nullptr };
+
+//It's UB for a handler to not have C linkage
+extern "C" {
+	void handle_sigwinch(int sig) {
+		assert(sig==SIGWINCH);
+		if(term) term->async_redraw();
+	}
+}
+
 namespace ui_impl {
 
 ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )  
@@ -38,9 +52,23 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )
 		}
 	);
 
+	::term=this;
+	std::signal(SIGWINCH, handle_sigwinch);
+
 	refresh();
-	//input.refresh();
+	input.refresh();
 }
+
+void ui::redraw() {
+	endwin();
+	winsize w;
+	ioctl(0, TIOCGWINSZ, &w);
+	resizeterm(w.ws_row,w.ws_col);
+	parent.reset(make_window());
+	refresh();
+}
+
+void ui::async_redraw() { io_service->post([this]{ redraw(); }); }
 
 void ui::refresh() {
 	parent.refresh();

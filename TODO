@@ -5,3 +5,12 @@ BUGS & esstential functionality
 Future Features
 * Many windows
 * Py interface for UI
+
+Notes:
+	Resizing the terminal is now supported, however it is not optimal.
+	This is because:
+		a). The signal handler calls an async_function, this is UB although
+		highly unlikely to be an issue
+			http://en.cppreference.com/w/cpp/utility/program/signal
+		b). I updates the elements by giving them new handles, this causes 
+		flickering which looks bad and is slow

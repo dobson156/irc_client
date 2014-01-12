@@ -59,6 +59,10 @@ public:
 	template<typename Iterator>
 	void assign_channels(Iterator first, Iterator last);
 
+
+	void redraw();
+	void async_redraw();
+
 	template<typename F> cons::bsig::connection connect_on_ctrl_char(F&& f);
 	template<typename F> cons::bsig::connection connect_on_text_input(F&& f);
 }; //class ui

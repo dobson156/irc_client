@@ -10,19 +10,11 @@
 
 #include <iostream>
 #include <string>
-#include <csignal>
 
 namespace po = boost::program_options;
 
-//It's UB for a handler to not have C linkage
-extern "C" {
-	void handle_sigwinch(int sig) {
-		assert(sig==SIGWINCH);
-	}
-}
 
 int main(int argc, char **argv) {
-	std::signal(SIGWINCH, handle_sigwinch);
 	try {
 		po::options_description desc { "Allowed options:" };
 		desc.add_options()

@@ -82,7 +82,10 @@ public:
 	point get_position()  const override { return frame_.get_position();  }
 	point get_dimension() const override { return frame_.get_dimension(); }
 	unique_window_ptr reset(unique_window_ptr handle) override {
-		return frame_.reset(std::move(handle));
+		auto p=frame_.reset(std::move(handle));
+		buffer.reset(make_pad( { frame_.get_dimension().x, 1024 }));
+		buffer.assign(values.begin(), values.end());
+		return p;
 	}
 //Colour
 	void set_background();
