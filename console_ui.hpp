@@ -13,11 +13,13 @@
 #include "ui/signals.hpp"
 #include "ui/console.hpp"
 
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/signal_set.hpp>
+
 #include <string>
 #include <memory>
 
 class buffer;
-namespace boost { namespace asio { class io_service; } } 
 
 /*
 ** the detail namespace allows us to use the namespace cons
@@ -41,10 +43,14 @@ class ui {
 	async_input_box&         input;
 	window&                  window1; //todo vector of windows
 	boost::asio::io_service *io_service;
+	boost::asio::signal_set  signal_set;
 //Callbacks
 	cons::sig_ctrl_ch        on_ctrl_char;
 
 	void refresh();
+
+	void redraw();
+	void handle_sigwinch(const boost::system::error_code& e, int sig);
 public:
 	ui(boost::asio::io_service& io_service, buffer& buffer);
 	void stop();
@@ -59,9 +65,6 @@ public:
 	template<typename Iterator>
 	void assign_channels(Iterator first, Iterator last);
 
-
-	void redraw();
-	void async_redraw();
 
 	template<typename F> cons::bsig::connection connect_on_ctrl_char(F&& f);
 	template<typename F> cons::bsig::connection connect_on_text_input(F&& f);

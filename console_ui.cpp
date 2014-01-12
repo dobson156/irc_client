@@ -13,16 +13,6 @@
 #include <sys/ioctl.h>
 #include <ncurses.h>
 
-ui_impl::ui *term { nullptr };
-
-//It's UB for a handler to not have C linkage
-extern "C" {
-	void handle_sigwinch(int sig) {
-		assert(sig==SIGWINCH);
-		if(term) term->async_redraw();
-	}
-}
-
 namespace ui_impl {
 
 ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )  
@@ -33,6 +23,7 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )
 ,	input          ( input_anchor.emplace_anchor<async_input_box>(io_service_) )
 ,	window1        ( input_anchor.emplace_fill<window>(io_service_, buffer)    )
 ,	io_service     { &io_service_                                              }
+,	signal_set     { io_service_, SIGWINCH                                     }
 {	
 	channel_border.set_background(COLOR_BLUE);
 	channel_border.set_foreground(COLOR_WHITE);
@@ -52,8 +43,8 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )
 		}
 	);
 
-	::term=this;
-	std::signal(SIGWINCH, handle_sigwinch);
+	signal_set.async_wait(
+		std::bind(&ui::handle_sigwinch, this, ph::_1, ph::_2));
 
 	refresh();
 	input.refresh();
@@ -68,7 +59,15 @@ void ui::redraw() {
 	refresh();
 }
 
-void ui::async_redraw() { io_service->post([this]{ redraw(); }); }
+void ui::handle_sigwinch(const boost::system::error_code& e, int sig) {
+	assert(sig==SIGWINCH);
+	if(!e) {
+		redraw();
+		signal_set.async_wait(
+			std::bind(&ui::handle_sigwinch, this, ph::_1, ph::_2));
+	}
+	//TODO what if e is set?
+}
 
 void ui::refresh() {
 	parent.refresh();

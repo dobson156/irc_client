@@ -84,6 +84,7 @@ public:
 	unique_window_ptr reset(unique_window_ptr handle) override {
 		auto p=frame_.reset(std::move(handle));
 		buffer.reset(make_pad( { frame_.get_dimension().x, 1024 }));
+		buffer.clear();
 		buffer.assign(values.begin(), values.end());
 		return p;
 	}
