@@ -5,7 +5,7 @@ export CPP  =g++
 export LNK =$(CPP)
 
 
-INC          =-I /usr/include/python2.7
+INC          =-I /usr/include/python2.7 -I .
 LIB          =-lncurses -lboost_python -lboost_system -lboost_program_options -lpython2.7 -lpthread
 
 export CFLAGS=-std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -DBOOST_RESULT_OF_USE_DECLTYPE -DUSING_PYTHON 
@@ -21,8 +21,8 @@ endif
 
 
 #slow objects are library elements and spirit parsers 
-SLOW_OBJS=ui/console.o controller_parse_text.o irc/irc.o python_interface.o
-FAST_OBJS=controller.o program.o console_ui.o message.o message_stencil.o channel_buffer.o session_buffer.o error_buffer.o buffer.o unique_connection.o window.o util.o
+SLOW_OBJS=ui/console.o src/controller_parse_text.o irc/irc.o src/python_interface.o
+FAST_OBJS=src/controller.o src/program.o src/console_ui.o src/message.o src/message_stencil.o src/channel_buffer.o src/session_buffer.o src/error_buffer.o src/buffer.o src/unique_connection.o src/window.o src/util.o
 OBJS=$(SLOW_OBJS) $(FAST_OBJS)
 
 all: irc_client
@@ -38,7 +38,7 @@ ui/console.o:
 irc/irc.o:
 	cd irc && $(MAKE)
 
-%.o: %.cpp 
+src/%.o: src/%.cpp
 	$(CPP) -c $(COMPILE_FLAGS) $< -o $@ 
 
 clean:
