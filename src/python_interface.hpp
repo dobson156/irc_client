@@ -26,6 +26,7 @@ class python_interface {
 	sig_s          on_connect,
 	               on_change_default_nick,
 	               on_change_default_username,
+	               on_change_default_fullname,
 				   on_python_error,
 				   on_python_output;
 
@@ -37,8 +38,9 @@ public:
 	void reload_conf();
 	void p_connect_new_session(py::object obj);
 	void p_start_connection(const std::string& con);
-	void p_set_default_username(const std::string& con);
 	void p_set_default_nick(const std::string& con);
+	void p_set_default_username(const std::string& con);
+	void p_set_default_fullname(const std::string& con);
 	void p_write_error(const std::string& str);
 	void p_write_output(const std::string& str);
 
@@ -49,6 +51,7 @@ public:
 	template<typename F> void connect_on_connect(F&& f);
 	template<typename F> void connect_on_change_default_nick(F&& f);
 	template<typename F> void connect_on_change_default_username(F&& f);
+	template<typename F> void connect_on_change_default_fullname(F&& f);
 	template<typename F> void connect_on_python_error(F&& f);
 	template<typename F> void connect_on_python_output(F&& f);
 }; //class python_interface
@@ -64,6 +67,10 @@ void python_interface::connect_on_change_default_nick(F&& f) {
 template<typename F> 
 void python_interface::connect_on_change_default_username(F&& f) {
 	on_change_default_username.connect(std::forward<F>(f));
+}
+template<typename F> 
+void python_interface::connect_on_change_default_fullname(F&& f) {
+	on_change_default_fullname.connect(std::forward<F>(f));
 }
 template<typename F> 
 void python_interface::connect_on_python_error(F&& f) {

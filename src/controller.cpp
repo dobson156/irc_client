@@ -354,6 +354,8 @@ controller::controller(std::string pyton_config_file_)
 		util::make_assign_on_call(default_nick));
 	python_controller.connect_on_change_default_username(
 		util::make_assign_on_call(default_username));
+	python_controller.connect_on_change_default_fullname(
+		util::make_assign_on_call(default_fullname));
 	python_controller.connect_on_python_error(
 		[this](const std::string s) { 
 			if(show_errors) {

@@ -109,6 +109,7 @@ BOOST_PYTHON_MODULE(irc_client) {
 		.def("connect_on_new_session",  &python_interface::p_connect_new_session)
 		.def("default_nick",            &python_interface::p_set_default_nick)
 		.def("default_username",        &python_interface::p_set_default_username)
+		.def("default_fullname",        &python_interface::p_set_default_fullname)
 		.def("write_error",             &python_interface::p_write_error)
 		.def("write_output",            &python_interface::p_write_output)
 		;
@@ -196,6 +197,9 @@ void python_interface::p_write_output(const std::string& str) {
 }
 void python_interface::p_set_default_username(const std::string& name) {
 	on_change_default_username(name);
+}
+void python_interface::p_set_default_fullname(const std::string& name) {
+	on_change_default_fullname(name);
 }
 void python_interface::accept_new_session(irc::session& sess) {
 	p_on_new_session(sess); //try catch is set in the handlers
