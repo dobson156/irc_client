@@ -15,6 +15,14 @@ Prerequisites
 
 You may need ot alter the `$(LIB)` and `$(INC)` in the `Makefile` at the root directory if your libraries are not in the normal places.
 
+Retrieving the source code
+------------------
+This project uses submodules which means you need to use a recursive clone to retreive all of the source, like so:
+
+```bash
+git clone https://github.com/dobson156/irc_client.git --recursive
+```
+
 Building
 --------
 Ensuring that the prerequisites are met, we can simply build using:
