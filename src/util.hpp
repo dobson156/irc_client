@@ -62,6 +62,14 @@ assign_on_call<T> make_assign_on_call(T& val) {
 	return { val };
 }
 
+//container with op[] and .size()
+template<typename ContainerType>
+boost::optional<typename ContainerType::value_type>
+try_get(ContainerType& container, std::size_t i) {
+	if(i < container.size()) return container[i];
+	else return { };
+}
+
 
 } //namespace util
 	
