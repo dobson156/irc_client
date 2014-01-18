@@ -22,6 +22,12 @@ This project uses submodules which means you need to use a recursive clone to re
 ```bash
 git clone https://github.com/dobson156/irc_client.git --recursive
 ```
+###Updating
+To update the submodules 
+
+git submodule update --init --recursive
+
+However this shouldn't be necessary if cloned correctly
 
 Building
 --------
