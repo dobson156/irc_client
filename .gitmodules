@@ -1,0 +1,3 @@
+[submodule "libircpp"]
+	path = libircpp
+	url = https://github.com/libircpp/libircpp.git
