@@ -60,6 +60,20 @@ void controller::handle_connection_connect(
 		)
 	);
 
+
+
+	session->get_self().connect_on_set_mode(
+		[=](const irc::user& me, const irc::prefix& set_by, 
+				const irc::mode_list& ml) {
+
+			auto& status_buf=get_status_buffer();
+			status_buf.push_back_msg(
+				"You mode has been changed to: " + irc::to_string(ml) + " by " + irc::to_string(ml)
+			);
+		}
+
+	);
+
 	// ne need to register all users so we can hook
 	// any priv_msgs
 	session->connect_on_new_user(
