@@ -14,7 +14,6 @@ class message_vistor {
 public:
 	virtual void operator()(message&)     =0;
 	virtual void operator()(motd_message&)=0;
-	virtual void operator()(error_message&)=0;
 
 	virtual void operator()(list_message&)=0;
 	virtual void operator()(text_message&)=0;

@@ -49,40 +49,7 @@ public:
 	void visit(message_vistor& visitor) override;
 
 	const std::string& get_motd() const;
-}; //chan_message
-
-
-class error_message : public message {
-	std::string error;
-public:
-	error_message(std::string error_);
-	error_message(error_message&&)                =default;
-	error_message(const error_message&)           =default;
-	error_message& operator=(error_message&&)     =default;
-	error_message& operator=(const error_message&)=default;
-
-	void visit(message_vistor& visitor) override;
-
-	const std::string& get_error() const;
-}; //chan_message
-
-/*
-class names_list : public message {
-	struct nick_details { std::string user_nick; bool is_operator; };
-	std::vector<nick_details> nicks;
-
-	template<typename Iter>
-	names_list(Iter first, Iter last, const irc::channel& ch) {
-		std::transform(first, last, std::back_inserter(nicks),
-			[&](const irc::user& u) {
-				return nick_details { u.get_nick(), ch.is_operator(u) };
-			}
-		);
-	}
-};
-*/
-
-
+}; //motd_message
 
 
 //[time] [header] | <e1> <e2> <e3>  |
@@ -115,7 +82,6 @@ private:
 }; //list_message
 
 
-
 //[time] [header] | body test goes  |
 //                | here            |
 class text_message : public message {
@@ -141,6 +107,6 @@ public:
 	const cons::colour_pair& get_body_colour() const;
 
 	void visit(message_vistor& visitor) override;
-}; //chan_message
+}; //text_message
 
 #endif //MESSAGE_HPP

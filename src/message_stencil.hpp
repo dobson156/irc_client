@@ -19,7 +19,6 @@ public:
 	cons::point write_to(cons::output_pane&, const value_type&);
 	void operator()(message&)      override;
 	void operator()(motd_message&) override;
-	void operator()(error_message&) override;
 
 	void operator()(list_message&) override;
 	void operator()(text_message&) override;
