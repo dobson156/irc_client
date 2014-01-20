@@ -24,64 +24,6 @@ const message::time_point& message::get_time_stamp() const {
 }
 
 
-
-
-
-
-
-chan_message::chan_message(std::string sender_, std::string content_) 
-:	sender  { std::move(sender_)  }
-,	content { std::move(content_) } 
-{	}
-
-void chan_message::visit(message_vistor& visitor) {
-	visitor(*this);
-}
-
-const std::string& chan_message::get_sender() const {
-	return sender;
-}
-
-const std::string& chan_message::get_content() const {
-	return content;
-}
-
-
-
-
-join_message::join_message(irc::prefix prefix_) 
-:	prefix { std::move(prefix_)  }
-{	}
-
-void join_message::visit(message_vistor& visitor) {
-	visitor(*this);
-}
-
-const irc::prefix& join_message::get_prefix() const {
-	return prefix;
-}
-
-
-
-
-part_message::part_message(irc::prefix prefix_, irc::optional_string message_) 
-:	prefix  { std::move(prefix_)  }
-,	message { std::move(message_) }
-{	}
-
-void part_message::visit(message_vistor& visitor) {
-	visitor(*this);
-}
-
-const irc::prefix& part_message::get_prefix() const {
-	return prefix;
-}
-
-const irc::optional_string& part_message::get_message() const {
-	return message;
-}
-
-
 motd_message::motd_message(std::string motd_) 
 :	motd { std::move(motd_) }
 {	}
@@ -127,3 +69,40 @@ std::size_t list_message::max_element_size() const {
 	if(it==store.end()) return 0;
 	return it->first.size();
 }
+
+const std::string& list_message::get_header() const {
+	return header;
+}
+
+
+
+text_message::text_message(std::string header_, std::string body_)
+:	header { std::move(header_) }
+,	body   { std::move(body_)   }
+{	}
+
+text_message::text_message(std::string header_, 
+                           cons::colour_pair header_colour_, 
+                           std::string body_,   
+                           cons::colour_pair body_colour_)
+:	header        { std::move(header_)        }
+,	body          { std::move(body_)          }
+,	header_colour { std::move(header_colour_) }
+,	body_colour   { std::move(body_colour_)   }
+{	
+
+}
+
+const std::string& text_message::get_header() const { return header; }
+const std::string& text_message::get_body() const   { return body;   }
+
+const cons::colour_pair& text_message::get_header_colour() const { 
+	return header_colour; 
+}
+const cons::colour_pair& text_message::get_body_colour() const { 
+	return body_colour; 
+}
+void text_message::visit(message_vistor& visitor) {
+	visitor(*this);
+}
+

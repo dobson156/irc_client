@@ -6,6 +6,7 @@
 
 #include "message.hpp"
 #include "buffer.hpp"
+#include "pallet.hpp"
 
 #include "irc/session.hpp"
 
@@ -38,10 +39,13 @@ session_buffer::session_buffer(irc::session& session_)
 			[&](irc::user& u) {
 				u.connect_on_notice(
 					[&](irc::user& u, const std::string& msg) {
-						//auto& status_buf=get_status_buffer();
-						//std::ostringstream oss;
-						//oss << "NOTICE: " << u.get_nick() << ": " << msg;
-						messages.push_back(std::make_shared<chan_message>(u.get_nick(), msg));
+						messages.push_back(std::make_shared<text_message>(
+								u.get_nick(), 
+								get_pallet().get_colour_pair(pallet_idx::notice_msg),
+								msg,
+								get_pallet().get_colour_pair(pallet_idx::default_colour)
+							)
+						);
 						on_new_msg(*this, messages.back());
 					}
 				);

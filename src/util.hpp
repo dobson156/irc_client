@@ -70,6 +70,29 @@ try_get(ContainerType& container, std::size_t i) {
 	else return { };
 }
 
+template<class IT, class T=decltype(*std::declval<IT>())>    
+constexpr bool  
+is_const_iterator() {   
+	return !std::is_assignable<decltype(*std::declval<IT>()), T>::value;
+}
+
+template<typename Iter, typename OutputIter, typename Predicate>
+std::pair<Iter, OutputIter> separate(Iter first, Iter last, OutputIter out, Predicate p) {
+	//using value_type=typename std::iterator_traits<Iter>::value_type;
+	using value_type=decltype(*first);
+
+	static_assert(!is_const_iterator<Iter>(), "Must not be const iterator");
+
+	last=std::remove_if(first, last, [&](value_type& v) {
+			if(p(v)) {
+				*out++=std::move(v);
+				return true;
+			}
+			return false;
+		}
+	);
+	return { last, out };
+}
 
 } //namespace util
 	

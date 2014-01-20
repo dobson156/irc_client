@@ -256,6 +256,14 @@ void controller::handle_names() {
 }
 
 void controller::handle_session_join_channel(irc::channel& chan) {
+	chan.connect_on_set_mode(
+		[&](irc::channel& chand, const irc::prefix& p, const irc::mode_list& ml) {
+			auto& status_buf=get_status_buffer();
+			status_buf.push_back_msg("modes set by: " + to_string(p) + ": +" + irc::to_string(ml));
+		}
+	);
+
+
 	chan.connect_on_channel_part(
 		[&](irc::channel& chand) {
 			auto it=std::find_if(begin(buffers), end(buffers),

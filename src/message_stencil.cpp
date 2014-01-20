@@ -23,96 +23,6 @@ void message_stencil::operator()(message& msg) {
 	assert(false);
 }
 
-void message_stencil::operator()(chan_message& msg) {
-	assert(frame_);
-	cons::output_pane& frame=*frame_;
-	frame_=nullptr;
-
-	int y=0;
-	auto dim=frame.get_dimension();
-	cons::point pos { 0, 0 };
-	if(dim.y > y) { //at least on line
-		auto ts=util::time_to_string(msg.get_time_stamp());
-		pos=frame.write(pos, ts);
-		pos=frame.write(pos, ' ');
-		frame.set_bold(true);
-		pos=frame.write(pos, msg.get_sender());
-		frame.set_bold(false);
-		pos=frame.write(pos, ' ');
-		pos=frame.write(pos, msg.get_content());
-	}
-	last=cons::point{dim.x, pos.y+1};
-}
-
-void message_stencil::operator()(join_message& msg) {
-	assert(frame_ && "frame was not valid");
-	cons::output_pane& frame=*frame_;
-	frame_=nullptr;
-
-	cons::point pos {0,0};
-	auto dim=frame.get_dimension();
-
-	//This need to be static so the colours are consistant
-	static cons::colour_pair cyn { COLOR_GREEN,  -1 };
-	frame.set_colour(cyn);
-
-	if(dim.y > 0) {
-		const auto& pfx=msg.get_prefix();
-		auto ts=util::time_to_string(msg.get_time_stamp());
-		pos=frame.write(pos, ts);
-
-		assert(pfx.nick);
-		pos=frame.write(pos, ' ');
-		frame.set_bold(true);
-
-		pos=frame.write(pos, *pfx.nick);
-		frame.set_bold(false);
-		pos=frame.write(pos, " has joined ");
-
-		std::ostringstream oss;
-		oss << pfx;
-
-		pos=frame.write(pos, oss.str());
-	}
-
-	last=cons::point{dim.x, pos.y+1};
-}
-
-void message_stencil::operator()(part_message& msg) {
-	assert(frame_ && "frame was not valid");
-	cons::output_pane& frame=*frame_;
-	frame_=nullptr;
-
-	cons::point pos {0,0};
-	auto dim=frame.get_dimension();
-
-	static cons::colour_pair p { COLOR_CYAN, -1 };
-	frame.set_colour(p);
-
-	if(dim.y > 0) {
-		frame.set_dim(true);
-		const auto& pfx=msg.get_prefix();
-		auto ts=util::time_to_string(msg.get_time_stamp());
-		pos=frame.write(pos, ts);
-		pos=frame.write(pos, ' ');
-
-		frame.set_bold(true);
-		pos=frame.write(pos, *pfx.nick);
-		frame.set_bold(false);
-		pos=frame.write(pos, " has parted");
-		if(msg.get_message()) {
-			pos=frame.write(pos, " with: ");
-			pos=frame.write(pos, *msg.get_message());
-		}
-		assert(pfx.nick);
-		std::ostringstream oss;
-		oss << ' ' << pfx;
-		pos=frame.write(pos, oss.str());
-		frame.set_dim(false);
-	}
-	last=cons::point{dim.x, pos.y+1};
-}
-
 void message_stencil::operator()(motd_message& msg) {
 	assert(frame_ && "frame was not valid");
 	cons::output_pane& frame=*frame_;
@@ -153,7 +63,7 @@ void message_stencil::operator()(list_message& msg) {
 
 	if(dim.y > 0) {
 		pos=frame.write(pos, time);
-		pos=frame.write(pos, " in channel: ");
+		pos=frame.write(pos, msg.get_header());
 
 		int indent=pos.x;
 		int divisions=(dim.x-indent) / max_wid;
@@ -169,6 +79,32 @@ void message_stencil::operator()(list_message& msg) {
 			pos.x+=max_wid;
 			++i;
 		}
+	}
+	last=cons::point{dim.x, pos.y+1};
+}
+
+void message_stencil::operator()(text_message& msg) {
+	assert(frame_ && "frame was not valid");
+
+	//the frame to write to
+	cons::output_pane& frame=*frame_;
+	frame_=nullptr; 
+
+	auto dim=frame.get_dimension();
+	cons::point pos{0,0};
+
+	if(dim.y > 0) {
+		frame.set_colour(msg.get_header_colour());
+		//Write time and header
+		pos=frame.write(pos, util::time_to_string(msg.get_time_stamp()));
+		pos=frame.write(pos, " ");
+		frame.set_bold(true);
+		pos=frame.write(pos, msg.get_header());
+		pos=frame.write(pos, " ");
+		//TODO: make more complex
+		frame.set_bold(false);
+		frame.set_colour(msg.get_body_colour());
+		pos=frame.write(pos, msg.get_body());
 	}
 	last=cons::point{dim.x, pos.y+1};
 }

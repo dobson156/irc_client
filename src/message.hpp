@@ -11,6 +11,8 @@
 #include "irc/user.hpp"
 #include "irc/prefix.hpp"
 
+#include "ui/colour_pair.hpp"
+
 #include <chrono>
 #include <string>
 
@@ -34,53 +36,6 @@ public:
 	virtual void visit(message_vistor&)=0;
 }; //class message
 
-
-class chan_message : public message {
-	std::string sender;
-	std::string content;
-public:
-	chan_message(std::string sender_, std::string content_);
-	chan_message(chan_message&&)                =default;
-	chan_message(const chan_message&)           =default;
-	chan_message& operator=(chan_message&&)     =default;
-	chan_message& operator=(const chan_message&)=default;
-
-	void visit(message_vistor& visitor) override;
-
-	const std::string& get_sender() const;
-	const std::string& get_content() const;
-}; //chan_message
-
-class join_message : public message {
-	irc::prefix prefix;
-public:
-	join_message(irc::prefix prefix_);
-	join_message(join_message&&)                =default;
-	join_message(const join_message&)           =default;
-	join_message& operator=(join_message&&)     =default;
-	join_message& operator=(const join_message&)=default;
-
-	void visit(message_vistor& visitor) override;
-
-	const irc::prefix& get_prefix() const;
-}; //chan_message
-
-
-class part_message : public message {
-	irc::prefix          prefix;
-	irc::optional_string message;
-public:
-	part_message(irc::prefix prefix_, irc::optional_string message_);
-	part_message(part_message&&)                =default;
-	part_message(const part_message&)           =default;
-	part_message& operator=(part_message&&)     =default;
-	part_message& operator=(const part_message&)=default;
-
-	void visit(message_vistor& visitor) override;
-
-	const irc::prefix&          get_prefix()  const;
-	const irc::optional_string& get_message() const;
-}; //chan_message
 
 class motd_message : public message {
 	std::string motd;
@@ -127,6 +82,11 @@ class names_list : public message {
 };
 */
 
+
+
+
+//[time] [header] | <e1> <e2> <e3>  |
+//                | <e3> <e4>...    |
 class list_message : public message {
 public:
 	//text, colour
@@ -136,17 +96,51 @@ public:
 	using const_iterator =container_type::const_iterator;
 	
 	template<typename Iter>
-	list_message(Iter first, Iter last) 
-	:	store(first, last)
+	list_message(std::string header_, Iter first, Iter last) 
+	:	header { header_   }
+	,	store (first, last)
 	{   }
 
 	void visit(message_vistor& visitor) override;
 	std::size_t max_element_size() const;
 
+	const std::string& get_header() const;
+
 	const_iterator begin() const;
 	const_iterator end() const;
 private:
-	container_type store;
+	std::string       header;
+	container_type    store;
+	cons::colour_pair header_colour { -1, -1 };
 }; //list_message
+
+
+
+//[time] [header] | body test goes  |
+//                | here            |
+class text_message : public message {
+	std::string       header, 
+	                  body;
+
+	cons::colour_pair header_colour { -1, -1 },  //using default colour 
+	                  body_colour   { -1, -1 };
+public:
+	text_message(std::string header_, std::string body_);
+	text_message(std::string header_, cons::colour_pair header_colour_, 
+	             std::string body_,   cons::colour_pair body_colour_);
+
+	text_message(text_message&&)                =default;
+	text_message(const text_message&)           =default;
+	text_message& operator=(text_message&&)     =default;
+	text_message& operator=(const text_message&)=default;
+
+	const std::string& get_header() const;
+	const std::string& get_body() const;
+
+	const cons::colour_pair& get_header_colour() const;
+	const cons::colour_pair& get_body_colour() const;
+
+	void visit(message_vistor& visitor) override;
+}; //chan_message
 
 #endif //MESSAGE_HPP

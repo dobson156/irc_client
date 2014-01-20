@@ -6,10 +6,12 @@
 
 #include "message.hpp"
 #include "buffer.hpp"
+#include "pallet.hpp"
 
 #include "irc/channel.hpp"
 #include "irc/user.hpp"
 
+#include <sstream>
 #include <string>
 
 
@@ -24,8 +26,17 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 	auto usr_sig=chan.connect_on_user_join(
 		[&](const irc::channel& chan_, const irc::user& user) {
 			assert(&chan_==&chan);
+
+			std::ostringstream oss;
+			oss << "has joined " << user.get_prefix();
+
 			messages.push_back(
-				std::make_shared<join_message>(user.get_prefix())
+				std::make_shared<text_message>(
+					user.get_nick(),
+					get_pallet().get_colour_pair(pallet_idx::join_msg),
+					oss.str(),
+					get_pallet().get_colour_pair(pallet_idx::join_msg)
+				)
 			);
 			on_new_msg(*this, messages.back());
 		}
@@ -35,8 +46,18 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 		[&](const irc::channel& chan_, const irc::user& user, 
 		                               const irc::optional_string& str) {
 			assert(&chan_==&chan);
+
+			std::ostringstream oss;
+			oss << "has parted";
+			if(str) oss << " with: " << *str;
+
 			messages.push_back(
-				std::make_shared<part_message>(user.get_prefix(), str)
+				std::make_shared<text_message>(
+					user.get_nick(),
+					get_pallet().get_colour_pair(pallet_idx::part_msg),
+					oss.str(),
+					get_pallet().get_colour_pair(pallet_idx::part_msg)
+				)
 			);
 			on_new_msg(*this, messages.back());
 		}
@@ -47,7 +68,7 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 			                           const std::string& str) {
 			assert(&chan_==&chan);
 			messages.push_back(
-				std::make_shared<chan_message>(user.get_nick(), str)
+				std::make_shared<text_message>(user.get_nick(), str)
 			);
 			on_new_msg(*this, messages.back());
 		}
@@ -57,6 +78,26 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 		[&](const irc::channel& chan_, const std::string& topic) {
 			assert(&chan_==&chan);
 			on_topic_change(*this, topic);
+		}
+	);
+
+	auto mode_sig=chan.connect_on_set_mode(
+		[&](const irc::channel& chan_, const irc::prefix& user, 
+			                           const irc::mode_list& ml) {
+			std::ostringstream oss;
+			oss << "Following modes have been set: +" << irc::to_string(ml) 
+				<< " by " << user;
+			//TODO: check whether "user" is an actual user
+
+			messages.push_back(std::make_shared<text_message>(
+					std::string{},  
+					get_pallet().get_colour_pair(pallet_idx::default_colour),
+					oss.str(), 
+					get_pallet().get_colour_pair(pallet_idx::set_mode_msg)
+				)
+			);
+
+			on_new_msg(*this, messages.back());
 		}
 	);
 
@@ -81,7 +122,7 @@ void channel_buffer::list_names() {
 		return std::make_pair(u.get_nick(), -1);
 	};
 
-	messages.push_back(std::make_shared<list_message>(
+	messages.push_back(std::make_shared<list_message>(" in channel: ",
 			boost::make_transform_iterator(first, to_list_pair),
 			boost::make_transform_iterator(last, to_list_pair)
 		)
