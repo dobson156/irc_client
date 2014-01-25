@@ -87,10 +87,25 @@ void message_stencil::operator()(text_message& msg) {
 		frame.set_bold(true);
 		pos=frame.write(pos, msg.get_header());
 		pos=frame.write(pos, " ");
-		//TODO: make more complex
+
 		frame.set_bold(false);
 		frame.set_colour(msg.get_body_colour());
-		pos=frame.write(pos, msg.get_body());
+
+		int line_len=dim.x-pos.x;
+		std::size_t n=msg.get_body().size();
+
+		int lines_required=n / line_len;
+		int next;
+
+		for(std::size_t i=0; i<n; i=next) {
+			next=std::min(i+line_len, n);
+			frame.write(pos, 	
+				msg.get_body().begin() + i,
+				msg.get_body().begin() + next
+			);
+			++pos.y;
+		}
 	}
-	last=cons::point{dim.x, pos.y+1};
+	//TODO: if the loop doesn't run (no body, then does y need decrementing?
+	last=cons::point{dim.x, pos.y};
 }

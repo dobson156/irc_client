@@ -61,15 +61,23 @@ void controller::handle_connection_connect(
 	);
 
 
+	session->connect_on_irc_error([=](const std::string& err) {
+			auto& status_buf=get_status_buffer();
+			status_buf.push_back_msg(err);
+		}
+	);
 
-	session->get_self().connect_on_set_mode(
+	// n
+
+	session->get_self().connect_on_mode_change(
 		[=](const irc::user& me, const irc::prefix& set_by, 
-				const irc::mode_list& ml) {
+				const irc::mode_diff& md) {
+
+			std::ostringstream oss;
+			oss << "You mode has been changed to: " << md << " by " << set_by;
 
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg(
-				"You mode has been changed to: " + irc::to_string(ml) + " by " + irc::to_string(ml)
-			);
+			status_buf.push_back_msg(oss.str());
 		}
 
 	);
@@ -195,7 +203,7 @@ void controller::handle_part(const std::string& chan, const std::string& msg) {
 	
 	if(has_channel hc { buf } ) {
 		auto& chan=hc.get_channel();
-		chan.async_part();
+		chan.send_part();
 	}
 }
 
@@ -230,7 +238,7 @@ void controller::handle_text(const std::string& text) {
 	
 	if(has_channel hc { buf } ) {
 		auto& chan=hc.get_channel();
-		chan.async_send_message(text);
+		chan.send_privmsg(text);
 	}
 }
 
@@ -270,10 +278,16 @@ void controller::handle_names() {
 }
 
 void controller::handle_session_join_channel(irc::channel& chan) {
-	chan.connect_on_set_mode(
-		[&](irc::channel& chand, const irc::prefix& p, const irc::mode_list& ml) {
+	chan.connect_on_mode_change(
+		[&](const irc::channel& ch, 
+		    const irc::prefix& p, 
+		    const irc::mode_diff& ml) {
+
+			std::ostringstream oss;
+			oss << "modes set by: " << p << ": " << ml;
+
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg("modes set by: " + to_string(p) + ": +" + irc::to_string(ml));
+			status_buf.push_back_msg(oss.str());
 		}
 	);
 

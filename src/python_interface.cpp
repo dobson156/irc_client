@@ -60,8 +60,8 @@ static void session_connect_on_new_user(irc::session& sess, const py::object& fu
 	sess.connect_on_new_user(make_py_catch(
 		[&,func](irc::user& user) { func(boost::ref(user)); }));
 }
-static void channel_connect_on_message(irc::channel& chan, const py::object& func) {
-	chan.connect_on_message(make_py_catch(
+static void channel_connect_on_privmsg(irc::channel& chan, const py::object& func) {
+	chan.connect_on_privmsg(make_py_catch(
 		[&,func](irc::channel& chan, irc::user& user, const std::string& str) {
 				func(boost::ref(chan), boost::ref(user), str); }));
 }
@@ -81,8 +81,8 @@ BOOST_PYTHON_MODULE(irc_client) {
 	py::object p_chan=py::class_<irc::channel, boost::noncopyable>("channel_t", py::no_init)
 		.def("get_name",                &irc::channel::get_name, 
 			py::return_value_policy<py::copy_const_reference>())
-		.def("send_message",            &irc::channel::async_send_message)
-		.def("connect_on_message",      &channel_connect_on_message)
+		.def("send_privmsg",            &irc::channel::send_privmsg)
+		.def("connect_on_privmsg",      &channel_connect_on_privmsg)
 		.def("connect_on_user_join",    &channel_connect_on_user_join)
 		;
 

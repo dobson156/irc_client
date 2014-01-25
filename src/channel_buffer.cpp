@@ -63,7 +63,7 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 		}
 	);
 
-	auto msg_sig=chan.connect_on_message(
+	auto msg_sig=chan.connect_on_privmsg(
 		[&](const irc::channel& chan_, const irc::user& user, 
 			                           const std::string& str) {
 			assert(&chan_==&chan);
@@ -81,12 +81,11 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 		}
 	);
 
-	auto mode_sig=chan.connect_on_set_mode(
+	auto mode_sig=chan.connect_on_mode_change(
 		[&](const irc::channel& chan_, const irc::prefix& user, 
-			                           const irc::mode_list& ml) {
+			                           const irc::mode_diff& md) {
 			std::ostringstream oss;
-			oss << "Following modes have been set: +" << irc::to_string(ml) 
-				<< " by " << user;
+			oss << "the following modes have been set: " << md << " by " << user;
 			//TODO: check whether "user" is an actual user
 
 			messages.push_back(std::make_shared<text_message>(
@@ -96,7 +95,6 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 					get_pallet().get_colour_pair(pallet_idx::set_mode_msg)
 				)
 			);
-
 			on_new_msg(*this, messages.back());
 		}
 	);
