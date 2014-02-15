@@ -47,8 +47,7 @@ class controller {
 	void handle_quit   ();
 	void handle_names  ();
 //connection handlers
-	void handle_connection_connect(std::shared_ptr<irc::connection>,
-				  std::string nick, std::string username, std::string fullname);
+	void handle_connection_connect(irc::session& sess);
 //session handlers
 	void handle_session_join_channel(irc::channel& chan);
 
@@ -75,7 +74,6 @@ class controller {
 	std::vector<std::unique_ptr<buffer>>          buffers;
 	boost::asio::io_service                       io_service       { 1      };
 	ui                                            view;
-	std::vector<std::shared_ptr<irc::connection>> connections;
 	std::vector<std::unique_ptr<irc::session>>    sessions;
 	bool                                          show_errors      { true  };
 

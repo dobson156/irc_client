@@ -8,7 +8,7 @@
 #include "util.hpp"
 
 #include "irc/session.hpp"
-#include "irc/connection.hpp"
+#include "irc/persistant_connection.hpp"
 #include "irc/channel.hpp"
 #include "irc/user.hpp"
 
@@ -32,27 +32,13 @@ void controller::set_channels() {
 	);
 }
 
-void controller::handle_connection_connect(
-                  std::shared_ptr<irc::connection> connection,
-				  std::string nick,
-				  std::string username,
-				  std::string fullname) {
-	assert(connection && "can not craete sesion with invalid connection");
-	sessions.push_back(
-		util::make_unique<irc::session>(
-			std::move(connection), std::move(nick), 
-			std::move(username), std::move(fullname))
-	);
-	auto& session=sessions.back();
-	auto sess_win=util::make_unique<session_buffer>(*session);
-
-	buffers.push_back(std::move(sess_win));
+void controller::handle_connection_connect(irc::session& session) {
+	buffers.push_back(util::make_unique<session_buffer>(session));
 	set_channels();
 	//if auto change
 	set_channel(*buffers.back());
-	
 	//this will create a new buffer view
-	session->connect_on_join_channel(
+	session.connect_on_join_channel(
 		std::bind(
 			&controller::handle_session_join_channel,
 			this,
@@ -60,17 +46,14 @@ void controller::handle_connection_connect(
 		)
 	);
 
-
-	session->connect_on_irc_error([=](const std::string& err) {
+	session.connect_on_irc_error([=](const std::string& err) {
 			auto& status_buf=get_status_buffer();
 			status_buf.push_back_msg(err);
 		}
 	);
 
-	// n
-
-	session->get_self().connect_on_mode_change(
-		[=](const irc::user& me, const irc::prefix& set_by, 
+	session.get_self().connect_on_mode_change(
+		[=](const irc::user& me, const irc::prefix& set_by,
 				const irc::mode_diff& md) {
 
 			std::ostringstream oss;
@@ -84,7 +67,7 @@ void controller::handle_connection_connect(
 
 	// ne need to register all users so we can hook
 	// any priv_msgs
-	session->connect_on_new_user(
+	session.connect_on_new_user(
 		[&](irc::user& u) {
 			u.connect_on_direct_message(
 				[](irc::user& u, const std::string&) {
@@ -105,44 +88,52 @@ void controller::handle_connection_connect(
 		}
 
 	);
-
 #ifdef USING_PYTHON
-	python_controller.accept_new_session(*session);
+	session.connect_on_connection_established([this, &session] {
+			python_controller.accept_new_session(session);
+		}
+	);
 #endif //USING_PYTHON
 }
 
 void controller::start_connection(const std::string& hostname) {
-	start_connection(hostname, get_default_nick(), get_default_username(), 
+	start_connection(hostname, get_default_nick(), get_default_username(),
 		get_default_fullname(), get_default_port());
 }
-void controller::start_connection(const std::string& hostname, 
-                                  const std::string& nickname, 
+void controller::start_connection(const std::string& hostname,
+                                  const std::string& nickname,
                                   const std::string& username,
-                                  const std::string& fullname,
+                                  const std::string& realname,
                                   const std::string& port) {
-	auto ic=irc::connection::make_shared(io_service, hostname, port);
-	ic->connect_on_resolve([=] {
+
+	auto ic=util::make_unique<irc::persistant_connection>(
+		io_service, hostname, port);
+
+	auto& icr=*ic; //for simplicities sake
+	icr.connect_on_resolve([=](const std::string& str) {
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg("successfully resolved host " + hostname);
+			status_buf.push_back_msg(str);
 		}
 	);
-	ic->connect_on_connect([=] { //copying args to handle_connnection_connect
-			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg("successfully connected to host " + hostname);
-			//TODO: ic has an sp to itself? probably not good!!!
-			handle_connection_connect(ic, std::move(nickname),
-				std::move(username), std::move(fullname)); 
-		}
-	);
-	ic->connect_on_network_error(
+	//icr.connect_on_network_error(
+	icr.connect_on_disconnect(
 		[this](const std::string& e) {
 			auto& sb=get_status_buffer();
 			sb.push_back_msg("NETWORK: " + e);
 		}
 	);
-	connections.push_back(std::move(ic));
-}
 
+	sessions.push_back(util::make_unique<irc::session>(
+		std::move(ic), nickname, username, realname));
+	irc::session& sess=*sessions.back();
+
+	icr.connect_on_connect([=, &sess](const std::string& str) {
+			auto& status_buf=get_status_buffer();
+			status_buf.push_back_msg("successfully connected to host " + hostname);
+			handle_connection_connect(sess);
+		}
+	);
+}
 
 //see controller_parse_text.hpp for impl
 void controller::parse_text(const std::string& text) {
@@ -157,14 +148,14 @@ void controller::handle_ctrl_char(cons::ctrl_char ch) {
 	auto& window=view.get_selected_window();
 	const auto& buff=window.get_buffer();
 	auto first=begin(buffers), last=end(buffers);
-		
-	auto it=std::find_if(first, last, 
+
+	auto it=std::find_if(first, last,
 		[&](const std::unique_ptr<buffer>& b) { return b.get()==&buff; }
 	);
 	assert(it!=last); //is an actual existing buffer
 
 	switch(ch) {
-	default: 
+	default:
 		break;
 
 	case cons::ctrl_char::ctrl_arrow_left:
@@ -256,9 +247,6 @@ void controller::handle_quit() {
 	view.stop();
 	for(auto& sess : sessions) {
 		sess->stop();
-	}
-	for(auto& conn : connections) {
-		conn->stop();
 	}
 }
 
