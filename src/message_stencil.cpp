@@ -8,11 +8,32 @@
 #include "message.hpp"
 #include "message_stencil.hpp"
 
+#include <boost/tokenizer.hpp>
+
 #include <sstream>
 #include <cassert>
 #include <chrono>
 
-cons::point message_stencil::write_to(cons::output_pane& frame, const value_type& msg) {
+
+cons::point write_next_word(cons::output_pane& frame, cons::point pt, 
+                            int indent, const std::string& val) {
+	int len=val.size();
+	auto dim=frame.get_dimension();
+	cons::point end { pt.x+len, pt.y };
+
+	if(!( end < dim)) {
+		pt.x=indent;
+		++pt.y;
+	}
+	//out of room
+	return  pt < dim
+		? frame.write(pt, val, std::min(len, dim.x - pt.x)) 
+		: dim
+		;
+}
+
+cons::point message_stencil::write_to(cons::output_pane& frame, 
+                                      const value_type& msg) {
 	assert(msg);
 	frame_=&frame;
 	msg->visit(*this);
@@ -94,7 +115,6 @@ void message_stencil::operator()(text_message& msg) {
 		int line_len=dim.x-pos.x;
 		std::size_t n=msg.get_body().size();
 
-		int lines_required=n / line_len;
 		int next;
 
 		for(std::size_t i=0; i<n; i=next) {
@@ -109,3 +129,55 @@ void message_stencil::operator()(text_message& msg) {
 	//TODO: if the loop doesn't run (no body, then does y need decrementing?
 	last=cons::point{dim.x, pos.y};
 }
+
+
+
+void message_stencil::operator()(rich_message& msg) {
+	assert(frame_ && "frame was not valid");
+
+	//the frame to write to
+	cons::output_pane& frame=*frame_;
+	frame_=nullptr; 
+
+	auto dim=frame.get_dimension();
+	cons::point pos{0,0};
+
+	if(dim.y > 0) {
+		frame.set_colour(msg.get_header_colour());
+		//Write time and header
+		pos=frame.write(pos, util::time_to_string(msg.get_time_stamp()));
+		pos=frame.write(pos, " ");
+		frame.set_bold(true);
+		pos=frame.write(pos, msg.get_header());
+		pos=frame.write(pos, " ");
+
+		frame.set_bold(false);
+		frame.set_colour(msg.get_body_colour());
+
+		int indent=pos.x;
+
+		//splits on spaces
+		using word_splitter=boost::tokenizer<boost::char_separator<char> >;
+		boost::char_separator<char> sep{"", " "};
+
+		for(const auto& chunk : msg.get_body()) {
+			frame.set_colour(chunk.colour);
+
+			word_splitter tokens{chunk.value, sep};
+			for(const auto& tok : tokens) {
+
+				pos=write_next_word(frame, pos, indent, tok);
+				if(pos==dim) {
+					last=pos;
+					return;
+				}
+			}
+		}
+	}
+	//TODO: if the loop doesn't run (no body, then does y need decrementing?
+	last=cons::point{dim.x, pos.y};
+}
+
+
+
+

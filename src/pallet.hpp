@@ -53,4 +53,8 @@ public:
 
 pallet& get_pallet();
 
+
+short irc_to_cons_colour(irc::colours colour);
+cons::colour_pair irc_to_pallet_colour(irc::colours fg, irc::colours bg);
+
 #endif //PALLET_HPP

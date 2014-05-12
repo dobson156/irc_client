@@ -40,6 +40,10 @@ point operator-(const point& l, const point& r) {
 	return { l.x - r.x, l.y - r.y };
 }
 
+bool operator<(const point& l, const point& r) {
+	return l.x < r.x && l.y < r.y;
+}
+
 int destroy_parent(WINDOW *win) {
 	delwin(win);
 	endwin();

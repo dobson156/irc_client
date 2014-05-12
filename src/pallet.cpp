@@ -1,3 +1,5 @@
+#include <irc/parse_coloured_string.hpp>
+
 #include "pallet.hpp"
 
 #include <cassert>
@@ -50,4 +52,30 @@ cons::colour_pair& pallet::get_colour_pair(pallet_idx pi) {
 pallet& get_pallet() {
 	static pallet pal;
 	return pal;
+}
+
+short irc_to_cons_colour(irc::colours colour) {
+	switch(colour) {
+	case irc::colours::white: return COLOR_WHITE;
+	case irc::colours::black: return COLOR_BLACK;
+	case irc::colours::blue: return COLOR_BLUE;
+	case irc::colours::green: return COLOR_GREEN;
+	case irc::colours::red: return COLOR_RED;
+	case irc::colours::brown: return COLOR_RED; //bad
+	case irc::colours::purple: return COLOR_BLUE; //bad
+	case irc::colours::orange: return COLOR_YELLOW; //bad
+	case irc::colours::yellow: return COLOR_YELLOW;
+	case irc::colours::light_green: return COLOR_GREEN; //bad
+	case irc::colours::teal: return COLOR_CYAN; //bad
+	case irc::colours::light_cyan: return COLOR_CYAN;
+	case irc::colours::light_blue: return COLOR_BLUE; //bad
+	case irc::colours::pink: return COLOR_RED; //bad
+	case irc::colours::grey: return COLOR_BLACK; //bad
+	case irc::colours::light_grey: return COLOR_WHITE; //bad
+	default: return -1;
+	}
+} //enum class colours
+
+cons::colour_pair irc_to_pallet_colour(irc::colours fg, irc::colours bg) {
+	return { irc_to_cons_colour(fg), irc_to_cons_colour(bg) };
 }

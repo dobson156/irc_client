@@ -22,6 +22,7 @@ public:
 
 	void operator()(list_message&) override;
 	void operator()(text_message&) override;
+	void operator()(rich_message&) override;
 }; //message_stencil
 
 #endif //MESSAGE_STENCIL_HPP

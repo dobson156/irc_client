@@ -8,6 +8,7 @@
 #include "buffer.hpp"
 #include "pallet.hpp"
 
+#include "irc/parse_coloured_string.hpp"
 #include "irc/channel.hpp"
 #include "irc/user.hpp"
 
@@ -67,8 +68,12 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 		[&](const irc::channel& chan_, const irc::user& user, 
 			                           const std::string& str) {
 			assert(&chan_==&chan);
+
+			auto rl=irc_split_string_to_rich_list(
+				irc::parse_coloured_string(str));
+
 			messages.push_back(
-				std::make_shared<text_message>(user.get_nick(), str)
+				std::make_shared<rich_message>(user.get_nick(), rl)
 			);
 			on_new_msg(*this, messages.back());
 		}

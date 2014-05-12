@@ -95,3 +95,34 @@ void text_message::visit(message_vistor& visitor) {
 	visitor(*this);
 }
 
+
+rich_message::rich_message(std::string header_, std::vector<rich_word> body_)
+:	header { std::move(header_) }
+,	body   { std::move(body_)   }
+{	}
+
+rich_message::rich_message(std::string header_, 
+                           cons::colour_pair header_colour_, 
+                           std::vector<rich_word> body_,   
+                           cons::colour_pair body_colour_)
+:	header        { std::move(header_)        }
+,	body          { std::move(body_)          }
+,	header_colour { std::move(header_colour_) }
+,	body_colour   { std::move(body_colour_)   }
+{	
+
+}
+
+const std::string& rich_message::get_header() const { return header; }
+const std::vector<rich_word>& rich_message::get_body() const   { return body;   }
+
+const cons::colour_pair& rich_message::get_header_colour() const { 
+	return header_colour; 
+}
+const cons::colour_pair& rich_message::get_body_colour() const { 
+	return body_colour; 
+}
+void rich_message::visit(message_vistor& visitor) {
+	visitor(*this);
+}
+

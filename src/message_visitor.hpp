@@ -17,6 +17,7 @@ public:
 
 	virtual void operator()(list_message&)=0;
 	virtual void operator()(text_message&)=0;
+	virtual void operator()(rich_message&)=0;
 };
 
 #endif //MESSAGE_HPP

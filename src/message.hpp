@@ -7,6 +7,7 @@
 #ifndef MESSAGE_HPP
 #define MESSAGE_HPP
 
+#include "irc/parse_coloured_string.hpp"
 #include "irc/channel.hpp"
 #include "irc/user.hpp"
 #include "irc/prefix.hpp"
@@ -15,6 +16,8 @@
 
 #include <chrono>
 #include <string>
+
+#include "pallet.hpp"
 
 class message_vistor;
 
@@ -108,5 +111,54 @@ public:
 
 	void visit(message_vistor& visitor) override;
 }; //text_message
+
+
+struct rich_word {
+	cons::colour_pair colour;
+	std::string value;
+}; //struct rich_word
+
+
+inline rich_word irc_coloured_string_to_rich_word(irc::coloured_string& val) {
+	return {
+		irc_to_pallet_colour(val.foreground, val.background),
+		std::move(val.value)
+	};
+}
+template<typename OutputIter>
+OutputIter irc_split_string_to_rich_list(irc::split_string ss, OutputIter iter) {
+	std::transform(begin(ss), end(ss), iter, irc_coloured_string_to_rich_word);
+	return iter;
+}
+inline std::vector<rich_word> irc_split_string_to_rich_list(irc::split_string ss) {
+	std::vector<rich_word> out;
+	irc_split_string_to_rich_list(std::move(ss), std::back_inserter(out));
+	return out;
+}
+
+class rich_message : public message {
+	std::string            header;
+	std::vector<rich_word> body;
+
+	cons::colour_pair header_colour { -1, -1 },  //using default colour 
+	                  body_colour   { -1, -1 };
+public:
+	rich_message(std::string header_, std::vector<rich_word> body_);
+	rich_message(std::string header_, cons::colour_pair header_colour_, 
+	             std::vector<rich_word> body_, cons::colour_pair body_colour_);
+
+	rich_message(rich_message&&)                =default;
+	rich_message(const rich_message&)           =default;
+	rich_message& operator=(rich_message&&)     =default;
+	rich_message& operator=(const rich_message&)=default;
+
+	const std::string& get_header() const;
+	const std::vector<rich_word>& get_body() const;
+
+	const cons::colour_pair& get_header_colour() const;
+	const cons::colour_pair& get_body_colour() const;
+
+	void visit(message_vistor& visitor) override;
+};
 
 #endif //MESSAGE_HPP

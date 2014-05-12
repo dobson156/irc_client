@@ -28,6 +28,7 @@ struct point {
 };
 std::ostream& operator<<(std::ostream& os, const point& p);
 bool  operator==(const point& l, const point& r);
+bool  operator< (const point& l, const point& r);
 point operator+ (const point& l, const point& r);
 point operator- (const point& l, const point& r);
 
