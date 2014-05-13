@@ -27,7 +27,7 @@ cons::point write_next_word(cons::output_pane& frame, cons::point pt,
 	}
 	//out of room
 	return  pt < dim
-		? frame.write(pt, val, std::min(len, dim.x - pt.x)) 
+		? frame.write(pt, val.begin(),  val.begin() + std::min(len, dim.x - pt.x))
 		: dim
 		;
 }
@@ -175,7 +175,7 @@ void message_stencil::operator()(rich_message& msg) {
 		}
 	}
 	//TODO: if the loop doesn't run (no body, then does y need decrementing?
-	last=cons::point{dim.x, pos.y};
+	last=cons::point{dim.x, pos.y + 1};
 }
 
 
