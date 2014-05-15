@@ -16,22 +16,23 @@ window::window(unique_window_ptr        handle,
                boost::asio::io_service& io_service, 
                buffer&                  buf) 
 
-:	base          ( /*TODO: gcc 4.8 allows {} braces here */                 ) 
-,	buf_          { buf                                                      }
-,	timer         { io_service                                               }
-,	title_anchor  { std::move(handle), 1                                     }
-,	status_anchor ( title_anchor.emplace_fill<anchor_bottom>(1)              ) //check
-,	title         ( title_anchor.emplace_anchor<text_box>("title")           )
-,	status        ( status_anchor.emplace_anchor<text_box>("status")         )
-,	message_list  ( status_anchor.emplace_fill<msg_list>()                   )
+:	base          ( /*TODO: gcc 4.8 allows {} braces here */         ) 
+,	buf_          { buf                                              }
+,	timer         { io_service                                       }
+,	title_anchor  { std::move(handle), 1                             }
+,	status_anchor ( title_anchor.emplace_fill<anchor_bottom>(1)      ) //check
+,	title         ( title_anchor.emplace_anchor<text_box>("title")   )
+,	status        ( status_anchor.emplace_anchor<text_box>("status") )
+,	message_list  ( status_anchor.emplace_fill<msg_list>()           )
 {
 	title.set_background(COLOR_BLUE);
+	title.set_foreground(COLOR_WHITE);
 	status.set_background(COLOR_BLUE);
+	status.set_foreground(COLOR_WHITE);
 
 	//message_list.selected_idx(std::numeric_limits<msg_list::size_type>::max());
 
 	retarget_buffer();
-	title.set_background(COLOR_BLUE);
 
 	timer.expires_at(util::get_next_min());
 	timer.async_wait(std::bind(&window::timer_set_status, this, ph::_1));
