@@ -31,6 +31,7 @@ std::pair<ctrl_char, Iter> parse_ctrl_char(Iter first, Iter last) {
 		("\x1b\x5b\x44",             ctrl_char::arrow_left)
 		("\x1b\x5b\x31\x3b\x35\x44", ctrl_char::ctrl_arrow_left)
 		("\x1b\x5b\x31\x3b\x35\x43", ctrl_char::ctrl_arrow_right)
+		("\x1b\x5b\x33\x7e",         ctrl_char::del)
 		("\x08",                     ctrl_char::backspace)
 		("\x7f",                     ctrl_char::backspace)
 		("\r",                       ctrl_char::carriage_ret)

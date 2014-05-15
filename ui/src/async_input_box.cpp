@@ -11,8 +11,6 @@
 
 #include <algorithm>
 
-#include <fstream>
-
 namespace cons {
 
 async_input_box::async_input_box(unique_window_ptr ptr, 
@@ -42,6 +40,14 @@ void async_input_box::handle_read_error(const boost::system::error_code&) {
 
 void async_input_box::handle_read_complete(std::string str) {
 	bool do_refresh=false;
+
+/*
+	std::stringstream os;
+	for(char c : str) {
+		os << "0x" << std::hex << int(c);
+	}
+	str =os.str();
+*/
 
 	for(auto it=str.cbegin(); it < str.cend(); ++it) {
 
@@ -77,6 +83,11 @@ void async_input_box::handle_read_complete(std::string str) {
 				do_refresh=true;		
 			}
 			break;
+		case ctrl_char::del:
+			if(pos < value.size()) {
+				value.erase(pos, 1);
+				do_refresh=true;
+			}
 		default:
 			//All other cases are passed on to the user
 			on_ctrl_char(cht);
