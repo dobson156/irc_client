@@ -90,6 +90,9 @@ void window::set_target_buffer(buffer& buf) {
 buffer&       window::get_buffer()       { return buf_; }
 const buffer& window::get_buffer() const { return buf_; }
 
+void window::scroll_up() { message_list.scroll_up(); message_list.refresh(); }
+void window::scroll_down() { message_list.scroll_down(); message_list.refresh(); }
+
 //Overrides :- all of these will be forwarded on to the top level anchor
 void window::clear()   { title_anchor.clear(); }
 void window::refresh() { title_anchor.refresh(); }

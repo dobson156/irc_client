@@ -13,12 +13,12 @@
 
 namespace cons {
 
-async_input_box::async_input_box(unique_window_ptr ptr, 
+async_input_box::async_input_box(unique_window_ptr ptr,
                                  boost::asio::io_service& io_service)
 :	frame_        { std::move(ptr)               }
 ,	in_manager    { make_tty_manager(io_service) }
 ,	io_service    { &io_service                  }
-{	
+{
 	set();
 }
 
@@ -27,6 +27,8 @@ void async_input_box::stop() {
 }
 
 point async_input_box::calc_cursor_position() const {
+	const auto& value=history.get_current();
+
 	auto dim=get_dimension();
 	return {
 		int(value.size()) % dim.x,
@@ -40,7 +42,7 @@ void async_input_box::handle_read_error(const boost::system::error_code&) {
 
 void async_input_box::handle_read_complete(std::string str) {
 	bool do_refresh=false;
-
+	auto value=history.get_current();
 /*
 	std::stringstream os;
 	for(char c : str) {
@@ -61,26 +63,32 @@ void async_input_box::handle_read_complete(std::string str) {
 			if(std::isprint(c)) {
 				value.insert(value.begin()+pos, *it);
 				++pos;
-				do_refresh=true;		
+				do_refresh=true;
 			}
 			break;
 		case ctrl_char::newline: //fall through
 		case ctrl_char::carriage_ret:
+			history.commit_current();
+			set_position();
 			on_input(value);
+			refresh();
+		//	do_refresh=true;
 			break;
 		case ctrl_char::arrow_right:
-			if(pos < value.size()) 
-				++pos; 
+			if(pos < value.size())
+				++pos;
+			do_refresh=true;
 			break;
 		case ctrl_char::arrow_left:
-			if(pos > 0) 
-				--pos; 
+			if(pos > 0)
+				--pos;
+			do_refresh=true;
 			break;
 		case ctrl_char::backspace:
 			if(!value.empty() && pos != 0) {
 				value.erase(pos-1, 1);
 				--pos;
-				do_refresh=true;		
+				do_refresh=true;
 			}
 			break;
 		case ctrl_char::del:
@@ -88,13 +96,26 @@ void async_input_box::handle_read_complete(std::string str) {
 				value.erase(pos, 1);
 				do_refresh=true;
 			}
+		case cons::ctrl_char::arrow_up:
+			history.dec_idx();
+			set_position();
+			refresh();
+			break;
+		case cons::ctrl_char::arrow_down:
+			history.inc_idx();
+			set_position();
+			refresh();
+			break;
 		default:
 			//All other cases are passed on to the user
 			on_ctrl_char(cht);
 			break;
 		}
-	}	
-	if(do_refresh) refresh();
+	}
+	if(do_refresh) {
+		history.set_current(std::move(value));
+		refresh();
+	}
 	set();
 }
 
@@ -106,7 +127,11 @@ void async_input_box::set() {
 
 	//TODO: handle  error
 	in_manager.async_read(
-		std::bind(&async_input_box::handle_read_complete, this, ph::_1));
+		[this](std::string str) {
+			handle_read_complete(str);
+		}
+	);
+		//std::bind(&async_input_box::handle_read_complete, this, ph::_1));
 }
 
 bool async_input_box::grow(point pt) {
@@ -117,6 +142,7 @@ bool async_input_box::grow(point pt) {
 
 void async_input_box::refresh() {
 	auto dim=get_dimension();
+	const auto& value=history.get_current();
 	int y=stencil.required_y(dim.x, value.size());
 	point required { dim.x, y };
 
@@ -135,7 +161,7 @@ void async_input_box::refresh() {
 	if(y <= dim.y) {
 		stencil.write_to(frame_, value);
 	}
-	else if(!grow(required)) {	
+	else if(!grow(required)) {
 		//TODO: a pad based draw
 	}
 	frame_.refresh();
@@ -143,20 +169,25 @@ void async_input_box::refresh() {
 
 void async_input_box::clear() {
 	pos=0;
-	value.clear();
+	history.set_current({});
 	frame_.clear();
 }
 
-void async_input_box::set_value(const std::string& str) { 
-	value=str; 
-	pos=str.size();
+void async_input_box::set_position() {
+	pos=history.get_current().size();
 }
-const std::string& async_input_box::get_value() const { 
-	return value; 
+
+void async_input_box::set_value(const std::string& str) {
+	history.set_current(str);
+	set_position();
+}
+
+const std::string& async_input_box::get_value() const {
+	return history.get_current();
 }
 
 //Overrides
-void async_input_box::set_position(const point& position) { 
+void async_input_box::set_position(const point& position) {
 	auto dim=frame_.get_dimension();
 	WINDOW *p=wgetparent(frame_.get_handle());
 
@@ -164,33 +195,33 @@ void async_input_box::set_position(const point& position) {
 
 	frame_=frame { make_window(p, position, dim) };
 	touchwin(frame_.get_handle());
-	//frame_.set_position(position); 
+	//frame_.set_position(position);
 }
-void async_input_box::set_dimension(const point& dimension) { 
-	frame_.set_dimension(dimension); 
+void async_input_box::set_dimension(const point& dimension) {
+	frame_.set_dimension(dimension);
 	touchwin(frame_.get_handle());
 }
-point async_input_box::get_position()  const { 
-	return frame_.get_position();  
+point async_input_box::get_position()  const {
+	return frame_.get_position();
 }
-point async_input_box::get_dimension() const { 
-	return frame_.get_dimension(); 
+point async_input_box::get_dimension() const {
+	return frame_.get_dimension();
 }
 unique_window_ptr async_input_box::reset(unique_window_ptr handle) {
 	return frame_.reset(std::move(handle));
 }
 //Colour
-void async_input_box::set_background(short bg) { 
-	frame_.set_background(bg); 
+void async_input_box::set_background(short bg) {
+	frame_.set_background(bg);
 }
-void async_input_box::set_foreground(short fg) { 
-	frame_.set_foreground(fg); 
+void async_input_box::set_foreground(short fg) {
+	frame_.set_foreground(fg);
 }
-short async_input_box::get_background() const { 
-	return frame_.get_background(); 
+short async_input_box::get_background() const {
+	return frame_.get_background();
 }
-short async_input_box::get_foreground() const { 
-	return frame_.get_foreground(); 
+short async_input_box::get_foreground() const {
+	return frame_.get_foreground();
 }
 
 } //namespace cons

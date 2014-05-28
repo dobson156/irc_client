@@ -24,7 +24,7 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )
 ,	window1        ( input_anchor.emplace_fill<window>(io_service_, buffer)    )
 ,	io_service     { &io_service_                                              }
 ,	signal_set     { io_service_, SIGWINCH                                     }
-{	
+{
 	channel_border.set_background(COLOR_BLUE);
 	channel_border.set_foreground(COLOR_WHITE);
 	channel_list.highlight_selected(true);
@@ -38,8 +38,17 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )
 	);
 
 	input.connect_on_ctrl_char(
-		[&](cons::ctrl_char ch) {
-			on_ctrl_char(ch);
+		[&, this](cons::ctrl_char ch) {
+			switch(ch) {
+			case cons::ctrl_char::page_up:
+				get_selected_window().scroll_up();
+				break;
+			case cons::ctrl_char::page_down:
+				get_selected_window().scroll_down();
+				break;
+			default:
+				on_ctrl_char(ch);
+			}
 		}
 	);
 
@@ -95,8 +104,8 @@ void ui::set_selected_channel(const std::string& channel_name) {
 }
 
 void ui::set_input(const std::string& str) {
-	input.set_value(str);
-	input.refresh();
+	//input.set_value(str);
+	//input.refresh();
 }
 
 } //namespace ui_impl

@@ -10,8 +10,12 @@
 namespace cons {
 
 enum class ctrl_char {
-	none, 
-	arrow_left, arrow_right, 
+	none,
+	page_up, page_down,
+	ctrl_page_up, ctrl_page_down,
+	arrow_up, arrow_down,
+	arrow_left, arrow_right,
+	ctrl_arrow_up, ctrl_arrow_down,
 	ctrl_arrow_left, ctrl_arrow_right,
 	del, backspace,
 	carriage_ret, newline

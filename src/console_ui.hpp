@@ -44,6 +44,9 @@ class ui {
 	window&                  window1; //todo vector of windows
 	boost::asio::io_service *io_service;
 	boost::asio::signal_set  signal_set;
+
+	std::vector<std::string> history;
+	std::size_t              slot;
 //Callbacks
 	cons::sig_ctrl_ch        on_ctrl_char;
 

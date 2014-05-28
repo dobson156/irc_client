@@ -65,7 +65,8 @@ public:
 		copy(
 			buffer.get_underlying_frame(),  //src
 			frame_, //dst
-			{ 0, y_pos }, //src upper left
+	//		{ 0, y_pos }, //src upper left
+			{ 0, get_scroll_position() }, //src upper left
 			{ 0, 0 },  //dst upper left
 			{ fdim.x, std::min(src_y, fdim.y) } //size
 		);
@@ -88,16 +89,56 @@ public:
 		buffer.assign(values.begin(), values.end());
 		return p;
 	}
+
+
+	void scroll_up() {
+		int fy=frame_.get_dimension().y;
+		int cur_pos=get_scroll_position();
+		int lu=buffer.lines_used();
+
+		if(lu < fy) {
+			line_num=page_end;
+		}
+		else {
+			line_num=std::max(cur_pos-fy, 0);
+		}
+	}
+	void scroll_down() {
+		auto fy=frame_.get_dimension().y;
+		int lu=buffer.lines_used();
+		if(line_num==page_end) 
+			return;
+
+		line_num+=fy;
+		if(line_num + fy > lu)
+			line_num=page_end;
+	}
+
 //Colour
 	void set_background();
 	void set_foreground();
 	short get_background() const { return frame_.get_background(); }
 	short get_foreground() const { return frame_.get_foreground(); }
 private:
+	int get_scroll_position() {
+		if(line_num == page_end) {
+			auto fy=frame_.get_dimension().y;
+			auto lu=buffer.lines_used();
+
+			if(lu < fy) return 0;
+			return lu-fy;
+		}
+		else {
+			return line_num;
+		}
+	}
+
+	static constexpr int                    page_end { std::numeric_limits<int>::max() };
 	frame                                   frame_;
 	stenciled_scrolling_frame<stencil_type> buffer;
 	container_type                          values;
 	stencil_type                            stencil;
+	int                                     line_num { page_end };
 }; //class stenciled_logger
 
 } //namespace cons

@@ -34,7 +34,7 @@ class window : public base {
 	using text_box                =stenciled_frame<string_stencil>;
 	using msg_list                =stenciled_logger<message_stencil>;
 //Member variables
-	unique_connection              con_topic_change, 
+	unique_connection              con_topic_change,
 	                               con_new_msg;
 	std::reference_wrapper<buffer> buf_;
 	boost::asio::system_timer      timer; //for updating the clock
@@ -51,12 +51,15 @@ class window : public base {
 	void set_status();
 	void timer_set_status(const boost::system::error_code&);
 public:
-	window(unique_window_ptr        handle, 
+	window(unique_window_ptr        handle,
 	       boost::asio::io_service& io_service, //for async_input_box
 	       buffer&                  buf);
 	buffer&       get_buffer();
 	const buffer& get_buffer() const;
 	void set_target_buffer(buffer& buf);
+
+	void scroll_up();
+	void scroll_down();
 
 //Overrides :- all of these will be forwarded on to the top level anchor
 	void clear()                                      override;

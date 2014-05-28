@@ -8,6 +8,7 @@
 #define ASYNC_INPUT_BOX_HPP
 
 #include "basic.hpp"
+#include "rlwrapper.hpp"
 #include "signals.hpp"
 #include "ctrl_char.hpp"
 #include "input_manager.hpp"
@@ -19,23 +20,18 @@
 namespace cons {
 
 class async_input_box : public base {
-public:
-	//TODO use boost::signals
-	//using grow_cb     =std::function<bool(point)>;
-	//reference of some kind
-	//using input_cb    =std::function<void(std::string)>;
-	//using ctrl_char_cb=std::function<void(ctrl_char)>;
 private:
 	sig_pt                  on_grow;
 	sig_s                   on_input;
 	sig_ctrl_ch             on_ctrl_char;	
 	
 	frame                    frame_;
-	std::string              value;
 	unsigned                 pos = 0;
 	string_stencil           stencil;
 	input_manager            in_manager;
 	boost::asio::io_service *io_service;
+
+	rlwrapper                history;
 public:
 	async_input_box(unique_window_ptr ptr, 
 	                boost::asio::io_service& io_service);
@@ -48,6 +44,7 @@ public:
 	bool grow(point pt);
 	void refresh();
 	void clear();
+	void set_position();
 	void set_value(const std::string& str);
 	const std::string& get_value() const;
 //Overrides

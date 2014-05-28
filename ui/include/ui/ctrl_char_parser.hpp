@@ -27,8 +27,18 @@ std::pair<ctrl_char, Iter> parse_ctrl_char(Iter first, Iter last) {
 
 	qi::symbols<char, ctrl_char> ctrl_map;
 	ctrl_map.add
+		("\x1b\x5b\x35\x7e",         ctrl_char::page_up)
+		("\x1b\x5b\x36\x7e",         ctrl_char::page_down)
+
+		("\x1b\x5b\x36\x3b\x35\x7e", ctrl_char::ctrl_page_up)
+		("\x1b\x5b\x35\x3b\x35\x7e", ctrl_char::ctrl_page_down)
+
+		("\x1b\x5b\x41",             ctrl_char::arrow_up)
+		("\x1b\x5b\x42",             ctrl_char::arrow_down)
 		("\x1b\x5b\x43",             ctrl_char::arrow_right)
 		("\x1b\x5b\x44",             ctrl_char::arrow_left)
+		("\x1b\x5b\x31\x3b\x35\x41", ctrl_char::ctrl_arrow_up)
+		("\x1b\x5b\x31\x3b\x35\x42", ctrl_char::ctrl_arrow_down)
 		("\x1b\x5b\x31\x3b\x35\x44", ctrl_char::ctrl_arrow_left)
 		("\x1b\x5b\x31\x3b\x35\x43", ctrl_char::ctrl_arrow_right)
 		("\x1b\x5b\x33\x7e",         ctrl_char::del)

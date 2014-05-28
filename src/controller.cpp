@@ -142,7 +142,7 @@ void controller::parse_text(const std::string& text) {
 
 void controller::handle_text_input(const std::string& str) {
 	parse_text(str);
-	view.set_input({});
+	//view.set_input({});
 }
 void controller::handle_ctrl_char(cons::ctrl_char ch) {
 	auto& window=view.get_selected_window();

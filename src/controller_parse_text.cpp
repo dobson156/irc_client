@@ -45,7 +45,7 @@ void controller::parse_text(std::string::const_iterator first,
 		|'/' 
 		>> ( cmd_nm('j', "oin" ) >> (+str)       [ phx::bind( &::controller::handle_join,    this, _1 )     ]
 		   | cmd_nm('m', "sg"  ) >> (str >> str) [ phx::bind( &::controller::handle_msg,     this, _1, _2 ) ]
-		   | cmd_nm('l', "eave") >> (str >> str) [ phx::bind( &::controller::handle_part,    this, _1, _2 ) ]
+//		   | cmd_nm('l', "eave")                 [ phx::bind( &::controller::handle_part,    this)          ]
 		   | "connect"           >> str          [ phx::bind( &::controller::handle_connect, this, _1 )     ]
 		   | "nick"              >> str          [ phx::bind( &::controller::handle_nick,    this, _1 )     ]
 		   | "exec"              >> str          [ phx::bind( &::controller::handle_exec,    this, _1 )     ]
