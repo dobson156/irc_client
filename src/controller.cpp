@@ -179,7 +179,7 @@ void controller::handle_join(const std::vector<std::string>& chans) {
 		auto& sess=hs.get_session();
 		for(const auto& ch : chans) {
 			if(!ch.empty()) { //shouldn't be necessary but still
-				if(ch.front() == '#') 
+				if(ch.front() == '#')
 					sess.async_join(ch);
 				else
 					sess.async_join('#' + ch);
@@ -191,13 +191,23 @@ void controller::handle_join(const std::vector<std::string>& chans) {
 void controller::handle_part(const std::string& chan, const std::string& msg) {
 	auto& win=view.get_selected_window();
 	auto& buf=win.get_buffer();
-	
+
 	if(has_channel hc { buf } ) {
 		auto& chan=hc.get_channel();
-		chan.send_part();
+		chan.send_part(msg);
 	}
 }
 
+void controller::handle_leave(const std::string& msg) {
+	auto& win=view.get_selected_window();
+	auto& buf=win.get_buffer();
+
+	if(has_channel hc { buf } ) {
+		auto& chan=hc.get_channel();
+		chan.send_part(msg);
+	}
+
+}
 void controller::handle_connect(const std::string& chan) {
 	 start_connection(chan);
 }
