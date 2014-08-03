@@ -84,14 +84,15 @@ class frame : public base, public output_pane {
 	unique_window_ptr handle;
 	colour_pair       colours;
 
-	point get_cursor() const; 
-	void set_cursor(const point& p);
-
 	void apply_colour();
 	bool is_attr_on(int attr_on) const;
 	void set_attribute(bool set, int attr);
 public:
 //Ctor
+
+	point get_cursor() const; 
+	void set_cursor(const point& p);
+
 	frame()            =delete;
 	frame(const frame&)=delete;
 	//This is safe as both colour and unique_ptr are move safe
@@ -126,6 +127,7 @@ public:
 	void set_dim       (bool set=true)         override;
 	void set_bold      (bool set=true)         override;
 	void set_colour    (const colour_pair& cp) override;
+	void set_colour    (const colour_pair& cp, bool set); //TODO override
 
 	bool is_underlined() const override;
 	bool is_blinking()   const override;

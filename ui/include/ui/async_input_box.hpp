@@ -30,6 +30,7 @@ private:
 	string_stencil           stencil;
 	input_manager            in_manager;
 	boost::asio::io_service *io_service;
+	colour_pair              cursor_colour { COLOR_BLACK, COLOR_WHITE };
 
 	rlwrapper                history;
 public:

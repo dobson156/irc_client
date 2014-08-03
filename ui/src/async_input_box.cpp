@@ -10,6 +10,7 @@
 #include "ctrl_char_parser.hpp"
 
 #include <algorithm>
+#include <fstream>
 
 namespace cons {
 
@@ -96,6 +97,7 @@ void async_input_box::handle_read_complete(std::string str) {
 				value.erase(pos, 1);
 				do_refresh=true;
 			}
+			break;
 		case cons::ctrl_char::arrow_up:
 			history.dec_idx();
 			set_position();
@@ -143,6 +145,7 @@ bool async_input_box::grow(point pt) {
 void async_input_box::refresh() {
 	auto dim=get_dimension();
 	const auto& value=history.get_current();
+
 	int y=stencil.required_y(dim.x, value.size());
 	point required { dim.x, y };
 
@@ -155,11 +158,25 @@ void async_input_box::refresh() {
 			//and explicitly reresh on the first iteration
 			return;
 		}
+
+		frame_.set_colour(cursor_colour);
+		frame_.write({0,0}, ' ');
+		frame_.set_colour(cursor_colour, false);
 		frame_.refresh();
 		return;
 	}
 	if(y <= dim.y) {
-		stencil.write_to(frame_, value);
+		auto last=frame_.write({0,0}, value, pos);
+		frame_.set_colour(cursor_colour);
+		if(pos == value.size()) {
+			last=frame_.write(last, ' ');
+			frame_.set_colour(cursor_colour, false);
+		}
+		else {
+			last=frame_.write(last, value[pos]);
+			frame_.set_colour(cursor_colour, false);
+			frame_.write(last, value.begin() + pos + 1, value.end());
+		}
 	}
 	else if(!grow(required)) {
 		//TODO: a pad based draw

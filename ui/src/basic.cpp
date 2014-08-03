@@ -23,7 +23,7 @@
 	template class cons::anchor_view<cons::anchors::bottom>;
 	template class cons::anchor_view<cons::anchors::left>;
 	template class cons::anchor_view<cons::anchors::right>;
-#endif 
+#endif
 
 namespace cons {
 
@@ -57,6 +57,8 @@ unique_window_ptr make_window() {
 		//&::delwin
 	};
 	start_color();
+	curs_set(0);
+	//TODO: leaveok()
 	if(parent==nullptr) {
 		throw CONS_MAKE_EXCEPTION("Unable to initialise screen");
 	}
@@ -273,6 +275,7 @@ void frame::set_blinking  (bool set) { set_attribute(set, A_BLINK); }
 void frame::set_dim       (bool set) { set_attribute(set, A_DIM); }
 void frame::set_bold      (bool set) { set_attribute(set, A_BOLD); }
 void frame::set_colour(const colour_pair& cp) { set_attribute(true, cp.get_id()); }
+void frame::set_colour(const colour_pair& cp, bool set) { set_attribute(set, cp.get_id()); }
 
 
 bool frame::is_attr_on(int attr_on) const {
@@ -451,7 +454,7 @@ point left::get_fill_dimension() const {
 	return { dimension.x - used.x, dimension.y };
 }
 point left::get_anchor_position() const {
-	return { 0, 0 };	
+	return { 0, 0 };
 }
 point left::get_anchor_dimension() const {
 	return { std::min(n, dimension.x), dimension.y };
@@ -465,7 +468,7 @@ bottom::bottom(point dimension_, int n_)
 ,	n         { n_         }
 {	}
 point bottom::get_fill_position() const {
-	return { 0, 0 };	
+	return { 0, 0 };
 }
 point bottom::get_fill_dimension() const {
 	auto used=get_anchor_dimension();
@@ -486,7 +489,7 @@ right::right(point dimension_, int n_)
 ,	n         { n_         }
 {	}
 point right::get_fill_position() const {
-	return { 0, 0 };	
+	return { 0, 0 };
 }
 point right::get_fill_dimension() const {
 	auto used=get_anchor_dimension();
@@ -523,7 +526,7 @@ attribute attribute::normal()    { return { WA_NORMAL };    }
 attribute attribute::underline() { return { WA_UNDERLINE }; }
 attribute attribute::reverse()   { return { WA_REVERSE };   }
 attribute attribute::blink()     { return { WA_BLINK };     }
-attribute attribute::dim()       { return { WA_DIM };       } 
+attribute attribute::dim()       { return { WA_DIM };       }
 attribute attribute::bold()      { return { WA_BOLD };      }
 
 } //namespace cons
