@@ -76,6 +76,21 @@ void message_stencil::operator()(list_message& msg) {
 		int divisions=(dim.x-indent) / max_wid;
 		int i=0;
 
+		//if to wide for window
+		if(max_wid + indent > dim.x) {
+			//yet could be single file
+			if(max_wid < dim.x) {
+				indent=0;
+				divisions=1;
+				++pos.y;
+				pos.x=0;
+			}
+			else {
+				last=cons::point{dim.x, pos.y+1};
+				return;
+			}
+		}
+
 		for(auto& e : msg) {
 			if(i==divisions) {
 				i=0;
