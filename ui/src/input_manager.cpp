@@ -57,6 +57,7 @@ void input_manager::async_read(std::function<void(std::string)> f_) {
 }
 
 void input_manager::stop() {
+	file.cancel();
 	file.close();
 }
 

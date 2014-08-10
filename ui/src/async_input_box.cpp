@@ -10,7 +10,6 @@
 #include "ctrl_char_parser.hpp"
 
 #include <algorithm>
-#include <fstream>
 
 namespace cons {
 
@@ -130,7 +129,7 @@ void async_input_box::set() {
 	//TODO: handle  error
 	in_manager.async_read(
 		[this](std::string str) {
-			handle_read_complete(str);
+			handle_read_complete(std::move(str));
 		}
 	);
 		//std::bind(&async_input_box::handle_read_complete, this, ph::_1));
