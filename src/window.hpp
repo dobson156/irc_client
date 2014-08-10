@@ -61,6 +61,7 @@ public:
 	void scroll_up();
 	void scroll_down();
 
+	void stop(); //stops the timer
 //Overrides :- all of these will be forwarded on to the top level anchor
 	void clear()                                      override;
 	void refresh()                                    override;

@@ -60,6 +60,7 @@ ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )
 }
 
 void ui::redraw() {
+	//TODO: this code should be in the UI lib
 	endwin();
 	winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
@@ -69,7 +70,8 @@ void ui::redraw() {
 }
 
 void ui::handle_sigwinch(const boost::system::error_code& e, int sig) {
-	assert(sig==SIGWINCH);
+	//sig==SIGWINCH this should be true, but there are other signals that are equivelant and
+	//also get passed in here
 	if(!e) {
 		redraw();
 		signal_set.async_wait(
@@ -85,6 +87,8 @@ void ui::refresh() {
 
 void ui::stop() {
 	input.stop();
+	signal_set.cancel();
+	window1.stop();
 }
 
       window& ui::get_selected_window()       { return window1; }

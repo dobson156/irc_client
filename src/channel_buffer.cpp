@@ -94,8 +94,8 @@ channel_buffer::channel_buffer(irc::channel& chan_)
 			//TODO: check whether "user" is an actual user
 
 			messages.push_back(std::make_shared<text_message>(
-					std::string{},  
-					get_pallet().get_colour_pair(pallet_idx::default_colour),
+					"modes",  
+					get_pallet().get_colour_pair(pallet_idx::set_mode_msg),
 					oss.str(), 
 					get_pallet().get_colour_pair(pallet_idx::set_mode_msg)
 				)

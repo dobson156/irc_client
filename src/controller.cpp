@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 #include "controller.hpp"
+#include "log_messages.hpp"
 #include "util.hpp"
 
 #include "irc/session.hpp"
@@ -48,21 +49,8 @@ void controller::handle_connection_connect(irc::session& session) {
 
 	session.connect_on_irc_error([=](const std::string& err) {
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg(err);
+			status_buf.push_back_msg(make_irc_error_msg(err));
 		}
-	);
-
-	session.get_self().connect_on_mode_change(
-		[=](const irc::user& me, const irc::prefix& set_by,
-				const irc::mode_diff& md) {
-
-			std::ostringstream oss;
-			oss << "You mode has been changed to: " << md << " by " << set_by;
-
-			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg(oss.str());
-		}
-
 	);
 
 	// ne need to register all users so we can hook
@@ -74,19 +62,7 @@ void controller::handle_connection_connect(irc::session& session) {
 					//TODO implement privmsg here
 				}
 			);
-
-			/* Currently this functionality is in session buffer
-			u.connect_on_notice(
-				[&](irc::user& u, const std::string& msg) {
-					auto& status_buf=get_status_buffer();
-					std::ostringstream oss;
-					oss << "NOTICE: " << u.get_nick() << ": " << msg;
-					status_buf.push_back_msg(oss.str());
-				}
-			);
-			*/
 		}
-
 	);
 #ifdef USING_PYTHON
 	session.connect_on_connection_established([this, &session] {
@@ -111,15 +87,13 @@ void controller::start_connection(const std::string& hostname,
 
 	auto& icr=*ic; //for simplicities sake
 	icr.connect_on_resolve([=](const std::string& str) {
-			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg(str);
+			get_status_buffer().push_back_msg(str);
 		}
 	);
 	//icr.connect_on_network_error(
 	icr.connect_on_disconnect(
 		[this](const std::string& e) {
-			auto& sb=get_status_buffer();
-			sb.push_back_msg("NETWORK: " + e);
+			get_status_buffer().push_back_msg(make_network_error_msg(e));
 		}
 	);
 
@@ -209,7 +183,7 @@ void controller::handle_leave(const std::string& msg) {
 
 }
 void controller::handle_connect(const std::string& chan) {
-	 start_connection(chan);
+	start_connection(chan);
 }
 
 
@@ -258,6 +232,7 @@ void controller::handle_quit() {
 	for(auto& sess : sessions) {
 		sess->stop();
 	}
+	//io_service.stop();
 }
 
 void controller::handle_names() {
@@ -276,20 +251,6 @@ void controller::handle_names() {
 }
 
 void controller::handle_session_join_channel(irc::channel& chan) {
-	chan.connect_on_mode_change(
-		[&](const irc::channel& ch, 
-		    const irc::prefix& p, 
-		    const irc::mode_diff& ml) {
-
-			std::ostringstream oss;
-			oss << "modes set by: " << p << ": " << ml;
-
-			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg(oss.str());
-		}
-	);
-
-
 	chan.connect_on_channel_part(
 		[&](irc::channel& chand) {
 			auto it=std::find_if(begin(buffers), end(buffers),
@@ -394,18 +355,14 @@ controller::controller(std::string pyton_config_file_)
 		[this](const std::string s) { 
 			if(show_errors) {
 				auto& status_buf=get_status_buffer();
-				std::ostringstream oss;
-				oss << "PYTHON ERROR: " << s;
-				status_buf.push_back_msg(oss.str());
+				status_buf.push_back_msg(make_python_error_msg(s));
 			}
 		}
 	);
 	python_controller.connect_on_python_output(
 		[this](const std::string s) { 
 			auto& status_buf=get_status_buffer();
-			std::ostringstream oss;
-			oss << "PYTHON: " << s;
-			status_buf.push_back_msg(oss.str());
+			status_buf.push_back_msg(make_python_error_msg(s));
 		}
 	);
 	python_controller.reload_conf();

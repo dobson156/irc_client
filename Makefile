@@ -22,7 +22,7 @@ endif
 
 #slow objects are library elements and spirit parsers 
 SLOW_OBJS=ui/src/console.o src/controller_parse_text.o libircpp/src/irc.o src/python_interface.o
-FAST_OBJS=src/controller.o src/program.o src/console_ui.o src/message.o src/message_stencil.o src/channel_buffer.o src/session_buffer.o src/error_buffer.o src/buffer.o src/unique_connection.o src/window.o src/util.o src/pallet.o
+FAST_OBJS=src/controller.o src/program.o src/console_ui.o src/message.o src/message_stencil.o src/channel_buffer.o src/session_buffer.o src/error_buffer.o src/buffer.o src/unique_connection.o src/window.o src/util.o src/pallet.o src/log_messages.o
 OBJS=$(SLOW_OBJS) $(FAST_OBJS)
 
 all: irc_client

@@ -146,7 +146,7 @@ python_interface::python_interface(std::string python_file_)
 		main_module    =py::import("__main__");
 		main_namespace =main_module.attr("__dict__");
 		py::object icm =py::import("irc_client");
-		auto icn       =icm.attr("__dict__");
+	//	auto icn       =icm.attr("__dict__");
 
 		main_namespace["irc"]=py::ptr(this);
 		py::exec(error_redirect.c_str(), main_namespace);
@@ -154,7 +154,10 @@ python_interface::python_interface(std::string python_file_)
 	catch(const py::error_already_set&) {
 		PyErr_Print();
 	}
+}
 
+python_interface::~python_interface() {
+	Py_Finalize();
 }
 
 void python_interface::exec(const std::string& py_code) {

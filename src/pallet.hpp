@@ -21,6 +21,7 @@ enum class pallet_idx  {
 
 	set_mode_msg,
 
+	python_error,
 	//! an ERROR: or ERR_X from the server
 	irc_error,      
 	//! we have recieved a msg but it's malformed or unrecognized (won't parse)

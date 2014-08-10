@@ -141,6 +141,16 @@ public:
 	log_buffer(std::string name);
 	~log_buffer() {}
 	void push_back_msg(std::string msg);
+
+	template<typename MsgType>
+	void push_back_msg(std::shared_ptr<MsgType> msg) {
+
+		auto msgptr=std::static_pointer_cast<message, MsgType>(msg);
+
+		messages.push_back(std::move(msgptr));
+
+		on_new_msg(*this, messages.back());
+	}
 }; //log_buffer
 
 #endif //BUFFER_HPP

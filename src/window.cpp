@@ -47,9 +47,9 @@ void window::set_status() {
 void window::timer_set_status(const boost::system::error_code& ec) {
 	if(!ec) {
 		set_status();
+		timer.expires_at(util::get_next_min()); //resubscribe
+		timer.async_wait(std::bind(&window::timer_set_status, this, ph::_1));
 	}
-	timer.expires_at(util::get_next_min()); //resubscribe
-	timer.async_wait(std::bind(&window::timer_set_status, this, ph::_1));
 }
 
 void window::retarget_buffer() {
@@ -92,6 +92,8 @@ const buffer& window::get_buffer() const { return buf_; }
 
 void window::scroll_up() { message_list.scroll_up(); message_list.refresh(); }
 void window::scroll_down() { message_list.scroll_down(); message_list.refresh(); }
+
+void window::stop() { timer.cancel(); }
 
 //Overrides :- all of these will be forwarded on to the top level anchor
 void window::clear()   { title_anchor.clear(); }

@@ -11,6 +11,7 @@
 #include "irc/session.hpp"
 
 #include <string>
+#include <sstream>
 
 
 session_buffer::session_buffer(irc::session& session_) 
@@ -52,7 +53,30 @@ session_buffer::session_buffer(irc::session& session_)
 			}
 		)
 	);
+
+
+	connections.push_back(
+		session.get_self().connect_on_mode_change(
+			[=](const irc::user& me, const irc::prefix& set_by,
+					const irc::mode_diff& md) {
+
+				std::ostringstream oss;
+				oss << "Your mode has been changed to: " << md << " by " << set_by;
+
+				messages.push_back(
+					std::make_shared<text_message>(
+						"modes",
+						get_pallet().get_colour_pair(pallet_idx::set_mode_msg),
+						oss.str(),
+						get_pallet().get_colour_pair(pallet_idx::set_mode_msg)
+					)
+				);
+				on_new_msg(*this, messages.back());
+			}
+		)
+	);
 }
+
 
 
 session_buffer::~session_buffer() {

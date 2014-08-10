@@ -46,6 +46,8 @@ class controller {
 	void handle_python (const std::string& py_code);
 	void handle_quit   ();
 	void handle_names  ();
+	
+	void handle_leave  (const std::string& exec);
 //connection handlers
 	void handle_connection_connect(irc::session& sess);
 //session handlers
