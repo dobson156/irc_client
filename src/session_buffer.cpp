@@ -75,6 +75,23 @@ session_buffer::session_buffer(irc::session& session_)
 			}
 		)
 	);
+
+	connections.push_back(
+		session.connect_on_nick_change(
+			[=](const std::string& s) {
+
+				messages.push_back(
+					std::make_shared<text_message>(
+						"nick",
+						get_pallet().get_colour_pair(pallet_idx::set_mode_msg),
+						"You are now known as: " + s,
+						get_pallet().get_colour_pair(pallet_idx::set_mode_msg)
+					)
+				);
+				on_new_msg(*this, messages.back());
+			}
+		)
+	);
 }
 
 
