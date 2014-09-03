@@ -61,6 +61,14 @@ To leave a channel, on the associated channel buffer issue:
     /leave <your exit message>
     /leave "goodbye cruel world" 
 
+Command list
+------------
+
+
+Command | Description | Context | Example
+--
+/join <channel name> | Joins a new IRC channel | This command can be run from any window relating to a server | /join ##ircpp
+
 Python (and config)
 ------
 By default irc_client will look in your current directory for an `irc_config.py`, a specific config file may be specified with following flag:
