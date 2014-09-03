@@ -61,6 +61,17 @@ To leave a channel, on the associated channel buffer issue:
     /leave <your exit message>
     /leave "goodbye cruel world" 
 
+Command list
+------------
+
+Command | Description | Context | Example
+--------|-------------|---------|--------
+`/connect <host address>` | Connects to a new IRC server, this will be in addition to any other open irc servers | Can be run from anywhere | `/connect irc.freenode.net`
+`/join <channel name>` | Joins a new IRC channel | This command can be run from any window relating to a server, such as the session window or channel window | `/join ##ircpp`
+`/quit` | Quits the program | Can be run from anywhere | `/quit`
+`/nick <nickname>` | Changes your nick name on ther server | This command can be run from any window relating to a server, such as the session window or channel window | `/nick testuser123`
+`/python <python expression>` | Runs a python expression, can be any valid single line of python, you may call functions defined in your configs or defined by this statement | Can be run from anywhere | `/python print 1+` `/python f()` `/python def h(): print "hello"`
+
 Python (and config)
 ------
 By default irc_client will look in your current directory for an `irc_config.py`, a specific config file may be specified with following flag:
