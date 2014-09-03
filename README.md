@@ -66,7 +66,7 @@ Command list
 
 
 Command | Description | Context | Example
---
+---|---|---|---
 /join <channel name> | Joins a new IRC channel | This command can be run from any window relating to a server | /join ##ircpp
 
 Python (and config)
