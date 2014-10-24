@@ -4,8 +4,8 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BASIC_HPP 
-#define BASIC_HPP
+#ifndef CONS_BASIC_HPP 
+#define CONS_BASIC_HPP
 
 #include "colour_pair.hpp"
 
@@ -19,8 +19,18 @@
 
 namespace cons {
 
-
 struct point { 
+/**
+ * A co-ordinate or offset
+ * when constructued using brace syntax, ie: { 5, 6 } then the first elemnt 
+ * is x, and the second is y
+ * 
+ * for sizes (ie: get_dimension()) then the values are the number of positions, 
+ * so a square element with a single block is of size 1,1
+ *
+ * positions are generally indexes into those positions, 
+ * so the first position is {0,0}, and the last is dimension - {1,1}
+ */
 	int x, y; 
 	point()                       =default;
 	point(const point&)           =default;
@@ -35,9 +45,25 @@ point operator- (const point& l, const point& r);
 using unique_window_ptr=std::unique_ptr<WINDOW, decltype(&::delwin)>;
 
 class base {
+/**
+ * This is the abstract interface that all UI elements must provide
+ */
 public:
+	/**
+	 * virtual dtor, UI elements may well be own by items that only know 
+	 * they decend from base
+	 */
 	virtual ~base() { }
+	/**
+     * This function resets the state of the UI element back to it's blank state,
+	 * for example, a text input would become empty, a frame would be wiped completely
+	 * this doesn't mean that nothing would be deplayed
+	 */
 	virtual void clear()                              =0;
+	/**
+	 * This function refreshes the UI element, this step may cause the
+	 * UI element to redraw and refresh (push output to screen)
+	 */
 	virtual void refresh()                            =0;
 	virtual void set_position(const point& position)  =0;
 	virtual void set_dimension(const point& dimension)=0;
@@ -60,6 +86,16 @@ unique_window_ptr make_window(WINDOW *parent, const point& position,
 unique_window_ptr make_pad(const point& dimension);
 
 class output_pane {
+/**
+ * Output pane, is the inteface for a UI element that be be written onto
+ * like a canvas, for example like a frame.
+ *
+ * The reason why we need this generic interface rather than just use
+ * frame itself is because we can use the interface to narrow down on
+ * subsections of a frame but still providing the same frame interface
+ *
+ * @see frame and scrolling_frame
+ */
 public:
 	virtual point get_position()  const                                    =0;
 	virtual point get_dimension() const                                    =0;
@@ -81,6 +117,19 @@ public:
 }; //class output_pane
 
 class frame : public base, public output_pane {
+/**
+ * frame is the most basic UI element and implementation of output_pane
+ * 
+ * it simply puts an iterface over the underlying curses windows,
+ * this system deals entirely with string and characters and has no
+ * default structure to the data
+ *
+ * Frame is highly useful for creating more strucutured UI elements,
+ * by wrapping frame you can use it's inteface to output data with formatting
+ * such as colour information and test attributes such bas bold and blinking
+ * 
+ * @see stenciled_frame for an examples
+ */
 	unique_window_ptr handle;
 	colour_pair       colours;
 
@@ -160,4 +209,4 @@ public:
 
 } //namespace cons
 
-#endif // BASIC_HPP
+#endif // CONS_BASIC_HPP
