@@ -1,3 +1,9 @@
+
+//          Copyright Joseph Dobson 2014
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef CONS_PROGRESS_BAR_HPP
 #define CONS_PROGRESS_BAR_HPP
 
@@ -12,6 +18,13 @@ private:
 	unsigned denominator_;
 	unsigned get_number_of_blocks() const;
 public:
+	/**
+	 * Ctor for the progress bar
+	 *
+	 * @param handle_ the UI window handle
+	 * @param progress the progress values from with the init from
+	 * @param denominator (optional, default 100) the denominator
+	 */
 	progress_bar(unique_window_ptr handle_, 
 	             unsigned progress=0, 
 	             unsigned denominator=100);

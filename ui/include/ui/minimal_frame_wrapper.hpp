@@ -1,3 +1,9 @@
+
+//          Copyright Joseph Dobson 2014
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef CONS_MINIMAL_FRAME_WRAPPER_HPP
 #define CONS_MINIMAL_FRAME_WRAPPER_HPP
 
@@ -15,7 +21,7 @@ boiler plate code for the majority of bases interface.
 
 An example of this use case is cons::progress_bar
 */
-class minimal_frame_wrapper : base {
+class minimal_frame_wrapper : public base {
 private:
 	frame frame_;
 protected:

@@ -8,53 +8,68 @@
 #define STENCILED_FRAME_HPP
 
 #include "basic.hpp"
+#include "minimal_frame_wrapper.hpp"
 
 #include <utility> //move
 
 namespace cons {
 
 template<typename StencilType>
-class stenciled_frame : public base {
+class stenciled_frame : public minimal_frame_wrapper {
+/**
+ * This class is used to provide an easy way of providing formatting to data
+ * 
+ * unlike cons::frame which just deals in raw text buffers and characters,
+ * this frame is specialised with a class, this template parameter defines a 
+ * a value_type, the type of data which is stenciled.
+ *
+ * the data that is you wish to have displayed is set with set_content, note
+ * that this will have version which it owns, you may move the value in 
+ * or it will copy
+ *
+ * the stencil is the responsible translating the abstract data onto a 
+ * raw output_pane (the interface to cons::frame)
+ * the stencil also provides a layer of separation between the data and
+ * the way in which it is displayed
+ *
+ * Most non interactive UI elements (ie outputs) are best modelled as stencils
+ *
+ * for an example of stencil see cons::string_stencil
+ */
 public:
 	using stencil_type=StencilType;
 	using value_type  =typename stencil_type::value_type;
 
 	stenciled_frame(unique_window_ptr handle, value_type value_)
-	:	frame_ { std::move(handle) }
-	,	value  ( std::move(value_) )
+	:	minimal_frame_wrapper { std::move(handle) }
+	,	value                 ( std::move(value_) )
 	{	}
+
+	/**
+	 * This sets the value which is stenciled onto the UI via the stencil_type
+	 * with which the stencil_frame is specialised
+	 *
+	 * This function takes the value by value, and the moves it internally.
+	 */
 	void set_content(value_type value_) {
 		value=std::move(value_);
 	}
 //Overrides
 	void clear() override { 
 		value=value_type();
-		frame_.clear(); 
+		get_frame().clear(); 
 	}
+	/**
+	 * This function implements refresh, 
+	 * in this step we delegate the formatting of the data to the 
+	 * stencils write_to function
+	 */
 	void refresh() override { 
-		frame_.clear();
-		stencil.write_to(frame_, value);
-		frame_.refresh(); 
+		get_frame().clear();
+		stencil.write_to(get_frame(), value);
+		get_frame().refresh(); 
 	}
-	void set_position(const point& position) override { 
-		frame_.set_position(position); 
-		//touchwin(frame_.get_handle());
-	}
-	void set_dimension(const point& dimension) override { 
-		frame_.set_dimension(dimension); 
-	}
-	point get_position()  const override { return frame_.get_position();  }
-	point get_dimension() const override { return frame_.get_dimension(); }
-	unique_window_ptr reset(unique_window_ptr handle) override {
-		return frame_.reset(std::move(handle));
-	}
-//Colour
-	void set_background(short bg) { frame_.set_background(bg); }
-	void set_foreground(short fg) { frame_.set_foreground(fg); }
-	short get_background() const  { return frame_.get_background(); }
-	short get_foreground() const  { return frame_.get_foreground(); }
 private:
-	frame        frame_;
 	value_type   value;
 	stencil_type stencil;
 }; //class stenciled_frame
