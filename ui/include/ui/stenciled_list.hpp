@@ -8,11 +8,12 @@
 #define STENCILED_LIST_HPP
 
 #include "basic.hpp"
+#include "minimal_frame_wrapper.hpp"
 
 #include <boost/optional.hpp>
 
-#include <utility> //std::move
-#include <vector>
+#include <utility> //std::move 
+#include <vector> 
 #include <deque>
 
 namespace cons {
@@ -35,7 +36,7 @@ template
 		typename StencilType::value_type
 	>
 >
-class stenciled_list : public base {
+class stenciled_list : public minimal_frame_wrapper {
 public:
 	using stencil_type  =StencilType;
 	using container_type=ContainerType;
@@ -45,7 +46,6 @@ public:
 	using iterator      =typename container_type::iterator;
 	using const_iterator=typename container_type::const_iterator;
 private:
-	frame                        frame_;
 	container_type               values;
 	stencil_type                 stencil;
 	size_type                    selected { 0 };
@@ -54,7 +54,7 @@ private:
 	boost::optional<colour_pair> selected_colour;
 public:
 	stenciled_list(unique_window_ptr handle)
-	:	frame_ { std::move(handle) }
+	:	minimal_frame_wrapper { std::move(handle) }
 	{	}
 //Mutuate
 	iterator insert(iterator it, value_type value) {
@@ -97,8 +97,8 @@ public:
 		return *it;
 	}
 //Overrides
-	void clear()   override {
-		frame_.clear();
+	void clear() override {
+		get_frame().clear();
 		values.clear();
 	}
 
@@ -106,7 +106,7 @@ public:
 	** Okay, this function is hideous, but it works
 	*/
 	void refresh() override {
-		frame_.clear();
+		get_frame().clear();
 		if(!empty()) {
 			auto selected=selected_idx();
 			const auto dime=get_dimension();
@@ -173,30 +173,12 @@ public:
 			int y=0;
 			for(auto& mfrm : message_frames) {
 				auto dime=mfrm.get_dimension();
-				copy(mfrm, frame_, {0,0}, {0,y}, dime);
+				copy(mfrm, get_frame(), {0,0}, {0,y}, dime);
 				y+=dime.y;
 			}
 		}
-		frame_.refresh();
+		get_frame().refresh();
 	}
-
-	void set_position(const point& position) override { 
-		frame_.set_position(position); 
-	}
-	void set_dimension(const point& dimension) override { 
-		frame_.set_dimension(dimension); 
-	}
-	point get_position()  const override { return frame_.get_position();  }
-	point get_dimension() const override { return frame_.get_dimension(); }
-	unique_window_ptr reset(unique_window_ptr handle) override {
-		return frame_.reset(std::move(handle));
-	}
-//Colour
-	void set_background();
-	void set_foreground();
-	short get_background() const { return frame_.get_background(); }
-	short get_foreground() const { return frame_.get_foreground(); }
-
 	bool highlight_selected() const { return selected_colour; }
 	void highlight_selected(bool v) { 
 		if(!selected_colour) {
@@ -206,7 +188,6 @@ public:
 			selected_colour=colour_pair { COLOR_BLACK, COLOR_WHITE };
 		}
 	}
-
 }; //class stenciled_list
 
 } //namespace cons
