@@ -12,11 +12,11 @@
 
 namespace ui_impl {
 
-window::window(unique_window_ptr        handle, 
-               boost::asio::io_service& io_service, 
-               buffer&                  buf) 
+window::window(unique_window_ptr        handle,
+               boost::asio::io_service& io_service,
+               buffer&                  buf)
 
-:	base          ( /*TODO: gcc 4.8 allows {} braces here */         ) 
+:	base          ( /*TODO: gcc 4.8 allows {} braces here */         )
 ,	buf_          { buf                                              }
 ,	timer         { io_service                                       }
 ,	title_anchor  { std::move(handle), 1                             }
@@ -98,7 +98,7 @@ void window::stop() { timer.cancel(); }
 //Overrides :- all of these will be forwarded on to the top level anchor
 void window::clear()   { title_anchor.clear(); }
 void window::refresh() { title_anchor.refresh(); }
-void window::set_position(const point& position) { 
+void window::set_position(const point& position) {
 	title_anchor.set_position(position);
 }
 void window::set_dimension(const point& dimension) {

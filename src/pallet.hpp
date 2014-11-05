@@ -2,7 +2,6 @@
 #define PALLET_HPP
 
 #include "ui/colour_pair.hpp"
-#include "ui/basic.hpp"
 
 #include <array>
 

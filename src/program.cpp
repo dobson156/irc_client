@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 		po::options_description desc { "Allowed options:" };
 		desc.add_options()
 			( "help", "produce help message" )
-			( "config-script", po::value<std::string>(), 
+			( "config-script", po::value<std::vector<std::string>>(),
 				"specify a python config file to load instead of default" )
 			;
 
@@ -30,12 +30,19 @@ int main(int argc, char **argv) {
 			std::cout << desc << "\n";
 		}
 		else {
+			/*
 			const std::string& python_file= vm.count("config-script") > 0
 			                              ? vm["config-script"].as<std::string>()
 			                              : "t.py"
 			                              ;
+			*/
+			std::vector<std::string> pfiles;
+			if(vm.count("config-script"))
+				pfiles=vm["config-script"].as<std::vector<std::string>>();
+			else
+				pfiles.push_back("t.py");
 
-			controller ctrl { python_file };
+			controller ctrl { pfiles.front() };
 			ctrl.run();
 		}
 	}

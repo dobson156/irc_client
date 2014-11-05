@@ -8,7 +8,10 @@
 #define MESSAGE_VISTOR_HPP
 
 class message;
-class chan_message;// : public message;
+class motd_message;
+class list_message;
+class text_message;
+class rich_message;// : public message;
 
 class message_vistor {
 public:

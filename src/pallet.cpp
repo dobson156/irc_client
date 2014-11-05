@@ -1,5 +1,8 @@
 #include <irc/parse_coloured_string.hpp>
 
+//todo, use own color names and header
+#include <ncurses.h>
+
 #include "pallet.hpp"
 
 #include <cassert>

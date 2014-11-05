@@ -11,7 +11,10 @@
 #include "message.hpp"
 
 #include "ui/signals.hpp"
-#include "ui/console.hpp"
+#include "ui/bordered.hpp"
+#include "ui/anchor_view.hpp"
+#include "ui/stenciled_list.hpp"
+#include "ui/async_input_box.hpp"
 
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/signal_set.hpp>

@@ -7,23 +7,21 @@
 #include "buffer.hpp"
 #include "console_ui.hpp"
 
-#include "ui/console.hpp"
-
 #include <csignal>
 #include <sys/ioctl.h>
 #include <ncurses.h>
 
 namespace ui_impl {
 
-ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )  
-:	parent         { make_window(), 16                                         }	
+ui::ui(boost::asio::io_service& io_service_, buffer& buffer                    )
+:	parent         { make_window(), 16                                         }
 ,	input_anchor   ( parent.emplace_fill<anchor_bottom>(1)                     )
 ,	channel_border ( parent.emplace_anchor<bordered>(borders::right)           )
-,	channel_list   ( channel_border.emplace_element<text_list>()               ) 
+,	channel_list   ( channel_border.emplace_element<text_list>()               )
 ,	input          ( input_anchor.emplace_anchor<async_input_box>(io_service_) )
 ,	window1        ( input_anchor.emplace_fill<window>(io_service_, buffer)    )
 ,	io_service     { &io_service_                                              }
-,	signal_set     { io_service_, SIGWINCH                                     }
+,	signal_set     { io_service_, SIGWINCH, SIGINT                             }
 {
 	channel_border.set_background(COLOR_BLUE);
 	channel_border.set_foreground(COLOR_WHITE);
@@ -72,6 +70,8 @@ void ui::redraw() {
 void ui::handle_sigwinch(const boost::system::error_code& e, int sig) {
 	//sig==SIGWINCH this should be true, but there are other signals that are equivelant and
 	//also get passed in here
+	if(sig == SIGINT) return;
+
 	if(!e) {
 		redraw();
 		signal_set.async_wait(
@@ -83,7 +83,7 @@ void ui::handle_sigwinch(const boost::system::error_code& e, int sig) {
 void ui::refresh() {
 	parent.refresh();
 	//input.refresh();
-} 
+}
 
 void ui::stop() {
 	input.stop();

@@ -7,14 +7,15 @@
 #ifndef MESSAGE_STENCIL_HPP
 #define MESSAGE_STENCIL_HPP
 
-#include "ui/basic.hpp"
+#include "ui/point.hpp"
+#include "ui/output_pane.hpp"
 
 #include "message_visitor.hpp"
 
 class message_stencil : public message_vistor {
 	cons::output_pane *frame_;
 	cons::point last;
-public:	
+public:
 	using value_type=std::shared_ptr<message>;
 	cons::point write_to(cons::output_pane&, const value_type&);
 	void operator()(message&)      override;

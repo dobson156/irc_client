@@ -10,10 +10,12 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/system_timer.hpp>
 
-#include "ui/console.hpp"
+#include "ui/base.hpp"
+#include "ui/anchor_view.hpp"
+#include "ui/string_stencil.hpp"
+#include "ui/stenciled_frame.hpp"
 #include "ui/stenciled_logger.hpp"
 
-#include "message.hpp"
 #include "message_stencil.hpp"
 #include "unique_connection.hpp"
 
