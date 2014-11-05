@@ -42,6 +42,7 @@ class controller {
 	void handle_nick   (const std::string& nick);
 	void handle_msg    (const std::string& target, const std::string& msg);
 	void handle_text   (const std::string& text);
+	void handle_invite (const std::string& nick);
 	void handle_exec   (const std::string& exec);
 	void handle_python (const std::string& py_code);
 	void handle_quit   ();

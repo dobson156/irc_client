@@ -4,12 +4,13 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-#include "controller.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
 
+//these includes are backwards because including both boost python and spirit kills things
+#include "controller.hpp"
 
 /*
 ** This function takes a month of sundays to compile 
@@ -51,6 +52,7 @@ void controller::parse_text(std::string::const_iterator first,
 		   | "connect"           >> str          [ phx::bind( &::controller::handle_connect, this, _1 )     ]
 		   | "nick"              >> str          [ phx::bind( &::controller::handle_nick,    this, _1 )     ]
 		   | "exec"              >> str          [ phx::bind( &::controller::handle_exec,    this, _1 )     ]
+		   | "invite"            >> str          [ phx::bind( &::controller::handle_invite,  this, _1 )     ]
 		   | lit("quit")                         [ phx::bind( &::controller::handle_quit,    this)          ]
 		   | lit("names")                        [ phx::bind( &::controller::handle_names,   this)          ]
 		   | "python"            >> str_to_end   [ phx::bind( &::controller::handle_python,  this, _1 )     ] 

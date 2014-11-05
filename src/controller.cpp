@@ -118,6 +118,18 @@ void controller::handle_text_input(const std::string& str) {
 	parse_text(str);
 	//view.set_input({});
 }
+
+
+void controller::handle_invite(const std::string& nick) {
+	auto& win=view.get_selected_window();
+	auto& buf=win.get_buffer();
+
+	if(has_channel hc { buf } ) {
+		auto& chan=hc.get_channel();
+		chan.send_invite(nick);
+	}
+}
+
 void controller::handle_ctrl_char(cons::ctrl_char ch) {
 	auto& window=view.get_selected_window();
 	const auto& buff=window.get_buffer();
