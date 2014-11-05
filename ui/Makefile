@@ -11,7 +11,7 @@ export CFLAGS=$(OPTS) -ggdb -std=c++11 -pedantic -Wall -Wextra -DBOOST_SIGNALS_N
 
 export LFLAGS=$(OPTS)
 
-OBJS=src/basic.o src/string_stencil.o src/async_input_box.o src/input_manager.o src/colour_pair.o src/scrolling_frame.o src/rlwrapper.o src/minimal_frame_wrapper.o src/progress_bar.o
+OBJS=src/basic.o src/string_stencil.o src/async_input_box.o src/input_manager.o src/colour_pair.o src/scrolling_frame.o src/rlwrapper.o src/minimal_frame_wrapper.o src/progress_bar.o src/frame.o src/anchors.o src/bordered.o
 
 all: src/console.o src/console.a tests
 
