@@ -151,7 +151,7 @@ void colour_pair::swap(colour_pair& other) {
 }
 
 void swap(colour_pair& a, colour_pair& b) {
-	a.swap(b);	
+	a.swap(b);
 }
 
 } //namespace cons

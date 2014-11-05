@@ -7,13 +7,12 @@
 #ifndef STENCILED_LIST_HPP
 #define STENCILED_LIST_HPP
 
-#include "basic.hpp"
 #include "minimal_frame_wrapper.hpp"
 
 #include <boost/optional.hpp>
 
-#include <utility> //std::move 
-#include <vector> 
+#include <utility> //std::move
+#include <vector>
 #include <deque>
 
 namespace cons {
@@ -127,7 +126,7 @@ public:
 
 			//This holds all the compoent pads, deque so we can add to front and back
 			std::deque<cons::frame> message_frames;
-			
+
 			//the amount of verticle space used by the pads so far
 			int y_used=0;
 
@@ -140,14 +139,11 @@ public:
 			}
 
 			y_used=message_frames.back().get_dimension().y;
-			
-
 
 			//true whilst there are still more upper & lower values
 			//when both are false loop breaks
 			bool tdo=true, bdo=true;
 
-			
 			//constructs the vector of frames
 			while(y_used < dime.y && (tdo || bdo)) {
 				//produce a forerunning message

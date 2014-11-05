@@ -7,7 +7,9 @@
 #ifndef ASYNC_INPUT_BOX_HPP
 #define ASYNC_INPUT_BOX_HPP
 
-#include "basic.hpp"
+#include "base.hpp"
+#include "frame.hpp"
+#include "window.hpp"
 #include "rlwrapper.hpp"
 #include "signals.hpp"
 #include "ctrl_char.hpp"
@@ -23,8 +25,8 @@ class async_input_box : public base {
 private:
 	sig_pt                  on_grow;
 	sig_s                   on_input;
-	sig_ctrl_ch             on_ctrl_char;	
-	
+	sig_ctrl_ch             on_ctrl_char;
+
 	frame                    frame_;
 	unsigned                 pos = 0;
 	string_stencil           stencil;

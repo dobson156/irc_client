@@ -11,6 +11,8 @@
 #ifdef NDEBUG 
 	#define CONS_ASSERT(expr, msg) static_cast<void>(0);
 #else
+	#include <ncurses.h> //for endwin
+	#include <cstdlib> //for abort
 	#include <iostream> //for cerr
 	#define CONS_ASSERT(expr, msg)\
 		if(!(expr)) {\

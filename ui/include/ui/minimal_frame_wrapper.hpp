@@ -7,7 +7,8 @@
 #ifndef CONS_MINIMAL_FRAME_WRAPPER_HPP
 #define CONS_MINIMAL_FRAME_WRAPPER_HPP
 
-#include "basic.hpp"
+#include "window.hpp"
+#include "frame.hpp"
 
 namespace cons {
 

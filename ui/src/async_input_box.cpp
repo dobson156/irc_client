@@ -6,7 +6,6 @@
 
 #include "assert.hpp"
 #include "async_input_box.hpp"
-
 #include "ctrl_char_parser.hpp"
 
 #include <algorithm>

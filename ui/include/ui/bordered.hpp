@@ -7,7 +7,8 @@
 #ifndef BOARDERED_HPP
 #define BOARDERED_HPP
 
-#include "basic.hpp"
+#include "util.hpp"
+#include "window.hpp"
 
 #include <utility> //move
 #include <algorithm> //max
@@ -15,12 +16,12 @@
 namespace cons {
 
 enum class borders { top, bottom, left, right };
-		  
+
 class bordered : public base {
 	frame           frame_;
 	unique_base_ptr element;
 
-	bool top  { false }, bottom { false }, 
+	bool top  { false }, bottom { false },
 	     left { false }, right  { false };
 
 	//TODO make safe for very small sizes

@@ -7,9 +7,9 @@
 #ifndef SCROLLING_BUFFER_HPP
 #define SCROLLING_BUFFER_HPP
 
-#include "minimal_frame_wrapper.hpp"
+#include "window.hpp"
 #include "scrolling_frame.hpp"
-#include "basic.hpp"
+#include "minimal_frame_wrapper.hpp"
 
 #include <iterator>
 

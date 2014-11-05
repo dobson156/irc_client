@@ -8,10 +8,11 @@
 #define ANCHOR_VIEW_HPP
 
 #include "util.hpp"
-#include "assert_cast.hpp"
-
-#include "basic.hpp"
+#include "base.hpp"
+#include "frame.hpp"
 #include "assert.hpp"
+#include "window.hpp"
+#include "assert_cast.hpp"
 
 #include <exception>
 #include <utility>
@@ -30,13 +31,13 @@ private:
 
 	unique_window_ptr make_fill_window() {
 		return make_window(frame_.get_handle(),
-			anchor_control.get_fill_position(),	
+			anchor_control.get_fill_position(),
 			anchor_control.get_fill_dimension()
 		);
 	}
 	unique_window_ptr make_anchor_window() {
 		return make_window(frame_.get_handle(),
-			anchor_control.get_anchor_position(),	
+			anchor_control.get_anchor_position(),
 			anchor_control.get_anchor_dimension()
 		);
 	}
@@ -46,7 +47,7 @@ private:
 		if(anchor) anchor->reset(make_anchor_window());
 	}
 public:
-	anchor_view(unique_window_ptr handle_, int partition) 
+	anchor_view(unique_window_ptr handle_, int partition)
 	:	frame_         ( std::move(handle_) )
 	,	anchor_control { frame_.get_dimension(), partition   }
 	{	}
@@ -64,13 +65,13 @@ public:
 	template<typename ElementType, typename... Args>
 	ElementType& emplace_anchor(Args&&...additional_args) {
 		auto element_anchor=util::make_unique<ElementType>(
-			make_anchor_window(),	
+			make_anchor_window(),
 			std::forward<Args>(additional_args)...
 		);
 		auto raw_ptr=element_anchor.get();
 		anchor=std::move(element_anchor);
 		return *raw_ptr;
-	}	
+	}
 	template<typename ElementType=base>
 	ElementType& get_fill() {
 		CONS_ASSERT(fill!=nullptr, "fill pointer is null");
@@ -106,7 +107,7 @@ public:
 	int   get_partition() const          { return anchor_control.get_n(); }
 
 	void set_partition(int n) {
-		anchor_control.set_n(n);		
+		anchor_control.set_n(n);
 		shuffle();
 	}
 	unique_window_ptr reset(unique_window_ptr handle) override {

@@ -4,9 +4,10 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-#include "scrolling_frame.hpp"
+#include "frame.hpp"
 #include "assert.hpp"
 #include "exception.hpp"
+#include "scrolling_frame.hpp"
 
 #include <limits>
 

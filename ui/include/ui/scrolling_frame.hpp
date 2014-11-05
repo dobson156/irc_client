@@ -7,6 +7,9 @@
 #ifndef SCROLLING_FRAME_HPP
 #define SCROLLING_FRAME_HPP
 
+#include "point.hpp"
+#include "output_pane.hpp"
+
 /*
  * The scolling_frame is a frame adaptor that facilities scroling
  * should the user write off the bottom of the frame then the frame
@@ -20,10 +23,10 @@
  * the frame, the write to {0,0} will make it scroll, which will
  * effectively append the data to the end
  */
-
-#include "basic.hpp"
-
 namespace cons {
+
+class frame;
+class colour_pair;
 
 class scrolling_frame : public output_pane {
 	int y_offset;

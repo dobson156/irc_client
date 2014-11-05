@@ -4,9 +4,11 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+#include "base.hpp"
+#include "frame.hpp"
 #include "stenciled_scrolling_frame.hpp"
-#include "basic.hpp"
 
+#include <limits>
 #include <vector>
 
 namespace cons {

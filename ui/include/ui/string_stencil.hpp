@@ -7,7 +7,7 @@
 #ifndef STRING_STENCIL_HPP
 #define STRING_STENCIL_HPP
 
-#include "basic.hpp"
+#include "output_pane.hpp"
 
 #include <string>
 
@@ -24,7 +24,7 @@ public:
 	string_stencil(const string_stencil&)=default;
 //STENCIL INTERFACE
 	int required_y(int max_width, std::string::size_type chars) const;
-	
+
 	point write_to(output_pane& frame_, const std::string& str) const;
 }; //class string_stencil
 
