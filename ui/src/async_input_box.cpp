@@ -137,7 +137,8 @@ void async_input_box::set() {
 bool async_input_box::grow(point pt) {
 	//TODO ensure this works as expected in the
 	//true, false and unconnected cases
-	return on_grow(pt);
+	auto res=on_grow(pt);
+	return res ? *res : false;
 }
 
 void async_input_box::refresh() {
