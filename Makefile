@@ -6,7 +6,7 @@ export LNK =$(CPP)
 
 
 INC          =-I /usr/include/python2.7 -I . -I ./libircpp/include -I ./ui/include
-LIB          =-lncurses -lboost_python -lboost_system -lboost_program_options -lpython2.7 -lpthread
+LIB          =-lncurses -lboost_python -lboost_system -lboost_program_options -lboost_filesystem -lpython2.7 -lpthread
 
 export CFLAGS=-std=c++11 -pedantic -Wall -Wextra -Wno-unused-parameter -DBOOST_RESULT_OF_USE_DECLTYPE -DUSING_PYTHON 
 

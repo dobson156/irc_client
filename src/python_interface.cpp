@@ -13,6 +13,9 @@
 #include <Python.h>
 #include <boost/python.hpp>
 
+#include <boost/filesystem/operations.hpp>
+
+#include <sstream>
 
 //try catch, py catch, get it?
 template<typename F>
@@ -22,7 +25,7 @@ public:
 	template<
 		typename F2,
 		typename=typename std::enable_if<std::is_same<F2, F>::value>::type
-	> 
+	>
 	py_catch(F2&& f)
 	:	func ( std::forward<F2>(f) )
 	{	}
@@ -32,7 +35,7 @@ public:
 	py_catch& operator=(const py_catch&)=default;
 	py_catch& operator=(py_catch&&)=default;
 
-	template<typename... Args> auto operator()(Args&&... args) 
+	template<typename... Args> auto operator()(Args&&... args)
 	-> decltype(func(std::forward<Args>(args)...)) {
 		try {
 			return func(std::forward<Args>(args)...);
@@ -53,8 +56,8 @@ static void session_connect_on_join_channel(irc::session& sess, const py::object
 }
 static void session_connect_on_user_notice(irc::session& sess, const py::object& func) {
 	sess.connect_on_user_notice(make_py_catch(
-		[&,func](irc::user& user, const std::string& msg) { 
-			func(boost::ref(user), msg); })); 
+		[&,func](irc::user& user, const std::string& msg) {
+			func(boost::ref(user), msg); }));
 }
 static void session_connect_on_new_user(irc::session& sess, const py::object& func) {
 	sess.connect_on_new_user(make_py_catch(
@@ -79,7 +82,7 @@ static void user_connect_on_channel_message(irc::user& user, const py::object& f
 BOOST_PYTHON_MODULE(irc_client) {
 //OBJECT MAPS
 	py::object p_chan=py::class_<irc::channel, boost::noncopyable>("channel_t", py::no_init)
-		.def("get_name",                &irc::channel::get_name, 
+		.def("get_name",                &irc::channel::get_name,
 			py::return_value_policy<py::copy_const_reference>())
 		.def("send_privmsg",            &irc::channel::send_privmsg)
 		.def("connect_on_privmsg",      &channel_connect_on_privmsg)
@@ -87,7 +90,7 @@ BOOST_PYTHON_MODULE(irc_client) {
 		;
 
 	py::object p_sess=py::class_<irc::session, boost::noncopyable>("session_t", py::no_init)
-		.def("get_nick",                &irc::session::get_nick, 
+		.def("get_nick",                &irc::session::get_nick,
 			py::return_value_policy<py::copy_const_reference>())
 		.def("change_nick",             &irc::session::async_change_nick)
 		.def("privmsg",                 &irc::session::async_privmsg)
@@ -98,7 +101,7 @@ BOOST_PYTHON_MODULE(irc_client) {
 		;
 
 	py::object p_user=py::class_<irc::user, boost::noncopyable>("user_t", py::no_init)
-		.def("get_nick",                   &irc::user::get_nick, 
+		.def("get_nick",                   &irc::user::get_nick,
 			py::return_value_policy<py::copy_const_reference>())
 		.def("connect_on_channel_message", &user_connect_on_channel_message)
 		;
@@ -143,13 +146,29 @@ python_interface::python_interface(std::string python_file_)
 			"sys.stdout=redirect_io(irc.write_output)\n"
 			;
 
+
 		main_module    =py::import("__main__");
 		main_namespace =main_module.attr("__dict__");
 		py::object icm =py::import("irc_client");
 	//	auto icn       =icm.attr("__dict__");
 
+
+		boost::filesystem::path python_path { python_file };
+		//auto path=python_path.parent_path().string(); 
+
+
+
 		main_namespace["irc"]=py::ptr(this);
 		py::exec(error_redirect.c_str(), main_namespace);
+
+
+		//add the script path to sys
+		auto path=boost::filesystem::absolute(python_file).parent_path();
+		std::ostringstream oss; oss << "import sys\n"
+			"if not " << path << " in sys.path:\n\t"
+				"sys.path.append(" << path << ")";
+
+		exec(oss.str().c_str());
 	}
 	catch(const py::error_already_set&) {
 		PyErr_Print();
@@ -209,7 +228,7 @@ void python_interface::accept_new_session(irc::session& sess) {
 }
 
 std::string python_interface::get_python_file() const { 
-	return python_file; 
+	return python_file;
 }
 
 void python_interface::p_start_connection(const std::string& con) {
