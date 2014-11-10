@@ -14,6 +14,17 @@ std::shared_ptr<text_message> make_python_error_msg(std::string msg) {
 	);
 }
 
+
+std::shared_ptr<text_message> make_python_stdout_msg(std::string msg) {
+	return std::make_shared<text_message>(
+		"PYTHON",
+		get_pallet().get_colour_pair(pallet_idx::python_stdout),
+		std::move(msg),
+		get_pallet().get_colour_pair(pallet_idx::python_stdout)
+	);
+}
+
+
 std::shared_ptr<text_message> make_network_error_msg(std::string msg) {
 	return std::make_shared<text_message>(
 		"NETWORK ERROR",

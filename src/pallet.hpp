@@ -20,6 +20,7 @@ enum class pallet_idx  {
 
 	set_mode_msg,
 
+	python_stdout,
 	python_error,
 	//! an ERROR: or ERR_X from the server
 	irc_error,      

@@ -353,7 +353,7 @@ controller::controller(std::string pyton_config_file_)
 
 	view.connect_on_ctrl_char(
 		std::bind(&controller::handle_ctrl_char, this, ph::_1));
-	
+
 #ifdef USING_PYTHON
 	python_controller.connect_on_connect(
 		[this](const std::string& server) { start_connection(server); });
@@ -363,8 +363,10 @@ controller::controller(std::string pyton_config_file_)
 		util::make_assign_on_call(default_username));
 	python_controller.connect_on_change_default_fullname(
 		util::make_assign_on_call(default_fullname));
+
+
 	python_controller.connect_on_python_error(
-		[this](const std::string s) { 
+		[this](const std::string s) {
 			if(show_errors) {
 				auto& status_buf=get_status_buffer();
 				status_buf.push_back_msg(make_python_error_msg(s));
@@ -372,9 +374,9 @@ controller::controller(std::string pyton_config_file_)
 		}
 	);
 	python_controller.connect_on_python_output(
-		[this](const std::string s) { 
+		[this](const std::string s) {
 			auto& status_buf=get_status_buffer();
-			status_buf.push_back_msg(make_python_error_msg(s));
+			status_buf.push_back_msg(make_python_stdout_msg(s));
 		}
 	);
 	python_controller.reload_conf();

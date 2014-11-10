@@ -18,6 +18,7 @@ pallet::pallet() {
 	slots[to_idx(pallet_idx::set_mode_msg)]  ={ COLOR_GREEN,   -1 };
 
 //ERROR COLOURS
+	slots[to_idx(pallet_idx::python_stdout)] ={ COLOR_BLUE,    -1 };
 	slots[to_idx(pallet_idx::python_error)]  ={ COLOR_RED,     -1 };
 	slots[to_idx(pallet_idx::irc_error)]     ={ COLOR_RED,     -1 };
 	slots[to_idx(pallet_idx::protocol_error)]={ COLOR_RED,     -1 };
