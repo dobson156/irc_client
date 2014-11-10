@@ -63,12 +63,50 @@ class controller {
 	const log_buffer& get_status_buffer() const;
 	
 	log_buffer& get_or_make_error_buffer();
-
+	/**
+	 * Gets the nick that is used when establishing new sessions 
+	 * @returns the default nick
+	 */
 	const std::string get_default_nick() const;
+	/**
+	 * Sets the nick used when establishing new session 
+	 * Note that setting this value will not alter current sessions 
+	 * @param nick the new value
+	 */
+	void  set_default_nick(const std::string& nick);
+	/**
+	 * Gets the username that is used when establishing new session 
+	 * @returns the default usersname 
+	 */
 	const std::string get_default_username() const;
+	/**
+	 * Sets the user used when establishing new session 
+	 * Note that setting this value will not alter current sessions 
+	 * @param username the new value
+	 */	
+	 void  set_default_username(const std::string& username);
+	/**
+	 * Gets the fullname that is used when establishing new sessions 
+	 * @returns the default fullname
+	 */
 	const std::string get_default_fullname() const;
+	/**
+	 * Sets the nick used when establishing new session 
+	 * Note that setting this value will not alter current sessions 
+	 * @param fullname the new value
+	 */
+	void  set_default_fullname(const std::string& fullname);
+	/**
+	 * Gets the port or service used when establishing new connection
+	 * @returns the default port
+	 */
 	const std::string get_default_port() const;
-
+	/**
+	 * Sets the port used when establishing new connection
+	 * Note that setting this value will not alter current connection
+	 * @param port the new value
+	 */
+	void  set_default_port(const std::string& str);
 //varaibles
 	std::string                                   default_nick,
 	                                              default_username,

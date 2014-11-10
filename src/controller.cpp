@@ -24,8 +24,8 @@ void controller::set_channel(buffer& buff) {
 }
 
 void controller::set_channels() {
-    auto get_name=[](const std::unique_ptr<buffer>& bp) { 
-		return bp->get_name(); 
+    auto get_name=[](const std::unique_ptr<buffer>& bp) {
+		return bp->get_name();
 	};
 	view.assign_channels( //iterate over channels as strings
 		boost::make_transform_iterator(buffers.begin(), get_name),
@@ -76,6 +76,7 @@ void controller::start_connection(const std::string& hostname) {
 	start_connection(hostname, get_default_nick(), get_default_username(),
 		get_default_fullname(), get_default_port());
 }
+
 void controller::start_connection(const std::string& hostname,
                                   const std::string& nickname,
                                   const std::string& username,
@@ -318,14 +319,26 @@ log_buffer& controller::get_or_make_error_buffer() {
 const std::string controller::get_default_nick() const {
 	return default_nick;
 }
+void controller::set_default_nick(const std::string& nick) {
+	default_nick=nick;
+}
 const std::string controller::get_default_username() const {
 	return default_username;
+}
+void controller::set_default_username(const std::string& username) {
+	default_username=username;
 }
 const std::string controller::get_default_fullname() const {
 	return default_fullname;
 }
+void controller::set_default_fullname(const std::string& fullname) {
+	default_fullname=fullname;
+}
 const std::string controller::get_default_port() const {
 	return default_port;
+}
+void controller::set_default_port(const std::string& port) {
+	default_port=port;
 }
 
 controller::controller(std::string pyton_config_file_)
