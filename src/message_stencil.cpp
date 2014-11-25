@@ -178,6 +178,9 @@ void message_stencil::operator()(rich_message& msg) {
 		for(const auto& chunk : msg.get_body()) {
 			frame.set_colour(chunk.colour);
 
+			frame.set_bold(chunk.bold);
+			frame.set_underlined(chunk.underline);
+
 			word_splitter tokens{chunk.value, sep};
 			for(const auto& tok : tokens) {
 

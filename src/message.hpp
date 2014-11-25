@@ -114,6 +114,7 @@ public:
 
 
 struct rich_word {
+	bool bold, underline;
 	cons::colour_pair colour;
 	std::string value;
 }; //struct rich_word
@@ -121,6 +122,8 @@ struct rich_word {
 
 inline rich_word irc_coloured_string_to_rich_word(irc::coloured_string& val) {
 	return {
+		val.get_bold(), 
+		val.get_underline(),
 		irc_to_pallet_colour(val.foreground, val.background),
 		std::move(val.value)
 	};
